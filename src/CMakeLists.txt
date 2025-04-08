@@ -6,8 +6,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Dependencies
 set(RAYLIB_VERSION 5.5)
+set(RAYGUI_VERSION 4.0)
 
 find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED
+find_package(raygui ${RAYGUI_VERSION} QUIET)
+# CONTINUE HERE
+
 
 if (NOT raylib_FOUND) # If there's none, fetch and build raylib
     include(FetchContent)

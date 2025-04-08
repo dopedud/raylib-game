@@ -13,6 +13,7 @@ int main()
 
     while (!WindowShouldClose())
     {
+        DrawFPS(10, 10);
         UpdateDrawFrame();
     }
 
