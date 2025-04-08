@@ -6,12 +6,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Dependencies
 set(RAYLIB_VERSION 5.5)
-set(RAYGUI_VERSION 4.0)
 
 find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED
-find_package(raygui ${RAYGUI_VERSION} QUIET)
-# CONTINUE HERE
-
 
 if (NOT raylib_FOUND) # If there's none, fetch and build raylib
     include(FetchContent)
@@ -31,10 +27,13 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
     endif()
 endif()
 
+add_library(raygui INTERFACE)
+target_sources(raygui PRIVATE ${CMAKE_SOURCE_DIR}/raygui/raygui.h)
+
 # Our Project
 add_executable(${PROJECT_NAME} main.c)
 #set(raylib_VERBOSE 1)
-target_link_libraries(${PROJECT_NAME} raylib)
+target_link_libraries(${PROJECT_NAME} raylib raygui)
 
 # Set the output directory just for this target
 set_target_properties(${PROJECT_NAME} PROPERTIES
