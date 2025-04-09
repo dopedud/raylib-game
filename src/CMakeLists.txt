@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11) # FetchContent is available in 3.11+
-project(game-engine)
+project(raylib-game)
 
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -30,6 +30,8 @@ endif()
 add_library(raygui INTERFACE)
 target_sources(raygui PRIVATE ${CMAKE_SOURCE_DIR}/raygui/raygui.h)
 
+file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR}/release)
+
 # Our Project
 add_executable(${PROJECT_NAME} main.c)
 #set(raylib_VERBOSE 1)
@@ -37,7 +39,7 @@ target_link_libraries(${PROJECT_NAME} raylib raygui)
 
 # Set the output directory just for this target
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/release/bin
 )
 
 # Web Configurations

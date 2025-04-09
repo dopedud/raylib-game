@@ -5,9 +5,10 @@
 This is the git repository for a C project about making a game from scratch, written in C powered by
 [Raylib](https://www.raylib.com/index.html) ([Github link](https://github.com/raysan5/raylib?tab=readme-ov-file)).
 
-## Features
+## Running the Game
 
-- TBA
+Use the `run.bat` file via typing in console `run`. There's nothing special about `run.bat`; it only acts as an alias
+to the full path to the executable `build\release\bin\raylib-game.exe`.
 
 ## Compilation Notes
 

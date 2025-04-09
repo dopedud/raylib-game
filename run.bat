@@ -1,0 +1,1 @@
+build\release\bin\raylib-game.exe
