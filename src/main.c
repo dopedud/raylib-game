@@ -12,6 +12,8 @@ void UpdateDrawFrame();
 
 int main()
 {
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "WINDOW");
 
     while (!WindowShouldClose())
@@ -29,9 +31,10 @@ void UpdateDrawFrame()
 {
     BeginDrawing();
 
-        ClearBackground(RAYWHITE);
+        Texture2D tex2d = LoadTextureFromImage(LoadImage("image.jpg"));
+        DrawTexture(tex2d, 10, 10, { Color });
 
-        DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+        ClearBackground(RAYWHITE);
 
     EndDrawing();
 }

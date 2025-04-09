@@ -2,7 +2,7 @@
 
 ## About
 
-This is the git repository for a C project about a game engine made from scratch, written in C powered by
+This is the git repository for a C project about making a game from scratch, written in C powered by
 [Raylib](https://www.raylib.com/index.html) ([Github link](https://github.com/raysan5/raylib?tab=readme-ov-file)).
 
 ## Features
