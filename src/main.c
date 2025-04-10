@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 __declspec(dllexport) unsigned long NvOptimusEnablement = 1;
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
@@ -8,6 +9,8 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
+
+#include "logger.h"
 
 #ifdef PLATFORM_DESKTOP
     #define GLSL_VERSION    330
@@ -22,10 +25,13 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #define ZOOM_SPEED 1.01f
 #define OFFSET_SPEED_MULTIPLIER 2.0f
 
+void TimestampLogCallback(int logType, const char *text, va_list args);
+
 int main()
 {
     ChangeDirectory(GetApplicationDirectory());
 
+    SetTraceLogCallback(TimestampLogCallback);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "WINDOW");

@@ -55,8 +55,13 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/shaders")
     DESTINATION ${CMAKE_BINARY_DIR}/release)
 endif()
 
+set(SOURCES
+    main.c
+    logger.c
+)
+
 # add project as executable
-add_executable(${PROJECT_NAME} main.c)
+add_executable(${PROJECT_NAME} ${SOURCES})
 set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib raygui_header)
 
