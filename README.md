@@ -8,7 +8,7 @@ This is the git repository for a C project about making a game from scratch, wri
 ## Running the Game
 
 Use the `run.bat` file via typing in console `run`. There's nothing special about `run.bat`; it only acts as an alias
-to the full path to the executable `build\release\bin\raylib-game.exe`.
+to the full path to the executable `build\release\raylib-game.exe`.
 
 ## Compilation Notes
 

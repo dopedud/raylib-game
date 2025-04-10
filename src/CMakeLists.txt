@@ -28,9 +28,15 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
 endif()
 
 add_library(raygui INTERFACE)
-target_sources(raygui PRIVATE ${CMAKE_SOURCE_DIR}/raygui/raygui.h)
+target_sources(raygui PRIVATE ${CMAKE_SOURCE_DIR}/raygui.h)
 
-file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR}/release)
+# copy resources
+if(EXISTS "${CMAKE_SOURCE_DIR}/shaders")
+    file(COPY 
+        ${CMAKE_SOURCE_DIR}/shaders
+    DESTINATION ${CMAKE_BINARY_DIR}/release)
+endif()
+
 
 # Our Project
 add_executable(${PROJECT_NAME} main.c)
@@ -39,7 +45,7 @@ target_link_libraries(${PROJECT_NAME} raylib raygui)
 
 # Set the output directory just for this target
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/release/bin
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/release
 )
 
 # Web Configurations
