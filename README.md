@@ -17,18 +17,24 @@ parameters and overall settings are written in `CMakeLists.txt`, and build prese
 All CMake operations are done with a console, with this project's root folder as its working directory.
 
 Build files are required to build this project, and CMake will first need to configure those build files. To configure,
-type in `cmake --fresh --preset=default src -B build` in console.
-
-`--fresh` argument refreshes the build files so that new build files can be written (this argument can be optional,
-thus speeds up build configuration times, but any changes made in `CMakeLists.txt` will require the argument to be included).
+type in `cmake --preset=default src -B build` in console.
 
 `--preset` argument indicates which build preset should be used in `CMakePresets.json` (if there's any). `default` is
-set as the build preset (this argument is used to determine what build generator should be used, which depends on what
-compiler is installed on the current computer).
+set as the build preset. This argument is used to determine what build generator should be used, which depends on what
+compiler is installed on the current computer.
+
+Optionally, the `--fresh` argument should be used if `CMakeLists.txt` file was changed. The `--fresh` argument rewrites
+the `CMakeCache.txt` file which stores various variables and their values between CMake runs.
 
 After configuration, CMake can then build the project with the generated build files. To build, type in `cmake --build
 build` in console.
 
+In addition, if it is required to do a full clean of the build (basically deleting the whole `build` directory), the
+command `cmake --build build --target full_clean` should be used. It uses the custom target made in `CMakeLists.txt`
+file to delete the entire `build` directory to build this project from scratch. It may throw errors and the end of
+command execution, which is an expected behaviour. One can then enter the configuration stage, and proceed from there.
+
 common commands (for easy copy):
-- `cmake --preset=default src -B build`
+- `cmake --build build --target full_clean`
+- `cmake --fresh --preset=default src -B build`
 - `cmake --build build`
