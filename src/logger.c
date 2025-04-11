@@ -20,12 +20,12 @@ void TimestampLogCallback(int logType, const char *text, va_list args)
 
     switch (logType)
     {
-        case LOG_TRACE:     strcat(buffer, "[TRACE]     - "); break;
-        case LOG_DEBUG:     strcat(buffer, "[DEBUG]     - "); break;
-        case LOG_INFO:      strcat(buffer, "[INFO]      - "); break;
-        case LOG_WARNING:   strcat(buffer, "[WARNING]   - "); break;
-        case LOG_ERROR:     strcat(buffer, "[ERROR]     - "); break;
-        case LOG_FATAL:     strcat(buffer, "[FATAL]     - "); break;
+        case LOG_TRACE:     strcat(buffer, "[ TRACE ] - "); break;
+        case LOG_DEBUG:     strcat(buffer, "[ DEBUG ] - "); break;
+        case LOG_INFO:      strcat(buffer, "[ INFO ] - "); break;
+        case LOG_WARNING:   strcat(buffer, "[ WARNING ] - "); break;
+        case LOG_ERROR:     strcat(buffer, "[ ERROR ] - "); break;
+        case LOG_FATAL:     strcat(buffer, "[ FATAL ] - "); break;
         default: break;
     }
     

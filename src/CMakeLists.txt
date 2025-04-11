@@ -13,7 +13,8 @@ find_package(raygui ${RAYGUI_VERSION} QUIET) # QUIET or REQUIRED
 
 include(FetchContent)
 
-if (NOT raylib_FOUND) # if there's none, fetch and build raylib
+# if there's none, fetch and build raylib
+if (NOT raylib_FOUND)
     FetchContent_Declare(
         raylib
         DOWNLOAD_EXTRACT_TIMESTAMP OFF
@@ -29,6 +30,7 @@ if (NOT raylib_FOUND) # if there's none, fetch and build raylib
     endif()
 endif()
 
+# if there's none, fetch and build raygui
 if (NOT raygui_FOUND)
     FetchContent_Declare(
         raygui
@@ -38,21 +40,25 @@ if (NOT raygui_FOUND)
 
     FetchContent_GetProperties(raygui)
 
-    if (NOT raygui_POPULATED)
+    if (NOT raygui_POPULATED) # have we downloaded raygui yet?
         set(FETCHCONTENT_QUIET NO)
         FetchContent_MakeAvailable(raygui)
-        set(BUILD_RAYGUI_EXAMPLES OFF CACHE BOOL "" FORCE)
+        set(BUILD_RAYGUI_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
     endif()
 endif()
 
+# use raygui header file as an interface library since raygui doesn't have its own CMakeLists.txt
+# unlike raylib which does
 add_library(raygui_header INTERFACE)
 target_include_directories(raygui_header INTERFACE ${raygui_SOURCE_DIR}/src)
 
-# copy resources
-if(EXISTS "${CMAKE_SOURCE_DIR}/shaders")
-    file(COPY 
-        ${CMAKE_SOURCE_DIR}/shaders
-    DESTINATION ${CMAKE_BINARY_DIR}/release)
+# create debug and release directories if they hadn't already exist
+if (NOT EXISTS ${CMAKE_BINARY_DIR}/debug)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/debug)
+endif()
+
+if (NOT EXISTS ${CMAKE_BINARY_DIR}/release)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/release)
 endif()
 
 set(SOURCES
@@ -65,10 +71,23 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib raygui_header)
 
-# Set the output directory just for this target
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/release
+# Set compiler flags for different build types
+target_compile_options(${PROJECT_NAME} PRIVATE
+    $<$<CONFIG:debug>:-g -O0 -Wall -Wextra -Wpedantic -fsanitize=address>
+    $<$<CONFIG:release>:-O3 -DNDEBUG -march=native>
 )
+
+# Link options for different build types
+target_link_options(${PROJECT_NAME} PRIVATE
+    $<$<CONFIG:debug>:-fsanitize=address>
+)
+
+# (OPTIONAL) build tests
+option(BUILD_TESTS OFF)
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 
 # create a custom target for full clean
 # NOTE: this will throw errors since we're deleting the very files needed to build itself; this is expected, and should
