@@ -1,1 +1,1 @@
-build\release\raylib-game.exe
+build\raylib-game.exe

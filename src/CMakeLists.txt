@@ -11,6 +11,7 @@ set(RAYGUI_VERSION 4.0)
 find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED
 find_package(raygui ${RAYGUI_VERSION} QUIET) # QUIET or REQUIRED
 
+set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/../_deps")
 include(FetchContent)
 
 # if there's none, fetch and build raylib
@@ -52,13 +53,19 @@ endif()
 add_library(raygui_header INTERFACE)
 target_include_directories(raygui_header INTERFACE ${raygui_SOURCE_DIR}/src)
 
-# create debug and release directories if they hadn't already exist
-if (NOT EXISTS ${CMAKE_BINARY_DIR}/debug)
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/debug)
-endif()
+# create a custom target for full clean
+# NOTE: this will throw errors since we're deleting the very files needed to build itself; this is expected, and should
+# then be proceed with configuration step as per usual
+add_custom_target(full_clean
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
+    COMMENT "removing build directory and rebuilding from scratch"
+)
 
-if (NOT EXISTS ${CMAKE_BINARY_DIR}/release)
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/release)
+# (OPTIONAL) build tests
+option(BUILD_TESTS OFF)
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
 endif()
 
 set(SOURCES
@@ -70,34 +77,6 @@ set(SOURCES
 add_executable(${PROJECT_NAME} ${SOURCES})
 set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib raygui_header)
-
-# Set compiler flags for different build types
-target_compile_options(${PROJECT_NAME} PRIVATE
-    $<$<CONFIG:debug>:-g -O0 -Wall -Wextra -Wpedantic -fsanitize=address>
-    $<$<CONFIG:release>:-O3 -DNDEBUG -march=native>
-)
-
-# Link options for different build types
-target_link_options(${PROJECT_NAME} PRIVATE
-    $<$<CONFIG:debug>:-fsanitize=address>
-)
-
-# (OPTIONAL) build tests
-option(BUILD_TESTS OFF)
-if(BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(tests)
-endif()
-
-# create a custom target for full clean
-# NOTE: this will throw errors since we're deleting the very files needed to build itself; this is expected, and should
-# then be proceed with configuration step as per usual
-add_custom_target(full_clean
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR} ${CMAKE_COMMAND} ${CMAKE_SOURCE_DIR}
-    COMMENT "Removing build directory and rebuilding from scratch"
-)
 
 # web configurations
 if (${PLATFORM} STREQUAL "Web")
