@@ -17,11 +17,7 @@ parameters and overall settings are written in `CMakeLists.txt`, and build prese
 All CMake operations are done with a console, with this project's root folder as its working directory.
 
 Build files are required to build this project, and CMake will first need to configure those build files. To configure,
-type in `cmake --preset=default src -B build` in console.
-
-`--preset` argument indicates which build preset should be used in `CMakePresets.json` (if there's any). `default` is
-set as the build preset. This argument is used to determine what build generator should be used, which depends on what
-compiler is installed on the current computer.
+type in `cmake src -B build` in console.
 
 Optionally, the `--fresh` argument should be used if `CMakeLists.txt` file was changed. The `--fresh` argument rewrites
 the `CMakeCache.txt` file which stores various variables and their values between CMake runs.
@@ -36,5 +32,5 @@ command execution, which is an expected behaviour. One can then enter the config
 
 common commands (for easy copy):
 - `cmake --build build --target full_clean`
-- `cmake --fresh --preset=default src -B build`
+- `cmake --fresh src -B build`
 - `cmake --build build`
