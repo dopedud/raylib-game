@@ -8,12 +8,9 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #include "raylib.h"
 
 #define RAYGUI_IMPLEMENTATION
-extern "C"
-{
-    #include "raygui.h"
-}
+#include "raygui.h"
 
-#include "logger.hpp"
+#include "logger.h"
 
 #ifdef PLATFORM_DESKTOP
     #define GLSL_VERSION    330
@@ -36,6 +33,11 @@ int main()
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "WINDOW");
+
+    while (!WindowShouldClose())
+    {
+        
+    }
 
     CloseWindow();
 

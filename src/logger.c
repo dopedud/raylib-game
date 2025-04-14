@@ -5,7 +5,7 @@
 
 #include "raylib.h"
 
-#include "logger.hpp"
+#include "logger.h"
 
 void TimestampLogCallback(int logType, const char *text, va_list args)
 {

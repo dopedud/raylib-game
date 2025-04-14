@@ -8,70 +8,80 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # dependencies
 set(RAYLIB_VERSION 5.5)
 set(RAYGUI_VERSION 4.0)
+set(BULLET_VERSION 3.25)
 
-find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED
-find_package(raygui ${RAYGUI_VERSION} QUIET) # QUIET or REQUIRED
+# raylib options
+option(BUILD_EXAMPLES "Build the examples" OFF)
+
+# bullet options
+option(BUILD_BULLET_EXAMPLES "Build Bullet examples" OFF)
+option(BUILD_EXTRAS "Build Bullet extras" OFF)
+option(BUILD_UNIT_TESTS "Build Bullet unit tests" OFF)
 
 set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/../_deps")
 include(FetchContent)
 
-# if there's none, fetch and build raylib
-if (NOT raylib_FOUND)
-    FetchContent_Declare(
-        raylib
-        DOWNLOAD_EXTRACT_TIMESTAMP OFF
-        URL https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz
-    )
+# fetch raylib
+FetchContent_Declare(
+    raylib
+    DOWNLOAD_EXTRACT_TIMESTAMP OFF
+    URL https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz
+)
 
-    FetchContent_GetProperties(raylib)
+FetchContent_GetProperties(raylib)
 
-    if (NOT raylib_POPULATED) # have we downloaded raylib yet?
-        set(FETCHCONTENT_QUIET NO)
-        FetchContent_MakeAvailable(raylib)
-        set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
-    endif()
+if (NOT raylib_POPULATED) # have we downloaded raylib yet?
+    set(FETCHCONTENT_QUIET NO)
+    FetchContent_MakeAvailable(raylib)
+    set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
+    set(BUILD_GAMES OFF CACHE BOOL "" FORCE)
 endif()
 
-# if there's none, fetch and build raygui
-if (NOT raygui_FOUND)
-    FetchContent_Declare(
-        raygui
-        DOWNLOAD_EXTRACT_TIMESTAMP OFF
-        URL https://github.com/raysan5/raygui/archive/refs/tags/${RAYGUI_VERSION}.tar.gz
-    )
+# fetch raygui
+FetchContent_Declare(
+    raygui
+    DOWNLOAD_EXTRACT_TIMESTAMP OFF
+    URL https://github.com/raysan5/raygui/archive/refs/tags/${RAYGUI_VERSION}.tar.gz
+)
 
-    FetchContent_GetProperties(raygui)
+FetchContent_GetProperties(raygui)
 
-    if (NOT raygui_POPULATED) # have we downloaded raygui yet?
-        set(FETCHCONTENT_QUIET NO)
-        FetchContent_MakeAvailable(raygui)
-        set(BUILD_RAYGUI_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
-    endif()
+if (NOT raygui_POPULATED) # have we downloaded raygui yet?
+    set(FETCHCONTENT_QUIET NO)
+    FetchContent_MakeAvailable(raygui)
+    set(BUILD_RAYGUI_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
 endif()
+
+# fetch bullet
+# FetchContent_Declare(
+#     bullet
+#     DOWNLOAD_EXTRACT_TIMESTAMP OFF
+#     URL https://github.com/bulletphysics/bullet3/archive/refs/tags/${BULLET_VERSION}.tar.gz
+# )
+
+# FetchContent_GetProperties(bullet)
+
+# if (NOT bullet_POPULATED) # have we downloaded raygui yet?
+#     set(FETCHCONTENT_QUIET NO)
+#     FetchContent_MakeAvailable(bullet)
+#     set(USE_MSVC_RUNTIME_LIBRARY_DLL    ON CACHE BOOL "" FORCE)
+#     set(BUILD_BULLET3                   ON CACHE BOOL "" FORCE)
+#     set(BUILD_EXTRAS                    OFF CACHE BOOL "" FORCE)
+#     set(BUILD_BULLET2_DEMOS             OFF CACHE BOOL "" FORCE)
+#     set(BUILD_CPU_DEMOS                 OFF CACHE BOOL "" FORCE)
+#     set(BUILD_OPENGL3_DEMOS             OFF CACHE BOOL "" FORCE)
+#     set(BUILD_UNIT_TESTS                OFF CACHE BOOL "" FORCE)
+#     set(BUILD_SHARED_LIBS               OFF CACHE BOOL "" FORCE)
+# endif()
 
 # use raygui header file as an interface library since raygui doesn't have its own CMakeLists.txt
 # unlike raylib which does
 add_library(raygui_header INTERFACE)
 target_include_directories(raygui_header INTERFACE ${raygui_SOURCE_DIR}/src)
 
-# create a custom target for full clean
-# NOTE: this will throw errors since we're deleting the very files needed to build itself; this is expected, and should
-# then be proceed with configuration step as per usual
-add_custom_target(full_clean
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
-    COMMENT "removing build directory and rebuilding from scratch"
-)
-
-# (OPTIONAL) build tests
-option(BUILD_TESTS OFF)
-if(BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(tests)
-endif()
-
 set(SOURCES
-    main.cpp
-    logger.cpp
+    main.c
+    logger.c
 )
 
 # add project as executable
@@ -90,4 +100,20 @@ if (APPLE)
     target_link_libraries(${EXECUTABLE_NAME} "-framework IOKit")
     target_link_libraries(${EXECUTABLE_NAME} "-framework Cocoa")
     target_link_libraries(${EXECUTABLE_NAME} "-framework OpenGL")
+endif()
+
+# create a custom target for full clean
+# NOTE: this will throw errors since we're deleting the very files needed to build itself; this is expected, and should
+# then be proceed with configuration step as per usual
+add_custom_target(full_clean
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/../_deps
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
+    COMMENT "removing build directory and rebuilding from scratch"
+)
+
+# (OPTIONAL) build tests
+option(BUILD_TESTS OFF)
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
 endif()
