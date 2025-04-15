@@ -42,16 +42,16 @@ endif()
 
 # fetch raygui
 FetchContent_Declare(
-    raygui
+    raygui_src
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
     URL https://github.com/raysan5/raygui/archive/refs/tags/${RAYGUI_VERSION}.tar.gz
 )
 
-FetchContent_GetProperties(raygui)
+FetchContent_GetProperties(raygui_src)
 
-if (NOT raygui_POPULATED) # have we downloaded raygui yet?
+if (NOT raygui_src_POPULATED) # have we downloaded raygui yet?
     set(FETCHCONTENT_QUIET NO)
-    FetchContent_MakeAvailable(raygui)
+    FetchContent_MakeAvailable(raygui_src)
     set(BUILD_RAYGUI_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
 endif()
 
@@ -79,13 +79,12 @@ endif()
 
 # use raygui header file as an interface library since raygui doesn't have its own CMakeLists.txt
 # unlike raylib which does
-add_library(raygui_header INTERFACE)
-target_include_directories(raygui_header INTERFACE ${raygui_SOURCE_DIR}/src)
+add_library(raygui INTERFACE)
+target_include_directories(raygui INTERFACE ${raygui_src_SOURCE_DIR}/src)
 # use the compiler flag "-w" to ignore all warnings when compiling raygui
-target_compile_options(raygui_header INTERFACE -w)
+target_compile_options(raygui INTERFACE -w)
 
-add_library(bullet INTERFACE)
-target_include_directories(bullet INTERFACE Bullet) # CONTINUE HERE
+target_compile_options(bullet PRIVATE -w)
 
 set(SOURCES
     main.cxx
@@ -94,7 +93,11 @@ set(SOURCES
 # add project as executable
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
 set(raylib_VERBOSE 1)
-target_link_libraries(${EXECUTABLE_NAME} raylib raygui_header)
+target_link_libraries(${EXECUTABLE_NAME}
+    raylib 
+    raygui
+    bullet
+)
 
 # web configurations
 if (${PLATFORM} STREQUAL "Web")

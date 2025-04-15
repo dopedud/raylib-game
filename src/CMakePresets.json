@@ -14,7 +14,7 @@
             "name": "debug",
             "displayName": "Debug Config",
             "generator": "MinGW Makefiles",
-            "binaryDir": "${sourceDir}/build_debug",
+            "binaryDir": "${sourceDir}/../build_debug",
             "cacheVariables":
             {
                 "CMAKE_BUILD_TYPE": "Debug",
@@ -27,7 +27,7 @@
             "name": "release",
             "displayName": "Release Config",
             "generator": "MinGW Makefiles",
-            "binaryDir": "${sourceDir}/build_release",
+            "binaryDir": "${sourceDir}/../build_release",
             "cacheVariables":
             {
                 "CMAKE_BUILD_TYPE": "Release",
