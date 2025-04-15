@@ -32,5 +32,6 @@ command execution, which is an expected behaviour. One can then enter the config
 
 common commands (for easy copy):
 - `cmake --build build --target full_clean`
-- `cmake --fresh src -B build`
+- `cmake --build build --target full_clean_dependency`
+- `cmake --fresh --preset debug src -B build`
 - `cmake --build build`

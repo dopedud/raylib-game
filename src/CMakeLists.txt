@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.11) # FetchContent is available in 3.11+
 project(raylib-game)
 set(EXECUTABLE_NAME main)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -53,35 +56,39 @@ if (NOT raygui_POPULATED) # have we downloaded raygui yet?
 endif()
 
 # fetch bullet
-# FetchContent_Declare(
-#     bullet
-#     DOWNLOAD_EXTRACT_TIMESTAMP OFF
-#     URL https://github.com/bulletphysics/bullet3/archive/refs/tags/${BULLET_VERSION}.tar.gz
-# )
+FetchContent_Declare(
+    bullet
+    DOWNLOAD_EXTRACT_TIMESTAMP OFF
+    URL https://github.com/bulletphysics/bullet3/archive/refs/tags/${BULLET_VERSION}.tar.gz
+)
 
-# FetchContent_GetProperties(bullet)
+FetchContent_GetProperties(bullet)
 
-# if (NOT bullet_POPULATED) # have we downloaded raygui yet?
-#     set(FETCHCONTENT_QUIET NO)
-#     FetchContent_MakeAvailable(bullet)
-#     set(USE_MSVC_RUNTIME_LIBRARY_DLL    ON CACHE BOOL "" FORCE)
-#     set(BUILD_BULLET3                   ON CACHE BOOL "" FORCE)
-#     set(BUILD_EXTRAS                    OFF CACHE BOOL "" FORCE)
-#     set(BUILD_BULLET2_DEMOS             OFF CACHE BOOL "" FORCE)
-#     set(BUILD_CPU_DEMOS                 OFF CACHE BOOL "" FORCE)
-#     set(BUILD_OPENGL3_DEMOS             OFF CACHE BOOL "" FORCE)
-#     set(BUILD_UNIT_TESTS                OFF CACHE BOOL "" FORCE)
-#     set(BUILD_SHARED_LIBS               OFF CACHE BOOL "" FORCE)
-# endif()
+if (NOT bullet_POPULATED) # have we downloaded bullet yet?
+    set(FETCHCONTENT_QUIET NO)
+    FetchContent_MakeAvailable(bullet)
+    set(USE_MSVC_RUNTIME_LIBRARY_DLL    ON CACHE BOOL "" FORCE)
+    set(BUILD_BULLET3                   ON CACHE BOOL "" FORCE)
+    set(BUILD_EXTRAS                    OFF CACHE BOOL "" FORCE)
+    set(BUILD_BULLET2_DEMOS             OFF CACHE BOOL "" FORCE)
+    set(BUILD_CPU_DEMOS                 OFF CACHE BOOL "" FORCE)
+    set(BUILD_OPENGL3_DEMOS             OFF CACHE BOOL "" FORCE)
+    set(BUILD_UNIT_TESTS                OFF CACHE BOOL "" FORCE)
+    set(BUILD_SHARED_LIBS               OFF CACHE BOOL "" FORCE)
+endif()
 
 # use raygui header file as an interface library since raygui doesn't have its own CMakeLists.txt
 # unlike raylib which does
 add_library(raygui_header INTERFACE)
 target_include_directories(raygui_header INTERFACE ${raygui_SOURCE_DIR}/src)
+# use the compiler flag "-w" to ignore all warnings when compiling raygui
+target_compile_options(raygui_header INTERFACE -w)
+
+add_library(bullet INTERFACE)
+target_include_directories(bullet INTERFACE Bullet) # CONTINUE HERE
 
 set(SOURCES
-    main.c
-    logger.c
+    main.cxx
 )
 
 # add project as executable
@@ -106,9 +113,17 @@ endif()
 # NOTE: this will throw errors since we're deleting the very files needed to build itself; this is expected, and should
 # then be proceed with configuration step as per usual
 add_custom_target(full_clean
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/../_deps
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
     COMMENT "removing build directory and rebuilding from scratch"
+)
+
+# create a custom target for full clean with dependency
+# NOTE: this will throw errors since we're deleting the very files needed to build itself; this is expected, and should
+# then be proceed with configuration step as per usual
+add_custom_target(full_clean_dependency
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/../_deps
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
+    COMMENT "removing build and dependency directory and rebuilding from scratch"
 )
 
 # (OPTIONAL) build tests

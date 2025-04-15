@@ -1,0 +1,39 @@
+{
+    "version": 1,
+
+    "cmakeMinimumRequired": 
+    {
+        "major": 3,
+        "minor": 11,
+        "patch": 0
+    },
+
+    "configurePresets": 
+    [
+        {
+            "name": "debug",
+            "displayName": "Debug Config",
+            "generator": "MinGW Makefiles",
+            "binaryDir": "${sourceDir}/build_debug",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_CXX_FLAGS_INIT": "-g -O0 -Wall -Wextra -Wpedantic -DDEBUG"
+            }
+        },
+
+        {
+            "name": "release",
+            "displayName": "Release Config",
+            "generator": "MinGW Makefiles",
+            "binaryDir": "${sourceDir}/build_release",
+            "cacheVariables":
+            {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_CXX_FLAGS_INIT": "-O3 -DNDEBUG -march=native"
+            }
+        }
+    ]
+}
