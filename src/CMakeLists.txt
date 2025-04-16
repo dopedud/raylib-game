@@ -74,9 +74,23 @@ endif()
 # use raygui header file as an interface library since raygui doesn't have its own CMakeLists.txt
 # unlike raylib which does
 add_library(raygui_header INTERFACE)
-target_include_directories(raygui_header INTERFACE ${raygui_src_SOURCE_DIR}/src)
+target_include_directories(raygui_header INTERFACE ${raygui_SOURCE_DIR}/src)
 # use the compiler flag "-w" to ignore all warnings when compiling raygui
 target_compile_options(raygui_header INTERFACE -w)
+
+# use the compiler flag "-w" to ignore all warnings when compiling bullet's libraries
+target_compile_options(Bullet3Common PUBLIC -w)
+target_compile_options(Bullet3Geometry PUBLIC -w)
+target_compile_options(Bullet3Collision PUBLIC -w)
+target_compile_options(Bullet3Dynamics PUBLIC -w)
+target_compile_options(BulletDynamics PUBLIC -w)
+target_compile_options(BulletCollision PUBLIC -w)
+target_compile_options(BulletInverseDynamics PUBLIC -w)
+target_compile_options(BulletSoftBody PUBLIC -w)
+target_compile_options(LinearMath PUBLIC -w)
+
+target_compile_options(Bullet2FileLoader PUBLIC -w)
+target_compile_options(Bullet3OpenCL_clew PUBLIC -w)
 
 set(SOURCES
     main.cxx
@@ -103,6 +117,12 @@ if (APPLE)
     target_link_libraries(${EXECUTABLE_NAME} "-framework Cocoa")
     target_link_libraries(${EXECUTABLE_NAME} "-framework OpenGL")
 endif()
+
+install(TARGETS ${EXECUTABLE_NAME}
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+)
 
 # create a custom target for full clean
 # NOTE: this will throw errors since we're deleting the very files needed to build itself; this is expected, and should
