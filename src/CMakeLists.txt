@@ -98,10 +98,13 @@ set(SOURCES
 
 # add project as executable
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
+target_include_directories(${EXECUTABLE_NAME} PRIVATE ${bullet_SOURCE_DIR}/src)
 target_link_libraries(${EXECUTABLE_NAME}
     raylib
     raygui_header
     Bullet3Dynamics
+    Bullet3Collision
+    BulletSoftBody
     LinearMath
 )
 
@@ -117,6 +120,11 @@ if (APPLE)
     target_link_libraries(${EXECUTABLE_NAME} "-framework Cocoa")
     target_link_libraries(${EXECUTABLE_NAME} "-framework OpenGL")
 endif()
+
+# Override output directory for our specific target
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
 install(TARGETS ${EXECUTABLE_NAME}
     RUNTIME DESTINATION bin
