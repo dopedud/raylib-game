@@ -8,12 +8,6 @@ extern "C"
     #include "raygui.h"
 }
 
-#ifdef PLATFORM_DESKTOP
-    #define GLSL_VERSION    330
-#else // PLATFORM_ANDROID, PLATFORM_WEB
-    #define GLSL_VERSION    100
-#endif
-
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 

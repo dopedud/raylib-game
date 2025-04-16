@@ -5,24 +5,18 @@ set(EXECUTABLE_NAME main)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# generate compile_commands.json
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 # dependencies
 set(RAYLIB_VERSION 5.5)
 set(RAYGUI_VERSION 4.0)
 set(BULLET_VERSION 3.25)
 
-# raylib options
-option(BUILD_EXAMPLES "Build the examples" OFF)
-
-# bullet options
-option(BUILD_BULLET_EXAMPLES "Build Bullet examples" OFF)
-option(BUILD_EXTRAS "Build Bullet extras" OFF)
-option(BUILD_UNIT_TESTS "Build Bullet unit tests" OFF)
+set(BUILD_SHARED_LIBS ON CACHE BOOL "build shared libraries" FORCE)
 
 set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/../_deps")
 include(FetchContent)
+
+# raylib options
+set(BUILD_EXAMPLES OFF CACHE BOOL "build raylib examples" FORCE)
 
 # fetch raylib
 FetchContent_Declare(
@@ -36,24 +30,32 @@ FetchContent_GetProperties(raylib)
 if (NOT raylib_POPULATED) # have we downloaded raylib yet?
     set(FETCHCONTENT_QUIET NO)
     FetchContent_MakeAvailable(raylib)
-    set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
-    set(BUILD_GAMES OFF CACHE BOOL "" FORCE)
 endif()
+
+set(BUILD_RAYGUI_EXAMPLES OFF CACHE BOOL "build raygui examples" FORCE)
 
 # fetch raygui
 FetchContent_Declare(
-    raygui_src
+    raygui
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
     URL https://github.com/raysan5/raygui/archive/refs/tags/${RAYGUI_VERSION}.tar.gz
 )
 
-FetchContent_GetProperties(raygui_src)
+FetchContent_GetProperties(raygui)
 
-if (NOT raygui_src_POPULATED) # have we downloaded raygui yet?
+if (NOT raygui_POPULATED) # have we downloaded raygui yet?
     set(FETCHCONTENT_QUIET NO)
-    FetchContent_MakeAvailable(raygui_src)
-    set(BUILD_RAYGUI_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
+    FetchContent_MakeAvailable(raygui)
 endif()
+
+set(USE_MSVC_RUNTIME_LIBRARY_DLL    ON CACHE BOOL "use MSVC runtime library" FORCE)
+set(BUILD_BULLET3                   ON CACHE BOOL "build bullet3" FORCE)
+set(BUILD_BULLET_EXAMPLES           OFF CACHE BOOL "build Bullet examples" FORCE)
+set(BUILD_EXTRAS                    OFF CACHE BOOL "build bullet extras" FORCE)
+set(BUILD_BULLET2_DEMOS             OFF CACHE BOOL "build bullet2" FORCE)
+set(BUILD_CPU_DEMOS                 OFF CACHE BOOL "build bullet CPU demos" FORCE)
+set(BUILD_OPENGL3_DEMOS             OFF CACHE BOOL "build bullet openGL3 demos" FORCE)
+set(BUILD_UNIT_TESTS                OFF CACHE BOOL "build bullet unit tests" FORCE)
 
 # fetch bullet
 FetchContent_Declare(
@@ -67,24 +69,14 @@ FetchContent_GetProperties(bullet)
 if (NOT bullet_POPULATED) # have we downloaded bullet yet?
     set(FETCHCONTENT_QUIET NO)
     FetchContent_MakeAvailable(bullet)
-    set(USE_MSVC_RUNTIME_LIBRARY_DLL    ON CACHE BOOL "" FORCE)
-    set(BUILD_BULLET3                   ON CACHE BOOL "" FORCE)
-    set(BUILD_EXTRAS                    OFF CACHE BOOL "" FORCE)
-    set(BUILD_BULLET2_DEMOS             OFF CACHE BOOL "" FORCE)
-    set(BUILD_CPU_DEMOS                 OFF CACHE BOOL "" FORCE)
-    set(BUILD_OPENGL3_DEMOS             OFF CACHE BOOL "" FORCE)
-    set(BUILD_UNIT_TESTS                OFF CACHE BOOL "" FORCE)
-    set(BUILD_SHARED_LIBS               OFF CACHE BOOL "" FORCE)
 endif()
 
 # use raygui header file as an interface library since raygui doesn't have its own CMakeLists.txt
 # unlike raylib which does
-add_library(raygui INTERFACE)
-target_include_directories(raygui INTERFACE ${raygui_src_SOURCE_DIR}/src)
+add_library(raygui_header INTERFACE)
+target_include_directories(raygui_header INTERFACE ${raygui_src_SOURCE_DIR}/src)
 # use the compiler flag "-w" to ignore all warnings when compiling raygui
-target_compile_options(raygui INTERFACE -w)
-
-target_compile_options(bullet PRIVATE -w)
+target_compile_options(raygui_header INTERFACE -w)
 
 set(SOURCES
     main.cxx
@@ -92,11 +84,11 @@ set(SOURCES
 
 # add project as executable
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
-set(raylib_VERBOSE 1)
 target_link_libraries(${EXECUTABLE_NAME}
-    raylib 
-    raygui
-    bullet
+    raylib
+    raygui_header
+    Bullet3Dynamics
+    LinearMath
 )
 
 # web configurations
@@ -128,10 +120,3 @@ add_custom_target(full_clean_dependency
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
     COMMENT "removing build and dependency directory and rebuilding from scratch"
 )
-
-# (OPTIONAL) build tests
-option(BUILD_TESTS OFF)
-if(BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(tests)
-endif()
