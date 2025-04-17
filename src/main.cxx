@@ -15,7 +15,8 @@ extern "C"
 
 #include "logger.h"
 
-
+constexpr int SCREEN_WIDTH = 1280;
+constexpr int SCREEN_HEIGHT = 720;
 
 int main(int argc, char* argv[])
 {
@@ -28,7 +29,9 @@ int main(int argc, char* argv[])
 
     while (!WindowShouldClose())
     {
+        BeginDrawing();
         
+        EndDrawing();
     }
 
     CloseWindow();

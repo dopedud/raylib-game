@@ -5,11 +5,12 @@ set(EXECUTABLE_NAME main)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# dependencies
+# dependencies' versions
 set(RAYLIB_VERSION 5.5)
 set(RAYGUI_VERSION 4.0)
 set(BULLET_VERSION 3.25)
 
+# set to use shared libraries so the main executable's size remains small
 set(BUILD_SHARED_LIBS ON CACHE BOOL "build shared libraries" FORCE)
 
 set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/../_deps")
@@ -36,6 +37,7 @@ if (NOT raylib_POPULATED) # have we downloaded raylib yet?
     FetchContent_MakeAvailable(raylib)
 endif()
 
+# raygui options
 set(BUILD_RAYGUI_EXAMPLES OFF CACHE BOOL "build raygui examples" FORCE)
 
 # fetch raygui
@@ -52,6 +54,7 @@ if (NOT raygui_POPULATED) # have we downloaded raygui yet?
     FetchContent_MakeAvailable(raygui)
 endif()
 
+# bullet options
 set(USE_MSVC_RUNTIME_LIBRARY_DLL    ON CACHE BOOL "use MSVC runtime library" FORCE)
 set(BUILD_BULLET3                   ON CACHE BOOL "build bullet3" FORCE)
 set(BUILD_BULLET_EXAMPLES           OFF CACHE BOOL "build Bullet examples" FORCE)
@@ -102,6 +105,7 @@ target_compile_options(Bullet3OpenCL_clew PUBLIC -w)
 
 set(SOURCES
     main.cxx
+    logger.cxx
 )
 
 set(LIBRARIES
@@ -121,15 +125,16 @@ set(LIBRARIES
     Bullet3OpenCL_clew
 )
 
-# add project as executable
+# add main executable
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${bullet_SOURCE_DIR}/src)
 target_link_libraries(${EXECUTABLE_NAME} ${LIBRARIES})
 
 # web configurations
 if (${PLATFORM} STREQUAL "Web")
-    set_target_properties(${EXECUTABLE_NAME} PROPERTIES SUFFIX ".html") # tell Emscripten to build an example.html file.
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_GLFW=3 -s ASSERTIONS=1 -s WASM=1 -s ASYNCIFY -s GL_ENABLE_GET_PROC_ADDRESS=1")
+    set_target_properties(${EXECUTABLE_NAME} PROPERTIES SUFFIX ".html") # tell Emscripten to build an example.html file
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} 
+    -s USE_GLFW=3 -s ASSERTIONS=1 -s WASM=1 -s ASYNCIFY -s GL_ENABLE_GET_PROC_ADDRESS=1")
 endif()
 
 # checks if OSX and links appropriate frameworks (only required on MacOS)
@@ -139,7 +144,10 @@ if (APPLE)
     target_link_libraries(${EXECUTABLE_NAME} "-framework OpenGL")
 endif()
 
-# Override output directory for our specific target
+# Override output directory for main executable
+# NOTE: for some reason shared libraries always created under the lib subdirectory during build, and for now there's no
+# way to change this
+# this is unlike during installs, where shared libraries are correctly placed along with the main executable
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/../installs)
