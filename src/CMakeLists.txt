@@ -15,6 +15,10 @@ set(BUILD_SHARED_LIBS ON CACHE BOOL "build shared libraries" FORCE)
 set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/../_deps")
 include(FetchContent)
 
+#####
+##### FETCHING DEPENDENCIES
+#####
+
 # raylib options
 set(BUILD_EXAMPLES OFF CACHE BOOL "build raylib examples" FORCE)
 
@@ -71,6 +75,10 @@ if (NOT bullet_POPULATED) # have we downloaded bullet yet?
     FetchContent_MakeAvailable(bullet)
 endif()
 
+#####
+##### END FETCHING DEPENDENCIES
+#####
+
 # use raygui header file as an interface library since raygui doesn't have its own CMakeLists.txt
 # unlike raylib which does
 add_library(raygui_header INTERFACE)
@@ -81,8 +89,8 @@ target_compile_options(raygui_header INTERFACE -w)
 # use the compiler flag "-w" to ignore all warnings when compiling bullet's libraries
 target_compile_options(Bullet3Common PUBLIC -w)
 target_compile_options(Bullet3Geometry PUBLIC -w)
-target_compile_options(Bullet3Collision PUBLIC -w)
 target_compile_options(Bullet3Dynamics PUBLIC -w)
+target_compile_options(Bullet3Collision PUBLIC -w)
 target_compile_options(BulletDynamics PUBLIC -w)
 target_compile_options(BulletCollision PUBLIC -w)
 target_compile_options(BulletInverseDynamics PUBLIC -w)
@@ -96,17 +104,27 @@ set(SOURCES
     main.cxx
 )
 
+set(LIBRARIES
+    raylib
+    raygui_header
+    Bullet3Common
+    Bullet3Geometry
+    Bullet3Dynamics
+    Bullet3Collision
+    BulletDynamics
+    BulletCollision
+    BulletInverseDynamics
+    BulletSoftBody
+    LinearMath
+
+    Bullet2FileLoader
+    Bullet3OpenCL_clew
+)
+
 # add project as executable
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${bullet_SOURCE_DIR}/src)
-target_link_libraries(${EXECUTABLE_NAME}
-    raylib
-    raygui_header
-    Bullet3Dynamics
-    Bullet3Collision
-    BulletSoftBody
-    LinearMath
-)
+target_link_libraries(${EXECUTABLE_NAME} ${LIBRARIES})
 
 # web configurations
 if (${PLATFORM} STREQUAL "Web")
@@ -122,11 +140,11 @@ if (APPLE)
 endif()
 
 # Override output directory for our specific target
-set_target_properties(${EXECUTABLE_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-set_target_properties(${EXECUTABLE_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
-set_target_properties(${EXECUTABLE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
-install(TARGETS ${EXECUTABLE_NAME}
+set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/../installs)
+
+install(TARGETS ${EXECUTABLE_NAME} ${LIBRARIES}
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
@@ -136,6 +154,7 @@ install(TARGETS ${EXECUTABLE_NAME}
 # NOTE: this will throw errors since we're deleting the very files needed to build itself; this is expected, and should
 # then be proceed with configuration step as per usual
 add_custom_target(full_clean
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/../installs
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
     COMMENT "removing build directory and rebuilding from scratch"
 )

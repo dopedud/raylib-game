@@ -1,5 +1,5 @@
 {
-    "version": 1,
+    "version": 3,
 
     "cmakeMinimumRequired": 
     {
@@ -32,7 +32,7 @@
             {
                 "CMAKE_BUILD_TYPE": "Release",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-                "CMAKE_CXX_FLAGS": "-O3 -DNDEBUG -march=native"
+                "CMAKE_CXX_FLAGS": "-O3 -DNDEBUG -march=native -mwindows"
             }
         }
     ]

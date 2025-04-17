@@ -1,1 +1,1 @@
-build\bin\main.exe
+build\lib\main.exe

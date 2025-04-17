@@ -85,6 +85,7 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
+installs
 
 ### VSCode files
 .vscode
