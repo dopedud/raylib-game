@@ -1,8 +1,8 @@
 __declspec(dllexport) unsigned long NvOptimusEnablement = 1;
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
-#include <vector>
-#include <memory>
+#include <cmath>
+#include <ctime>
 
 extern "C"
 {
@@ -18,6 +18,8 @@ extern "C"
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
 
+
+
 int main(int argc, char* argv[])
 {
     ChangeDirectory(GetApplicationDirectory());
@@ -30,7 +32,11 @@ int main(int argc, char* argv[])
     while (!WindowShouldClose())
     {
         BeginDrawing();
-        
+            ClearBackground(RAYWHITE);
+
+                DrawCircle(540, 1080, 1080, BLUE);
+
+            DrawFPS(10, 10);
         EndDrawing();
     }
 
