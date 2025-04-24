@@ -40,6 +40,7 @@ command execution, which is an expected behaviour. One can then enter the config
 One can also delete the `_deps` directory (the directory where this project's dependencies reside) via the target `full_clean_dependency`.
 
 common commands (for easy copy):
+- `cmake --build build --target clean_install`
 - `cmake --build build --target full_clean`
 - `cmake --build build --target full_clean_dependency`
 - `cmake --fresh --preset debug src -B build`

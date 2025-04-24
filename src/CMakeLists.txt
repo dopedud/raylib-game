@@ -158,20 +158,27 @@ install(TARGETS ${EXECUTABLE_NAME} ${LIBRARIES}
     ARCHIVE DESTINATION lib
 )
 
+# create a custom target to clean install files
+add_custom_target(clean_install
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_INSTALL_PREFIX}
+    COMMENT "removing install directory"
+)
+
 # create a custom target for full clean
 # NOTE: this will throw errors since we're deleting the very files needed to build itself; this is expected, and should
 # then be proceed with configuration step as per usual
 add_custom_target(full_clean
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/../installs
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_INSTALL_PREFIX}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
-    COMMENT "removing build directory and rebuilding from scratch"
+    COMMENT "removing build and install directory"
 )
 
-# create a custom target for full clean with dependency
+# create a custom target for full clean with dependencies
 # NOTE: this will throw errors since we're deleting the very files needed to build itself; this is expected, and should
 # then be proceed with configuration step as per usual
 add_custom_target(full_clean_dependency
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/../_deps
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${FETCHCONTENT_BASE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_INSTALL_PREFIX}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
-    COMMENT "removing build and dependency directory and rebuilding from scratch"
+    COMMENT "removing build, install, and dependency directory"
 )
