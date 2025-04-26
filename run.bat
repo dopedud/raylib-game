@@ -1,2 +1,3 @@
 cmake --build build
-build\lib\main.exe
+cmake --install build
+installs\bin\game.exe
