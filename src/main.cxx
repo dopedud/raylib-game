@@ -25,30 +25,39 @@ int main(int argc, char* argv[])
 
     // Define the camera to look into our 3d world
     Camera3D camera;
-    camera.position = (Vector3){ 3.0f, 5.0f, -10.0f };
+    camera.position = (Vector3){ .0f, .0f, -8.0f };
     camera.target = (Vector3){ .0f, .0f, .0f };
     camera.up = (Vector3){ .0f, 1.0f, .0f };
-    camera.fovy = 5.0f;
-    camera.projection = CAMERA_ORTHOGRAPHIC;
+    camera.fovy = 30.0f;
+    camera.projection = CAMERA_PERSPECTIVE;
 
-    Vector3 cube_position { 0.0f, 0.0f, 0.0f };
+    Model model = LoadModel("../resources/monke.glb");
+
+    Vector3 model_position { .0f, .0f, .0f };
 
     while (!WindowShouldClose())
     {
+        if (IsKeyPressed(KEY_ESCAPE))
+        {
+            if (IsCursorHidden()) EnableCursor();
+            else DisableCursor();
+        }
+
         BeginDrawing();
-            ClearBackground(RAYWHITE);
+            ClearBackground(BLACK);
 
             BeginMode3D(camera);
-
-                DrawCube(cube_position, 2.0f, 2.0f, 2.0f, RED);
-
-                DrawGrid(10, 1.0f);
+                DrawModelEx(model, model_position, { .0f, .0f, .0f }, 90.0f, { 1.0f, 1.0f, 1.0f }, WHITE);
+                // DrawModel(model, model_position, 1.0f, WHITE);
+                DrawGrid(25, 1.0f);
 
             EndMode3D();
 
             DrawFPS(10, 10);
         EndDrawing();
     }
+
+    UnloadModel(model);
 
     CloseWindow();
 
@@ -68,4 +77,6 @@ void initialise()
 
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     SetWindowMinSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    SetExitKey(KEY_NULL);
 }

@@ -176,6 +176,8 @@ install(TARGETS ${EXECUTABLE_NAME} ${LIBRARIES}
     ARCHIVE DESTINATION lib
 )
 
+install(DIRECTORY resources/ DESTINATION resources)
+
 # create a custom target to clean install files
 add_custom_target(clean_install
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_INSTALL_PREFIX}
