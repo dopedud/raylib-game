@@ -161,13 +161,14 @@ if (APPLE)
 endif()
 
 # Override output directory for main executable
-# NOTE: for some reason shared libraries always created under the lib subdirectory during build, and for now there's no
-# way to change this
+# NOTE: for some reason shared libraries are created in their respective build directories (for example, the
+# libraylib.dll file under raylib's build directory) and not copied into the executable's directory
 # this is unlike during installs, where shared libraries are correctly placed along with the main executable
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
+set(CMAKE_INSTALL_MESSAGE LAZY)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/../installs)
 
 install(TARGETS ${EXECUTABLE_NAME} ${LIBRARIES}
