@@ -14,15 +14,15 @@ uniform sampler2D texture0;
 out vec4 finalColor;
 
 // Custom uniform variables
-uniform float pixels_per_unit;  // How many texture pixels per world unit
+uniform float texels_per_unit;  // How many texture pixels per world unit
 uniform vec2 texture_size;     // Width and height of the texture in pixels
 
 void main()
 {
     // Calculate how many times the texture should repeat across the model
     // based on the pixels per unit value
-    float texture_repeatX = texture_size.x / pixels_per_unit;
-    float texture_repeatY = texture_size.y / pixels_per_unit;
+    float texture_repeatX = texture_size.x / texels_per_unit;
+    float texture_repeatY = texture_size.y / texels_per_unit;
     
     // Apply the scaling to the texture coordinates
     vec2 scaledTexCoord = vec2(

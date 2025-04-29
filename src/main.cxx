@@ -17,33 +17,34 @@ void initialise();
 constexpr int SCREEN_WIDTH { 1280 };
 constexpr int SCREEN_HEIGHT { 720 };
 
-float PIXELS_PER_UNIT { 64.0f };
+float TEXELS_PER_UNIT { 32.0f };
 
 int main(int argc, char* argv[])
 {
     initialise();
 
     Camera3D camera;
-    camera.position = { .0f, 1.0f, -8.0f };
-    camera.target = { camera.position.x, camera.position.y , camera.position.z + 1.0f };
-    // camera.target = { .0f, .0f, .0f };
+    camera.position = { .0f, 1.0f, -5.0f };
+    camera.target = { .0f, .0f, .0f };
     camera.up = { .0f, 1.0f, .0f };
-    camera.fovy = 30.0f;
+    camera.fovy = 75.0f;
     camera.projection = CAMERA_PERSPECTIVE;
 
     Model dummy { LoadModel("../resources/monke.glb") };
 
     Image player_sprite { LoadImage("../resources/Warrior/Individual Sprite/idle/Warrior_Idle_1.png") };
+    ImageCrop(&player_sprite, Rectangle{ 18, 10, 18, 33 } );
     ImageRotateCW(&player_sprite);
     ImageRotateCW(&player_sprite);
 
-    Vector3 player_position { .0f, 2.0f, .0f };
-    Vector2 plane_size { 2.0f, 2.0f };
+    Vector3 player_position { .0f, .0f, .0f };
+    Vector2 plane_size { 5.0f, 5.0f };
     Model player { LoadModelFromMesh(GenMeshCube(plane_size.x, plane_size.y, .0f)) };
     Texture player_texture { LoadTextureFromImage(player_sprite) };
+    // Texture player_texture { LoadTextureFromImage(GenImageCellular(512, 512, 50)) };
     Shader player_shader { LoadShader("../resources/shaders/glsl/vertex.vs", "../resources/shaders/glsl/fragment.fs") };
 
-    int shaderloc_pixels_per_unit { GetShaderLocation(player_shader, "pixels_per_unit") };
+    int shaderloc_pixels_per_unit { GetShaderLocation(player_shader, "texels_per_unit") };
     int shaderloc_texture_size { GetShaderLocation(player_shader, "texture_size") };
 
     player.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = player_texture;
@@ -51,22 +52,28 @@ int main(int argc, char* argv[])
 
     Vector2 player_texture_size { (float)player_texture.width, (float)player_texture.height };
     SetShaderValue(player_shader, shaderloc_texture_size, &player_texture_size, SHADER_UNIFORM_VEC2);
-    SetShaderValue(player_shader, shaderloc_pixels_per_unit, &PIXELS_PER_UNIT, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(player_shader, shaderloc_pixels_per_unit, &TEXELS_PER_UNIT, SHADER_UNIFORM_FLOAT);
+
+    camera.target = player_position;
 
     while (!WindowShouldClose())
     {
+        UpdateCamera(&camera, CAMERA_ORBITAL);
+
         if (IsKeyPressed(KEY_ESCAPE))
         {
             if (IsCursorHidden()) EnableCursor();
             else DisableCursor();
         }
 
-        if (IsKeyDown(KEY_UP)) player.transform = MatrixScale(player.transform.m0 + 1.0f, 
-                                                              player.transform.m5,
-                                                              player.transform.m10);
-        if (IsKeyDown(KEY_DOWN) && PIXELS_PER_UNIT > 8.0f) player.transform = MatrixScale(player.transform.m0 - 1.0f,
-                                                                                          player.transform.m5,
-                                                                                          player.transform.m10);
+        if (IsKeyPressed(KEY_UP)) 
+        player.transform = MatrixScale(player.transform.m0 + 1.0f,
+                                       player.transform.m5,
+                                       player.transform.m10);
+        if (IsKeyPressed(KEY_DOWN) && TEXELS_PER_UNIT > 8.0f)
+        player.transform = MatrixScale(player.transform.m0 - 1.0f,
+                                       player.transform.m5,
+                                       player.transform.m10);
 
         BeginDrawing();
             ClearBackground(BLACK);
