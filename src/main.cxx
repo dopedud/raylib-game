@@ -17,7 +17,7 @@ void initialise();
 constexpr int SCREEN_WIDTH { 1280 };
 constexpr int SCREEN_HEIGHT { 720 };
 
-float TEXELS_PER_UNIT { 32.0f };
+float TEXELS_PER_UNIT { 16.0f };
 
 int main(int argc, char* argv[])
 {
@@ -32,15 +32,15 @@ int main(int argc, char* argv[])
 
     Model dummy { LoadModel("../resources/monke.glb") };
 
-    Image player_sprite { LoadImage("../resources/Warrior/Individual Sprite/idle/Warrior_Idle_1.png") };
+    Image player_sprite { LoadImage("../resources/warrior/idle/Warrior_Idle_1.png") };
     ImageCrop(&player_sprite, Rectangle{ 18, 10, 18, 33 } );
     ImageRotateCW(&player_sprite);
     ImageRotateCW(&player_sprite);
 
-    Vector3 player_position { .0f, .0f, .0f };
-    Vector2 plane_size { 5.0f, 5.0f };
-    Model player { LoadModelFromMesh(GenMeshCube(plane_size.x, plane_size.y, .0f)) };
     Texture player_texture { LoadTextureFromImage(player_sprite) };
+
+    Vector3 player_position { .0f, .0f, .0f };
+    Model player { LoadModelFromMesh(GenMeshCube((float)player_texture.width / TEXELS_PER_UNIT, (float)player_texture.height / TEXELS_PER_UNIT, .0f)) };
     // Texture player_texture { LoadTextureFromImage(GenImageCellular(512, 512, 50)) };
     Shader player_shader { LoadShader("../resources/shaders/glsl/vertex.vs", "../resources/shaders/glsl/fragment.fs") };
 
@@ -51,8 +51,8 @@ int main(int argc, char* argv[])
     player.materials[0].shader = player_shader;
 
     Vector2 player_texture_size { (float)player_texture.width, (float)player_texture.height };
-    SetShaderValue(player_shader, shaderloc_texture_size, &player_texture_size, SHADER_UNIFORM_VEC2);
     SetShaderValue(player_shader, shaderloc_pixels_per_unit, &TEXELS_PER_UNIT, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(player_shader, shaderloc_texture_size, &player_texture_size, SHADER_UNIFORM_VEC2);
 
     camera.target = player_position;
 

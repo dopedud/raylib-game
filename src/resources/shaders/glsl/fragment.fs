@@ -30,13 +30,9 @@ void main()
         fragTexCoord.y / texture_repeatY
     );
     
-    // Use fract() to create the tiling effect
-    // This will repeat the texture once it goes beyond 1.0
-    vec2 tiledTexCoord = fract(scaledTexCoord);
-    
     // Sample the texture with the tiled coordinates
-    vec4 texelColor = texture(texture0, tiledTexCoord);
+    vec4 texelColor = texture(texture0, fragTexCoord);
     
     // Apply basic lighting and texture
-    finalColor = texelColor * colDiffuse;
+    finalColor = texelColor;
 }
