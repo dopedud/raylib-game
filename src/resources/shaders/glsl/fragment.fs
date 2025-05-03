@@ -33,6 +33,5 @@ void main()
     // Sample the texture with the tiled coordinates
     vec4 texelColor = texture(texture0, fragTexCoord);
     
-    // Apply basic lighting and texture
     finalColor = texelColor;
 }

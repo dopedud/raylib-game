@@ -17,7 +17,7 @@ void initialise();
 constexpr int SCREEN_WIDTH { 1280 };
 constexpr int SCREEN_HEIGHT { 720 };
 
-float TEXELS_PER_UNIT { 16.0f };
+float TEXELS_PER_UNIT { 32.0f };
 
 int main(int argc, char* argv[])
 {
@@ -37,12 +37,23 @@ int main(int argc, char* argv[])
     ImageRotateCW(&player_sprite);
     ImageRotateCW(&player_sprite);
 
+    // Texture player_texture { LoadTextureFromImage(GenImageCellular(512, 512, 50)) };
     Texture player_texture { LoadTextureFromImage(player_sprite) };
 
+    Vector2 player_texture_size { (float)player_texture.width, (float)player_texture.height };
+    Vector2 player_pivot { player_texture.width / 2, player_texture.height / 2};
+
     Vector3 player_position { .0f, .0f, .0f };
-    Model player { LoadModelFromMesh(GenMeshCube((float)player_texture.width / TEXELS_PER_UNIT, (float)player_texture.height / TEXELS_PER_UNIT, .0f)) };
-    // Texture player_texture { LoadTextureFromImage(GenImageCellular(512, 512, 50)) };
-    Shader player_shader { LoadShader("../resources/shaders/glsl/vertex.vs", "../resources/shaders/glsl/fragment.fs") };
+    Model player { LoadModelFromMesh(GenMeshCube(
+        player_texture_size.x / TEXELS_PER_UNIT, 
+        player_texture_size.y / TEXELS_PER_UNIT, 
+        .0f)) 
+    };
+    
+    Shader player_shader { LoadShader(
+        "../resources/shaders/glsl/vertex.vs", 
+        "../resources/shaders/glsl/fragment.fs") 
+    };
 
     int shaderloc_pixels_per_unit { GetShaderLocation(player_shader, "texels_per_unit") };
     int shaderloc_texture_size { GetShaderLocation(player_shader, "texture_size") };
@@ -50,7 +61,6 @@ int main(int argc, char* argv[])
     player.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = player_texture;
     player.materials[0].shader = player_shader;
 
-    Vector2 player_texture_size { (float)player_texture.width, (float)player_texture.height };
     SetShaderValue(player_shader, shaderloc_pixels_per_unit, &TEXELS_PER_UNIT, SHADER_UNIFORM_FLOAT);
     SetShaderValue(player_shader, shaderloc_texture_size, &player_texture_size, SHADER_UNIFORM_VEC2);
 
