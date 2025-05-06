@@ -1,11 +1,29 @@
+#include "settings.h"
+
 #include <cstdio>
 #include <cstdlib>
+#include <cstdarg>
 #include <cstring>
 #include <ctime>
 
 #include "raylib.h"
 
-#include "logger.h"
+void initialise()
+{
+    ChangeDirectory(GetApplicationDirectory());
+
+    SetTraceLogLevel(LOG_DEBUG);
+    SetTraceLogCallback(TimestampLogCallback);
+
+    SetRandomSeed(time(NULL));
+
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "WINDOW");
+
+    SetWindowState(FLAG_WINDOW_RESIZABLE);
+    SetWindowMinSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    SetExitKey(KEY_NULL);
+}
 
 void TimestampLogCallback(int logType, const char *text, va_list args)
 {

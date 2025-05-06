@@ -120,9 +120,11 @@ endif()
 ######################### END FETCHING DEPENDENCIES
 #########################
 
+# set your sources here
 set(SOURCES
     main.cxx
-    logger.cxx
+    settings.cxx
+    player.cxx
 )
 
 set(LIBRARIES
