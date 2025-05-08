@@ -125,6 +125,7 @@ set(SOURCES
     main.cxx
     settings.cxx
     player.cxx
+    animated_model.cxx
 )
 
 set(LIBRARIES

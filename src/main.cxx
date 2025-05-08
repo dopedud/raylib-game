@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
     initialise();
 
     Camera3D camera;
-    camera.position = { .0f, 1.0f, -5.0f };
+    camera.position = { .0f, .1f, -5.0f };
     camera.target = { .0f, .0f, .0f };
     camera.up = { .0f, 1.0f, .0f };
     camera.fovy = 75.0f;
@@ -29,6 +29,8 @@ int main(int argc, char* argv[])
     Player player {};
 
     camera.target = Vector3Zeros;
+
+    SetTargetFPS(512);
 
     while (!WindowShouldClose())
     {
@@ -46,7 +48,6 @@ int main(int argc, char* argv[])
             ClearBackground(BLACK);
 
             BeginMode3D(camera);
-                DrawGrid(25, 1.0f);
                 DrawModel(dummy, { .0f, .0f, 10.0f }, 1.0f, WHITE);
                 player.draw();
             EndMode3D();
