@@ -17,6 +17,7 @@ class AnimatedModel
     std::vector<float> timing;
     std::vector<float> timing_cumulative;
 
+    // NOTE: path to textures are formatted to allow animations
     std::vector<Texture> textures;
 
     Model m_model {};

@@ -7,8 +7,7 @@
 
 #include "settings.h"
 
-Player::Player() :
-model 
+Player::Player() : model 
 { 
     8,
     true,

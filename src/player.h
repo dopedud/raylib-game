@@ -14,12 +14,15 @@ class Player
 {
     AnimatedModel model;
 
-    b2BodyId bodyID;
-    Vector2 extent;
+    b2BodyId m_bodyID;
+    Vector2 m_extent;
 
 public:
     Player();
     ~Player();
+
+    b2BodyId bodyID();
+    Vector2 extent();
 
     void update();
     void draw();

@@ -1,4 +1,4 @@
-#version 330
+#version 400
 
 // Input vertex attributes
 in vec2 vertexTexCoord;

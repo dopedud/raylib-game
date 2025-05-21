@@ -1,4 +1,4 @@
-#version 330
+#version 400
 
 // Input vertex attributes (from vertex shader)
 in vec2 fragTexCoord;
