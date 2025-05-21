@@ -17,6 +17,13 @@ int main(int argc, char* argv[])
 {
     initialise();
 
+    b2WorldDef physical_world = b2DefaultWorldDef();
+
+    b2SetLengthUnitsPerMeter(TEXELS_PER_UNIT);
+	physical_world.gravity.y = GRAVITY_ACCELERATION * TEXELS_PER_UNIT;
+
+	b2WorldId worldId = b2CreateWorld(&physical_world);
+
     Camera3D camera;
     camera.position = { .0f, .1f, -5.0f };
     camera.target = { .0f, .0f, .0f };

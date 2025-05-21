@@ -8,6 +8,7 @@ constexpr int SCREEN_WIDTH { 1280 };
 constexpr int SCREEN_HEIGHT { 720 };
 
 constexpr float TEXELS_PER_UNIT { 32.0f };
+constexpr float GRAVITY_ACCELERATION { 9.807f };
 
 void initialise();
 
