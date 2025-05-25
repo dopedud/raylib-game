@@ -14,12 +14,14 @@ AnimatedModel::AnimatedModel
     int frame_count,
     bool looping,
     char* textures_path,
+    Vector2 pivot,
     char* vertexshader_path,
     char* fragmentshader_path,
     std::vector<float> timing
 ) : 
 frame_count { frame_count },
 looping { looping },
+pivot { pivot },
 timing { timing },
 shader { LoadShader(vertexshader_path, fragmentshader_path) }
 {
@@ -31,11 +33,10 @@ shader { LoadShader(vertexshader_path, fragmentshader_path) }
         textures[i] = LoadTexture(path.c_str());
     }
 
-    m_model = LoadModelFromMesh(GenMeshCube(
-        (float)textures[0].width / -TEXELS_PER_UNIT,
-        (float)textures[0].height / -TEXELS_PER_UNIT,
-        .0f
-    ));
+    m_width = (float)textures[0].width / -TEXELS_PER_UNIT;
+    m_height = (float)textures[0].height / -TEXELS_PER_UNIT;
+
+    m_model = LoadModelFromMesh(GenMeshCube(m_width, m_height, .0f));
 
     m_model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = textures[0];
     m_model.materials[0].shader = shader;
@@ -52,6 +53,7 @@ AnimatedModel::AnimatedModel
     int frame_count,
     bool looping,
     char* textures_path,
+    Vector2 pivot,
     char* vertexshader_path,
     char* fragmentshader_path,
     float timing
@@ -61,6 +63,7 @@ AnimatedModel
     frame_count,
     looping,
     textures_path,
+    pivot,
     vertexshader_path,
     fragmentshader_path,
     std::vector<float>(frame_count, timing)
@@ -75,7 +78,7 @@ AnimatedModel::~AnimatedModel()
     UnloadShader(shader);
 }
 
-void AnimatedModel::update()
+void AnimatedModel::animate()
 {
     timer += GetFrameTime();
 

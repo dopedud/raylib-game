@@ -8,7 +8,16 @@ constexpr int SCREEN_WIDTH { 1280 };
 constexpr int SCREEN_HEIGHT { 720 };
 
 constexpr float TEXELS_PER_UNIT { 32.0f };
+
+//physics settings
+/*
+** NOTE: The time step and the sub-step count are related. As the time step decreases, the size of the sub-steps also 
+** decreases. For example, at 60Hz time step and 4 sub-steps, the sub-steps operate at 240Hz. With 8 sub-steps the 
+** sub-step is 480Hz.
+*/
 constexpr float GRAVITY_ACCELERATION { 9.807f };
+constexpr float TIMESTEP { 1.0f / 60.0f };
+constexpr int SUBSTEP_COUNT { 4 };
 
 void initialise();
 
