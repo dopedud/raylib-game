@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     // creating physics ground
     b2BodyDef ground_def = b2DefaultBodyDef();
 
-    ground_def.position = { 0.0f, -2.5f };
+    ground_def.position = { 0.0f, -10.0f };
 
     b2BodyId ground_id = b2CreateBody(world_id, &ground_def);
 
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
     b2CreatePolygonShape(ground_id, &shape_def, &polygon_box);
 
     Camera3D camera;
-    camera.position = { .0f, 2.5f, -5.0f };
+    camera.position = { .0f, 1.0f, -5.0f };
     camera.target = { .0f, .0f, .0f };
     camera.up = { .0f, 1.0f, .0f };
     camera.fovy = 75.0f;
@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 
     camera.target = Vector3Zeros;
 
-    SetTargetFPS(512);
+    SetTargetFPS(TARGET_FPS);
 
     while (!WindowShouldClose())
     {

@@ -33,10 +33,10 @@ shader { LoadShader(vertexshader_path, fragmentshader_path) }
         textures[i] = LoadTexture(path.c_str());
     }
 
-    m_width = (float)textures[0].width / -TEXELS_PER_UNIT;
-    m_height = (float)textures[0].height / -TEXELS_PER_UNIT;
+    m_width = (float)textures[0].width / TEXELS_PER_UNIT;
+    m_height = (float)textures[0].height / TEXELS_PER_UNIT;
 
-    m_model = LoadModelFromMesh(GenMeshCube(m_width, m_height, .0f));
+    m_model = LoadModelFromMesh(GenMeshCube(-m_width, -m_height, .0f));
 
     m_model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = textures[0];
     m_model.materials[0].shader = shader;

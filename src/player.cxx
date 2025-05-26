@@ -25,9 +25,9 @@ model
     body_def.type = b2_dynamicBody;
     m_bodyID = b2CreateBody(world_id, &body_def);
 
-    m_extent.x = model.width() / 2.0f;
-    m_extent.y = model.height() / 2.0f;
-
+    m_extent.x = model.width() / 2;
+    m_extent.y = model.height() / 2;
+    
     b2Polygon box = b2MakeBox(m_extent.x, m_extent.y);
 
     b2ShapeDef shape_def = b2DefaultShapeDef();
