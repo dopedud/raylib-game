@@ -26,7 +26,8 @@ constexpr float TEXELS_PER_UNIT { 32.0f };
 ** decreases. For example, at 60Hz time step and 4 sub-steps, the sub-steps operate at 240Hz. With 8 sub-steps the 
 ** sub-step is 480Hz.
 */
-constexpr float GRAVITY_ACCELERATION { -.1f };
+
+constexpr float GRAVITY_ACCELERATION { -1.0f };
 constexpr float TIMESTEP { 1.0f / 60.0f };
 constexpr int SUBSTEP_COUNT { 4 };
 

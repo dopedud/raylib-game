@@ -126,6 +126,7 @@ set(SOURCES
     settings.cxx
     player.cxx
     animated_model.cxx
+    player_camera_controller.cxx
 )
 
 set(LIBRARIES
