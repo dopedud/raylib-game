@@ -10,16 +10,40 @@
 #include "settings.h"
 
 Player::Player(b2WorldId world_id) :
-model 
-{ 
-    8,
-    true,
-    "../resources/warrior/run/warrior_run",
-    { .0f, .0f },
-    "../resources/shaders/glsl/vertex.vs",
-    "../resources/shaders/glsl/fragment.fs",
-    .1f
+models
+{
+    AnimatedModel
+    {
+        6,
+        true,
+        "../resources/warrior/run/warrior_idle",
+        { .0f, .0f },
+        "../resources/shaders/glsl/vertex.vs",
+        "../resources/shaders/glsl/fragment.fs",
+        .1f
+    },
+
+    AnimatedModel
+    {
+        8,
+        true,
+        "../resources/warrior/run/warrior_run",
+        { .0f, .0f },
+        "../resources/shaders/glsl/vertex.vs",
+        "../resources/shaders/glsl/fragment.fs",
+        .05f
+    }
 }
+// model 
+// { 
+//     8,
+//     true,
+//     "../resources/warrior/run/warrior_idle",
+//     { .0f, .0f },
+//     "../resources/shaders/glsl/vertex.vs",
+//     "../resources/shaders/glsl/fragment.fs",
+//     .1f
+// }
 {
     b2BodyDef bodydef = b2DefaultBodyDef();
     bodydef.position = { .0f, 2.5f };
@@ -46,7 +70,7 @@ model
 
 Player::~Player()
 {
-    model.~AnimatedModel();
+    // model.~AnimatedModel();
 }
 
 void Player::handle_input()
@@ -55,7 +79,7 @@ void Player::handle_input()
 
     if (IsKeyPressed(KEY_SPACE))
     {
-        b2Body_ApplyForceToCenter(m_bodyID, { .0f, jump_force }, true);
+        b2Body_ApplyForceToCenter(m_bodyID, { .0f, jump_force * JUMP_FORCE_CONSTANT }, true);
     }
 
     if (IsKeyDown(KEY_A))
@@ -71,7 +95,7 @@ void Player::handle_input()
 
 void Player::animate()
 {
-    model.animate();
+    // model.animate();
 }
 
 void Player::draw()
@@ -80,7 +104,18 @@ void Player::draw()
     b2Rot rotation = b2Body_GetRotation(m_bodyID);
     float degrees = b2Rot_GetAngle(rotation) * RAD2DEG;
 
-    DrawModelEx(model.model(), { position.x, position.y , .0f }, { .0f, .0f, 1.0f }, degrees, Vector3Ones, WHITE);
+    switch (state.state())
+    {
+        case PLAYER_IDLE:
+        //     DrawModelEx(model.model(),
+        //     { position.x, position.y , .0f },
+        //     { .0f, .0f, 1.0f }, degrees, Vector3Ones, WHITE);
+        break;
 
+        case PLAYER_MOVING:
+        break;
 
+        case PLAYER_JUMPING:
+        break;
+    }
 }

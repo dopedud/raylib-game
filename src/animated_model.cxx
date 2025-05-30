@@ -4,6 +4,7 @@
 #include <string>
 #include <numeric>
 #include <cmath>
+#include <utility>
 
 #include "raylib.h"
 
@@ -17,12 +18,12 @@ AnimatedModel::AnimatedModel
     Vector2 pivot,
     char* vertexshader_path,
     char* fragmentshader_path,
-    std::vector<float> timing
+    std::vector<std::pair<int, float>> textures_timing
 ) : 
 frame_count { frame_count },
 looping { looping },
 pivot { pivot },
-timing { timing },
+textures_timing { textures_timing },
 shader { LoadShader(vertexshader_path, fragmentshader_path) }
 {
     textures.resize(frame_count);
@@ -41,11 +42,7 @@ shader { LoadShader(vertexshader_path, fragmentshader_path) }
     m_model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = textures[0];
     m_model.materials[0].shader = shader;
 
-    timing_cumulative.resize(timing.size());
-
-    std::partial_sum(timing.cbegin(), timing.cend(), timing_cumulative.begin());
-
-    duration = timing_cumulative[frame_count - 1];
+    initialise_timings();
 }
 
 AnimatedModel::AnimatedModel
@@ -66,9 +63,18 @@ AnimatedModel
     pivot,
     vertexshader_path,
     fragmentshader_path,
-    std::vector<float>(frame_count, timing)
+    {{}}
 }
-{}
+{
+    textures_timing.resize(frame_count);
+
+    for (int i = 0; i < frame_count; i++)
+    {
+        textures_timing.push_back({ i, timing });
+    }
+
+    initialise_timings();
+}
 
 AnimatedModel::~AnimatedModel()
 {
@@ -91,11 +97,13 @@ void AnimatedModel::animate()
 
 int AnimatedModel::bsearch_frameindex()
 {
+    int total_frame_count { textures_timing.size() };
+
     if (timer >= .0f && timer < timing_cumulative[0]) return 0;
-    else if (timer > duration) return frame_count - 1;
+    else if (timer > duration) return total_frame_count - 1;
 
     int low {};
-    int high { frame_count - 1 };
+    int high { total_frame_count - 1 };
 
     while (low <= high)
     {
@@ -107,4 +115,18 @@ int AnimatedModel::bsearch_frameindex()
         if (timer >= timing_cumulative[mid]) low = mid + 1;
         else high = mid - 1;
     }
+}
+
+void AnimatedModel::initialise_timings()
+{
+    timing_cumulative.resize(textures_timing.size());
+    
+    float acc {};
+    for (const std::pair<int, float>& pair : textures_timing)
+    {
+        acc += pair.second;
+        timing_cumulative.push_back(acc);
+    }
+
+    duration = timing_cumulative[frame_count - 1];
 }

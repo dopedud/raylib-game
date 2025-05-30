@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <utility>
 
 #include "raylib.h"
 
@@ -13,8 +14,10 @@ class AnimatedModel
     float duration {};
 
     bool looping {};
+    bool finished {};
 
     std::vector<float> timing;
+    std::vector<std::pair<int, float>> textures_timing;
     std::vector<float> timing_cumulative;
 
     // NOTE: path to textures are formatted to allow animations
@@ -30,6 +33,8 @@ class AnimatedModel
     // used binary search to search for the playhead in the perspective of the frame index
     int bsearch_frameindex();
 
+    void initialise_timings();
+
 public:
     AnimatedModel
     (
@@ -39,7 +44,7 @@ public:
         Vector2 pivot,
         char* vertexshader_path,
         char* fragmentshader_path,
-        std::vector<float> timing
+        std::vector<std::pair<int, float>> textures_timing
     );
 
     AnimatedModel
@@ -55,8 +60,8 @@ public:
 
     ~AnimatedModel();
 
-    constexpr float width() { return m_width; }
-    constexpr float height() { return m_height; }
+    float width() const { return m_width; }
+    float height() const { return m_height; }
 
     const Model& model() const { return m_model; }
 

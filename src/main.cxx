@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 
     b2CreatePolygonShape(ground_id, &shape_def, &polygon_box);
 
-    PlayerCameraController player_camera_controller {};
+    PlayerCameraController playercam {};
 
     Model dummy { LoadModel("../resources/monke.glb") };
 
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
         while (physics_sim_count >= TIMESTEP)
         {
             b2World_Step(world_id, TIMESTEP, SUBSTEP_COUNT);
-
+            playercam.move_right(.1f);
             physics_sim_count -= TIMESTEP;
         }
         /*
@@ -96,10 +96,6 @@ int main(int argc, char* argv[])
         /*
         ** CAMERA MOVEMENT
         */
-        
-        /*
-        ** PLAYER CAMERA MOVEMENT
-        */
 
         /*
         ** DRAWING FUNCTIONS
@@ -107,7 +103,7 @@ int main(int argc, char* argv[])
         BeginDrawing();
             ClearBackground(BLACK);
 
-            BeginMode3D(player_camera_controller.camera());
+            BeginMode3D(playercam.camera());
                 DrawGrid(100, 1);
                 DrawModel(dummy, { .0f, .0f, 10.0f }, 1.0f, WHITE);
                 player.draw();

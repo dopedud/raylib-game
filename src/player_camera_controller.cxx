@@ -12,6 +12,11 @@ PlayerCameraController::PlayerCameraController()
     m_camera.projection = CAMERA_PERSPECTIVE;
 }
 
+void PlayerCameraController::follow(Transform target)
+{
+
+}
+
 void PlayerCameraController::move_right(float amount)
 {
     m_camera.position += (Vector3){ -amount, .0f, .0f };

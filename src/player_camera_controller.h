@@ -12,5 +12,7 @@ public:
 
     Camera3D camera() { return m_camera; }
 
+    void follow(Transform target);
+
     void move_right(float amount);
 };

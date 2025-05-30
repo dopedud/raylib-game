@@ -124,6 +124,9 @@ endif()
 set(SOURCES
     main.cxx
     settings.cxx
+
+    state_manager.cxx
+
     player.cxx
     animated_model.cxx
     player_camera_controller.cxx
