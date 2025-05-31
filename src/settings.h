@@ -9,7 +9,7 @@
 ** When trying to debug, use Raylib's built-in TraceLog() function to print C-formatted debug messages along with
 ** timestamps. Example usage: 
 ** 
-** TraceLog(LOG_DEBUG, "formatted text means you can insert a %s in a middle of a sentence", "variable's value");
+** TraceLog(LOG_DEBUG, "formatted text means you can insert a %s in a middle of a sentence", <variable's value>);
 **
 */
 

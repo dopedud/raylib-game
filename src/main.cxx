@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
     float physics_sim_count {};
 
     /*
-    ** GAME SIMULATION UPDATE (UPDATE EVERY FRAME)
+    ** GAME SIMULATION UPDATE (UPDATES EVERY FRAME)
     */
     while (!WindowShouldClose())
     {
@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
         }
 
         /*
-        ** PHYSICS SIMULATION UPDATE (UPDATE EVERY FIXED INTERVAL)
+        ** PHYSICS SIMULATION UPDATE (UPDATES EVERY FIXED INTERVAL)
         */
         physics_sim_count += GetFrameTime();
 

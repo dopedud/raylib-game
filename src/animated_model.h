@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <utility>
+#include <string_view>
 
 #include "raylib.h"
 
@@ -40,10 +41,10 @@ public:
     (
         int frame_count,
         bool looping,
-        char* textures_path,
+        std::string_view textures_path,
         Vector2 pivot,
-        char* vertexshader_path,
-        char* fragmentshader_path,
+        std::string_view vertexshader_path,
+        std::string_view fragmentshader_path,
         std::vector<std::pair<int, float>> textures_timing
     );
 
@@ -51,17 +52,17 @@ public:
     (
         int frame_count,
         bool looping,
-        char* textures_path,
+        std::string_view textures_path,
         Vector2 pivot,
-        char* vertexshader_path,
-        char* fragmentshader_path,
+        std::string_view vertexshader_path,
+        std::string_view fragmentshader_path,
         float timing
     );
 
     ~AnimatedModel();
 
-    float width() const { return m_width; }
-    float height() const { return m_height; }
+    const float width() const { return m_width; }
+    const float height() const { return m_height; }
 
     const Model& model() const { return m_model; }
 

@@ -14,17 +14,17 @@ AnimatedModel::AnimatedModel
 (
     int frame_count,
     bool looping,
-    char* textures_path,
+    std::string_view textures_path,
     Vector2 pivot,
-    char* vertexshader_path,
-    char* fragmentshader_path,
+    std::string_view vertexshader_path,
+    std::string_view fragmentshader_path,
     std::vector<std::pair<int, float>> textures_timing
 ) : 
 frame_count { frame_count },
 looping { looping },
 pivot { pivot },
 textures_timing { textures_timing },
-shader { LoadShader(vertexshader_path, fragmentshader_path) }
+shader { LoadShader(vertexshader_path.data(), fragmentshader_path.data()) }
 {
     textures.resize(frame_count);
 
@@ -49,10 +49,10 @@ AnimatedModel::AnimatedModel
 (
     int frame_count,
     bool looping,
-    char* textures_path,
+    std::string_view textures_path,
     Vector2 pivot,
-    char* vertexshader_path,
-    char* fragmentshader_path,
+    std::string_view vertexshader_path,
+    std::string_view fragmentshader_path,
     float timing
 ) :
 AnimatedModel 
@@ -69,16 +69,26 @@ AnimatedModel
     textures_timing.resize(frame_count);
 
     for (int i = 0; i < frame_count; i++)
-    {
-        textures_timing.push_back({ i, timing });
-    }
+    textures_timing.push_back({ i, timing });
 
     initialise_timings();
 }
 
+AnimatedModel::AnimatedModel(const AnimatedModel& model)
+{
+
+}
+
+AnimatedModel& AnimatedModel::operator=(const AnimatedModel& model)
+{
+
+}
+
 AnimatedModel::~AnimatedModel()
 {
-    for (int i = 0; i < frame_count; i++) UnloadTexture(textures[i]);
+    TraceLog(LOG_DEBUG, "was this called?");
+
+    for (Texture texture : textures) UnloadTexture(texture);
 
     UnloadModel(m_model);
     UnloadShader(shader);
