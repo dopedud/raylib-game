@@ -4,7 +4,7 @@
 
 class PlayerCameraController
 {
-    
+private:   
     Camera3D m_camera;
 
 public:

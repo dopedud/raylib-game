@@ -5,6 +5,7 @@
 template<typename E>
 class StateManager
 {
+private:
     static_assert(std::is_enum_v<E>, "StateManager only works with enumeration types.");
 
     E m_state {};

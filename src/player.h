@@ -21,6 +21,7 @@ typedef enum
 
 class Player
 {
+private:
     StateManager<PlayerState> state {};
 
     b2BodyId m_bodyID {};

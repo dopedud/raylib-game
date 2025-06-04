@@ -8,6 +8,7 @@
 
 class AnimatedModel
 {
+private:
     int frame_count {};
     int frameindex {};
 
@@ -17,7 +18,6 @@ class AnimatedModel
     bool looping {};
     bool finished {};
 
-    std::vector<float> timing;
     std::vector<std::pair<int, float>> textures_timing;
     std::vector<float> timing_cumulative;
 
@@ -31,6 +31,11 @@ class AnimatedModel
     float m_width {};
     float m_height {};
 
+    // to be used by the copy/move constructors/assignment operators
+    std::string_view textures_path {};
+    std::string_view vertexshader_path {};
+    std::string_view fragmentshader_path {};
+
     // used binary search to search for the playhead in the perspective of the frame index
     int bsearch_frameindex();
 
@@ -41,8 +46,8 @@ public:
     (
         int frame_count,
         bool looping,
-        std::string_view textures_path,
         Vector2 pivot,
+        std::string_view textures_path,
         std::string_view vertexshader_path,
         std::string_view fragmentshader_path,
         std::vector<std::pair<int, float>> textures_timing
@@ -52,12 +57,17 @@ public:
     (
         int frame_count,
         bool looping,
-        std::string_view textures_path,
         Vector2 pivot,
+        std::string_view textures_path,
         std::string_view vertexshader_path,
         std::string_view fragmentshader_path,
         float timing
     );
+
+    AnimatedModel(AnimatedModel& other);
+    AnimatedModel(AnimatedModel&& other) noexcept;
+    AnimatedModel& operator=(AnimatedModel& other);
+    AnimatedModel& operator=(AnimatedModel&& other) noexcept;
 
     ~AnimatedModel();
 

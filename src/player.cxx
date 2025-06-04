@@ -17,8 +17,8 @@ Player::Player(b2WorldId world_id)
         {
             8,
             true,
-            "../resources/warrior/run/warrior_run",
             { .0f, .0f },
+            "../resources/warrior/run/warrior_run",
             "../resources/shaders/glsl/vertex.vs",
             "../resources/shaders/glsl/fragment.fs",
             .05f
@@ -31,8 +31,8 @@ Player::Player(b2WorldId world_id)
         {
             8,
             true,
-            "../resources/warrior/run/warrior_run",
             { .0f, .0f },
+            "../resources/warrior/run/warrior_run",
             "../resources/shaders/glsl/vertex.vs",
             "../resources/shaders/glsl/fragment.fs",
             .05f
@@ -43,7 +43,7 @@ Player::Player(b2WorldId world_id)
 
     TraceLog(LOG_DEBUG, "reached here 1");
 
-    for (int i = 0; i < models.size(); i++)
+    for (size_t i = 0; i < models.size(); i++)
     {
         b2BodyDef bodydef = b2DefaultBodyDef();
         bodydef.type = b2_dynamicBody;
@@ -84,8 +84,10 @@ Player::Player(b2WorldId world_id)
 
 Player::~Player()
 {
-    for (const AnimatedModel& model : models)
+    for (AnimatedModel& model : models)
     model.~AnimatedModel();
+
+    for (b2BodyId& bodyID : bodyIDs) b2DestroyBody(bodyID);
 }
 
 void Player::switch_to_body(b2BodyId newbody)

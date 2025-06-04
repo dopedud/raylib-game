@@ -14,8 +14,8 @@ AnimatedModel::AnimatedModel
 (
     int frame_count,
     bool looping,
-    std::string_view textures_path,
     Vector2 pivot,
+    std::string_view textures_path,
     std::string_view vertexshader_path,
     std::string_view fragmentshader_path,
     std::vector<std::pair<int, float>> textures_timing
@@ -24,13 +24,16 @@ frame_count { frame_count },
 looping { looping },
 pivot { pivot },
 textures_timing { textures_timing },
-shader { LoadShader(vertexshader_path.data(), fragmentshader_path.data()) }
+shader { LoadShader(vertexshader_path.data(), fragmentshader_path.data()) },
+textures_path { textures_path },
+vertexshader_path { vertexshader_path },
+fragmentshader_path { fragmentshader_path }
 {
     textures.resize(frame_count);
 
     for (int i = 0; i < frame_count; i++)
     {
-        std::string path = std::string(textures_path) + "_" + std::to_string(i) + ".png";
+        std::string path = std::string{ textures_path } + "_" + std::to_string(i) + ".png";
         textures[i] = LoadTexture(path.c_str());
     }
 
@@ -42,15 +45,15 @@ shader { LoadShader(vertexshader_path.data(), fragmentshader_path.data()) }
     m_model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = textures[0];
     m_model.materials[0].shader = shader;
 
-    initialise_timings();
+    AnimatedModel::initialise_timings();
 }
 
 AnimatedModel::AnimatedModel
 (
     int frame_count,
     bool looping,
-    std::string_view textures_path,
     Vector2 pivot,
+    std::string_view textures_path,
     std::string_view vertexshader_path,
     std::string_view fragmentshader_path,
     float timing
@@ -59,8 +62,8 @@ AnimatedModel
 { 
     frame_count,
     looping,
-    textures_path,
     pivot,
+    textures_path,
     vertexshader_path,
     fragmentshader_path,
     {{}}
@@ -71,17 +74,107 @@ AnimatedModel
     for (int i = 0; i < frame_count; i++)
     textures_timing.push_back({ i, timing });
 
-    initialise_timings();
+    AnimatedModel::initialise_timings();
 }
 
-AnimatedModel::AnimatedModel(const AnimatedModel& model)
+AnimatedModel::AnimatedModel(AnimatedModel& other) :
+frame_count { other.frame_count },
+duration { other.duration },
+looping { other.looping },
+pivot { other.pivot },
+textures_timing { other.textures_timing },
+timing_cumulative { other.timing_cumulative },
+m_width { other.m_width },
+m_height { other.m_height },
+textures_path { textures_path },
+vertexshader_path { vertexshader_path },
+fragmentshader_path { fragmentshader_path }
 {
+    textures.resize(other.textures.size());
 
+    for (size_t i = 0; i < other.textures.size(); ++i) 
+    {
+        Image img = LoadImageFromTexture(other.textures[i]);
+        textures[i] = LoadTextureFromImage(img);
+        UnloadImage(img);
+    }
+
+    m_model = LoadModelFromMesh(GenMeshCube(-m_width, -m_height, 0.0f));
+    m_model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = textures[frameindex];
+    m_model.materials[0].shader = shader;
 }
 
-AnimatedModel& AnimatedModel::operator=(const AnimatedModel& model)
-{
 
+AnimatedModel::AnimatedModel(AnimatedModel&& other) noexcept :
+frame_count { other.frame_count },
+duration { other.duration },
+looping { other.looping },
+pivot { other.pivot },
+textures_timing { std::move(other.textures_timing) },
+timing_cumulative { std::move(other.timing_cumulative) },
+textures { std::move(other.textures) },
+m_model { other.m_model },
+shader { other.shader },
+m_width { other.m_width },
+m_height { other.m_height },
+textures_path { other.textures_path },
+vertexshader_path { other.vertexshader_path },
+fragmentshader_path { other.fragmentshader_path }
+{
+    other.frame_count = 0;
+    other.frameindex = 0;
+    other.timer = .0f;
+    other.duration = .0f;
+    other.looping = false;
+    other.finished = false;
+    other.pivot = { 0, 0 };
+    other.m_width = .0f;
+    other.m_height = .0f;
+
+    other.m_model = {};
+    other.shader = {};
+    other.textures.clear();
+}
+
+AnimatedModel& AnimatedModel::operator=(AnimatedModel&& other) noexcept
+{
+    if (this == &other) return *this;
+
+    for (Texture texture : textures) UnloadTexture(texture);
+
+    UnloadModel(m_model);
+    UnloadShader(shader);
+
+    frame_count = other.frame_count;
+    frameindex = other.frameindex;
+    timer = other.timer;
+    duration = other.duration;
+    looping = other.looping;
+    pivot = other.pivot;
+    textures = std::move(other.textures);
+    textures_timing = std::move(other.textures_timing);
+    timing_cumulative = std::move(other.timing_cumulative);
+
+    m_width = other.m_width;
+    m_height = other.m_height;
+    m_model = other.m_model;
+    shader = other.shader;
+
+    other.frame_count = 0;
+    other.frameindex = 0;
+    other.timer = .0f;
+    other.duration = .0f;
+    other.looping = false;
+    other.finished = false;
+    other.pivot = { 0, 0 };
+    other.m_width = .0f;
+    other.m_height = .0f;
+
+    other.m_model = {};
+    other.shader = {};
+    other.textures.clear();
+
+    return *this;
 }
 
 AnimatedModel::~AnimatedModel()
@@ -91,7 +184,9 @@ AnimatedModel::~AnimatedModel()
     for (Texture texture : textures) UnloadTexture(texture);
 
     UnloadModel(m_model);
-    UnloadShader(shader);
+
+    // only unload if it's a valid shader
+    if (shader.id > 0) UnloadShader(shader);
 }
 
 void AnimatedModel::animate()
