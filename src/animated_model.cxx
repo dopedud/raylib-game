@@ -69,8 +69,6 @@ AnimatedModel
     {{}}
 }
 {
-    textures_timing.resize(frame_count);
-
     for (int i = 0; i < frame_count; i++)
     textures_timing.push_back({ i, timing });
 
@@ -86,18 +84,19 @@ textures_timing { other.textures_timing },
 timing_cumulative { other.timing_cumulative },
 m_width { other.m_width },
 m_height { other.m_height },
-textures_path { textures_path },
-vertexshader_path { vertexshader_path },
-fragmentshader_path { fragmentshader_path }
+textures_path { other.textures_path },
+vertexshader_path { other.vertexshader_path },
+fragmentshader_path { other.fragmentshader_path }
 {
     textures.resize(other.textures.size());
 
     for (size_t i = 0; i < other.textures.size(); ++i) 
     {
-        Image img = LoadImageFromTexture(other.textures[i]);
-        textures[i] = LoadTextureFromImage(img);
-        UnloadImage(img);
+        std::string path = std::string{ textures_path } + "_" + std::to_string(i) + ".png";
+        textures[i] = LoadTexture(path.c_str());
     }
+
+    shader = LoadShader(vertexshader_path.data(), fragmentshader_path.data());
 
     m_model = LoadModelFromMesh(GenMeshCube(-m_width, -m_height, 0.0f));
     m_model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = textures[frameindex];
