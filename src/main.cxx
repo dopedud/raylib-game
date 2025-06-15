@@ -13,25 +13,18 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #include "settings.h"
 #include "player.h"
 #include "player_camera_controller.h"
+#include "resource_manager.h"
 
 int main(int argc, char* argv[])
 {
     initialise();
-
-    // creating physics world
-    b2WorldDef world_def = b2DefaultWorldDef();
-
-    b2SetLengthUnitsPerMeter(TEXELS_PER_UNIT);
-	world_def.gravity.y = GRAVITY_ACCELERATION * TEXELS_PER_UNIT;
-
-	b2WorldId world_id = b2CreateWorld(&world_def);   
 
     // creating physics ground
     b2BodyDef ground_def = b2DefaultBodyDef();
 
     ground_def.position = { .0f, -2.0f };
 
-    b2BodyId ground_id = b2CreateBody(world_id, &ground_def);
+    b2BodyId ground_id = b2CreateBody(ResourceManager::instance().world_id(), &ground_def);
 
     // creating shape for physics ground
     b2ShapeDef shape_def = b2DefaultShapeDef();
@@ -44,7 +37,7 @@ int main(int argc, char* argv[])
 
     Model dummy { LoadModel("../resources/monke.glb") };
 
-    Player player { world_id };
+    Player player { ResourceManager::instance().world_id() };
 
     EnableCursor();
     SetTargetFPS(TARGET_FPS);
@@ -69,7 +62,7 @@ int main(int argc, char* argv[])
 
         while (physics_sim_count >= TIMESTEP)
         {
-            b2World_Step(world_id, TIMESTEP, SUBSTEP_COUNT);
+            b2World_Step(ResourceManager::instance().world_id(), TIMESTEP, SUBSTEP_COUNT);
             playercam.move_right(.1f);
             physics_sim_count -= TIMESTEP;
         }

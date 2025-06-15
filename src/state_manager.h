@@ -12,8 +12,8 @@ private:
     E m_previous_state {};
 
 public:
-    explicit StateManager() {}
-    explicit StateManager(E state) : m_state { state }, m_previous_state { state } {}
+    StateManager() {}
+    StateManager(E state) : m_state { state }, m_previous_state { state } {}
     
     E state() const { return m_state; }
     E previous_state() const { return m_previous_state; }

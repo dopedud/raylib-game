@@ -1,6 +1,7 @@
 #include "player.h"
 
 #include <array>
+#include <utility>
 
 #include "raylib.h"
 #include "raymath.h"
@@ -11,7 +12,7 @@
 
 Player::Player(b2WorldId world_id)
 {
-    models.push_back
+    models.emplace_back
     (
         AnimatedModel
         {
@@ -25,19 +26,19 @@ Player::Player(b2WorldId world_id)
         }
     );
 
-    models.push_back
-    (
-        AnimatedModel
-        {
-            8,
-            true,
-            { .0f, .0f },
-            "../resources/warrior/run/warrior_run",
-            "../resources/shaders/glsl/vertex.vs",
-            "../resources/shaders/glsl/fragment.fs",
-            .05f
-        }
-    );
+    // models.emplace_back
+    // (
+    //     AnimatedModel
+    //     {
+    //         8,
+    //         true,
+    //         { .0f, .0f },
+    //         "../resources/warrior/run/warrior_run",
+    //         "../resources/shaders/glsl/vertex.vs",
+    //         "../resources/shaders/glsl/fragment.fs",
+    //         .05f
+    //     }
+    // );
 
     bodyIDs.resize(models.size());
 

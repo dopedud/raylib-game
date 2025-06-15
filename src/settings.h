@@ -4,6 +4,7 @@
 
 #define MAX_TRACELOG_MSG_LENGTH 1024
 
+// game settings
 /* 
 ** NOTE:
 ** When trying to debug, use Raylib's built-in TraceLog() function to print C-formatted debug messages along with

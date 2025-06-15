@@ -9,6 +9,7 @@
 #include "raylib.h"
 
 #include "settings.h"
+#include "resource_manager.h"
 
 AnimatedModel::AnimatedModel
 (
@@ -19,26 +20,26 @@ AnimatedModel::AnimatedModel
     std::string_view vertexshader_path,
     std::string_view fragmentshader_path,
     std::vector<std::pair<int, float>> textures_timing
-) : 
-frame_count { frame_count },
-looping { looping },
-pivot { pivot },
-textures_timing { textures_timing },
-shader { LoadShader(vertexshader_path.data(), fragmentshader_path.data()) },
-textures_path { textures_path },
-vertexshader_path { vertexshader_path },
-fragmentshader_path { fragmentshader_path }
+)
+: frame_count           { frame_count }
+, looping               { looping }
+, pivot                 { pivot }
+, textures_path         { textures_path }
+, vertexshader_path     { vertexshader_path }
+, fragmentshader_path   { fragmentshader_path }
+, shader                { LoadShader(vertexshader_path.data(), fragmentshader_path.data()) }
+, textures_timing       { textures_timing }
 {
     textures.resize(frame_count);
 
     for (int i = 0; i < frame_count; i++)
     {
-        std::string path = std::string{ textures_path } + "_" + std::to_string(i) + ".png";
+        std::string path { std::string{ textures_path } + "_" + std::to_string(i) + ".png" };
         textures[i] = LoadTexture(path.c_str());
     }
 
     m_width = (float)textures[0].width / TEXELS_PER_UNIT;
-    m_height = (float)textures[0].height / TEXELS_PER_UNIT;
+    m_height = (float)textures[0].height / TEXELS_PER_UNIT ;
 
     m_model = LoadModelFromMesh(GenMeshCube(-m_width, -m_height, .0f));
 
@@ -66,59 +67,65 @@ AnimatedModel
     textures_path,
     vertexshader_path,
     fragmentshader_path,
-    {{}}
+    {}
 }
 {
     for (int i = 0; i < frame_count; i++)
-    textures_timing.push_back({ i, timing });
+    textures_timing.emplace_back(std::pair<int, float>{ i, timing });
 
     AnimatedModel::initialise_timings();
 }
 
-AnimatedModel::AnimatedModel(AnimatedModel& other) :
-frame_count { other.frame_count },
-duration { other.duration },
-looping { other.looping },
-pivot { other.pivot },
-textures_timing { other.textures_timing },
-timing_cumulative { other.timing_cumulative },
-m_width { other.m_width },
-m_height { other.m_height },
-textures_path { other.textures_path },
-vertexshader_path { other.vertexshader_path },
-fragmentshader_path { other.fragmentshader_path }
+AnimatedModel::AnimatedModel(const AnimatedModel& other)
+: frame_count           { other.frame_count }
+, looping               { other.looping }
+, pivot                 { other.pivot }
+, textures_path         { other.textures_path }
+, vertexshader_path     { other.vertexshader_path }
+, fragmentshader_path   { other.fragmentshader_path }
+, textures_timing       { other.textures_timing }
+
+, frameindex            { other.frameindex }
+, timer                 { other.timer }
+, duration              { other.duration }
+, finished              { other.finished }
+, m_width               { other.m_width }
+, m_height              { other.m_height }
+, textures              { other.textures }
+, timing_cumulative     { other.timing_cumulative }
 {
     textures.resize(other.textures.size());
 
-    for (size_t i = 0; i < other.textures.size(); ++i) 
+    for (size_t i = 0; i < other.textures.size(); ++i)
     {
-        std::string path = std::string{ textures_path } + "_" + std::to_string(i) + ".png";
+        std::string path { std::string{ textures_path } + "_" + std::to_string(i) + ".png" };
         textures[i] = LoadTexture(path.c_str());
     }
 
     shader = LoadShader(vertexshader_path.data(), fragmentshader_path.data());
 
     m_model = LoadModelFromMesh(GenMeshCube(-m_width, -m_height, 0.0f));
+
     m_model.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = textures[frameindex];
     m_model.materials[0].shader = shader;
 }
 
 
-AnimatedModel::AnimatedModel(AnimatedModel&& other) noexcept :
-frame_count { other.frame_count },
-duration { other.duration },
-looping { other.looping },
-pivot { other.pivot },
-textures_timing { std::move(other.textures_timing) },
-timing_cumulative { std::move(other.timing_cumulative) },
-textures { std::move(other.textures) },
-m_model { other.m_model },
-shader { other.shader },
-m_width { other.m_width },
-m_height { other.m_height },
-textures_path { other.textures_path },
-vertexshader_path { other.vertexshader_path },
-fragmentshader_path { other.fragmentshader_path }
+AnimatedModel::AnimatedModel(AnimatedModel&& other) noexcept
+: frame_count             { other.frame_count }
+, duration                { other.duration }
+, looping                 { other.looping }
+, pivot                   { other.pivot }
+, textures_timing         { std::move(other.textures_timing) }
+, timing_cumulative       { std::move(other.timing_cumulative) }
+, textures                { std::move(other.textures) }
+, m_model                 { other.m_model }
+, shader                  { other.shader }
+, m_width                 { other.m_width }
+, m_height                { other.m_height }
+, textures_path           { other.textures_path }
+, vertexshader_path       { other.vertexshader_path }
+, fragmentshader_path     { other.fragmentshader_path }
 {
     other.frame_count = 0;
     other.frameindex = 0;
@@ -133,6 +140,11 @@ fragmentshader_path { other.fragmentshader_path }
     other.m_model = {};
     other.shader = {};
     other.textures.clear();
+}
+
+AnimatedModel &AnimatedModel::operator=(const AnimatedModel &other)
+{
+    // TODO: insert return statement here
 }
 
 AnimatedModel& AnimatedModel::operator=(AnimatedModel&& other) noexcept
@@ -190,9 +202,16 @@ AnimatedModel::~AnimatedModel()
 
 void AnimatedModel::animate()
 {
+    if (finished) return;
+
     timer += GetFrameTime();
 
     if (looping) timer = fmodf(timer, duration);
+    else if (timer >= duration)
+    {
+        timer = .0f;
+        finished = true;
+    }
 
     frameindex = AnimatedModel::bsearch_frameindex();
 
@@ -204,7 +223,7 @@ int AnimatedModel::bsearch_frameindex()
     int total_frame_count { textures_timing.size() };
 
     if (timer >= .0f && timer < timing_cumulative[0]) return 0;
-    else if (timer > duration) return total_frame_count - 1;
+    else if (timer >= duration) return total_frame_count - 1;
 
     int low {};
     int high { total_frame_count - 1 };
@@ -229,7 +248,7 @@ void AnimatedModel::initialise_timings()
     for (const std::pair<int, float>& pair : textures_timing)
     {
         acc += pair.second;
-        timing_cumulative.push_back(acc);
+        timing_cumulative.emplace_back(acc);
     }
 
     duration = timing_cumulative[frame_count - 1];
