@@ -9,8 +9,9 @@
 #include "box2d/box2d.h"
 
 #include "settings.h"
+#include "resource_manager.h"
 
-Player::Player(b2WorldId world_id)
+Player::Player()
 {
     models.emplace_back
     (
@@ -19,9 +20,6 @@ Player::Player(b2WorldId world_id)
             8,
             true,
             { .0f, .0f },
-            "../resources/warrior/run/warrior_run",
-            "../resources/shaders/glsl/vertex.vs",
-            "../resources/shaders/glsl/fragment.fs",
             .05f
         }
     );
@@ -42,15 +40,11 @@ Player::Player(b2WorldId world_id)
 
     bodyIDs.resize(models.size());
 
-    TraceLog(LOG_DEBUG, "reached here 1");
-
     for (size_t i = 0; i < models.size(); i++)
     {
         b2BodyDef bodydef = b2DefaultBodyDef();
         bodydef.type = b2_dynamicBody;
-        bodyIDs[i] = b2CreateBody(world_id, &bodydef);
-
-        TraceLog(LOG_DEBUG, "reached here 2");
+        bodyIDs[i] = b2CreateBody(ResourceManager::instance().world_id(), &bodydef);
 
         b2Vec2 extent {};
 
@@ -59,14 +53,10 @@ Player::Player(b2WorldId world_id)
 
         b2Polygon box = b2MakeBox(extent.x, extent.y);
 
-        TraceLog(LOG_DEBUG, "reached here 3");
-
         b2ShapeDef shape_def = b2DefaultShapeDef();
         shape_def.material.friction = 1.0f;
 
         b2CreatePolygonShape(bodyIDs[i], &shape_def, &box);
-
-        TraceLog(LOG_DEBUG, "reached here 4");
 
         b2MassData massdata {};
         massdata.mass = 1.0f;

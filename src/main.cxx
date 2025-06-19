@@ -19,6 +19,8 @@ int main(int argc, char* argv[])
 {
     initialise();
 
+    ResourceManager::instance();
+
     // creating physics ground
     b2BodyDef ground_def = b2DefaultBodyDef();
 
@@ -37,7 +39,7 @@ int main(int argc, char* argv[])
 
     Model dummy { LoadModel("../resources/monke.glb") };
 
-    Player player { ResourceManager::instance().world_id() };
+    Player player {};
 
     EnableCursor();
     SetTargetFPS(TARGET_FPS);

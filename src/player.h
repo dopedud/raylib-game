@@ -40,7 +40,7 @@ private:
     void switch_to_body(b2BodyId newbody);
 
 public:
-    Player(b2WorldId world_id);
+    Player();
     ~Player();
 
     b2BodyId bodyID() const { return m_bodyID; }
