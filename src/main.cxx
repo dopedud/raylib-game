@@ -1,5 +1,9 @@
-__declspec(dllexport) unsigned long NvOptimusEnablement = 1;
-__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+/** 
+ * @file
+ * @brief Main source file to initiate the start of the game program.
+ * 
+ * Main source file that act as the main entry point for the game program to start.
+ */
 
 #include <iostream>
 
@@ -15,9 +19,21 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #include "player_camera_controller.h"
 #include "resource_manager.h"
 
+__declspec(dllexport) unsigned long NvOptimusEnablement = 1;
+__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+
+/**
+ * @fn
+ * @brief Main entry function of the program. 
+ * 
+ * Any initialisation is done in here.
+ * 
+ * @param argc Argument count.
+ * @param argv Given arguments in a string array.
+ */
 int main(int argc, char* argv[])
 {
-    initialise();
+    settings::initialise();
 
     ResourceManager::instance();
 
@@ -37,12 +53,12 @@ int main(int argc, char* argv[])
 
     PlayerCameraController playercam {};
 
-    Model dummy { LoadModel("../resources/monke.glb") };
-
     Player player {};
 
+    Model dummy { LoadModel("../resources/monke.glb") };
+
     EnableCursor();
-    SetTargetFPS(TARGET_FPS);
+    SetTargetFPS(settings::TARGET_FPS);
 
     float physics_sim_count {};
 
@@ -62,11 +78,11 @@ int main(int argc, char* argv[])
         */
         physics_sim_count += GetFrameTime();
 
-        while (physics_sim_count >= TIMESTEP)
+        while (physics_sim_count >= settings::TIMESTEP)
         {
-            b2World_Step(ResourceManager::instance().world_id(), TIMESTEP, SUBSTEP_COUNT);
+            b2World_Step(ResourceManager::instance().world_id(), settings::TIMESTEP, settings::SUBSTEP_COUNT);
             playercam.move_right(.1f);
-            physics_sim_count -= TIMESTEP;
+            physics_sim_count -= settings::TIMESTEP;
         }
         /*
         ** END PHYSICS SIMULATION

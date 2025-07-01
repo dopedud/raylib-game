@@ -89,3 +89,9 @@ installs
 
 ### VSCode files
 .vscode
+
+# doxygen generated documentation
+docs
+
+# doxygen warnings file
+doxygen_warnings.txt

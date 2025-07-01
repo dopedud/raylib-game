@@ -10,4 +10,4 @@ bool StateManager<E>::transition(E state)
     return true;
 }
 
-template class StateManager<PlayerState>;
+// template class StateManager<PlayerState>;

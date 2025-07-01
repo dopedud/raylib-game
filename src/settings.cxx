@@ -8,7 +8,7 @@
 
 #include "raylib.h"
 
-void initialise()
+void settings::initialise()
 {
     ChangeDirectory(GetApplicationDirectory());
 
@@ -25,7 +25,7 @@ void initialise()
     SetExitKey(KEY_NULL);
 }
 
-void TimestampLogCallback(int logType, const char *text, va_list args)
+void settings::TimestampLogCallback(int logType, const char *text, va_list args)
 {
     char buffer[MAX_TRACELOG_MSG_LENGTH] = { 0 };
     
@@ -54,5 +54,6 @@ void TimestampLogCallback(int logType, const char *text, va_list args)
     vprintf(buffer, args);
     fflush(stdout);
 
-    if (logType == LOG_FATAL) exit(EXIT_FAILURE);  // If fatal logging, exit program
+    // if fatal logging, exit program
+    if (logType == LOG_FATAL) exit(EXIT_FAILURE);
 }

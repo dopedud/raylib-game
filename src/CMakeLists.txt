@@ -17,13 +17,12 @@ set(BUILD_SHARED_LIBS ON CACHE BOOL "build shared libraries" FORCE)
 # set dependencies folder
 set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/../_deps")
 include(FetchContent)
+# verbose option for FetchContent
+set(FETCHCONTENT_QUIET NO)
 
 #########################
 ######################### START FETCHING DEPENDENCIES
 #########################
-
-# verbose option for FetchContent
-set(FETCHCONTENT_QUIET NO)
 
 # raylib options
 set(BUILD_EXAMPLES OFF CACHE BOOL "build raylib examples" FORCE)
@@ -125,6 +124,7 @@ set(SOURCES
     main.cxx
     settings.cxx
 
+    resource_manager.cxx
     state_manager.cxx
 
     player.cxx

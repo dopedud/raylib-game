@@ -12,7 +12,7 @@ private:
     E m_previous_state {};
 
 public:
-    StateManager() {}
+    StateManager() = default;
     StateManager(E state) : m_state { state }, m_previous_state { state } {}
     
     E state() const { return m_state; }

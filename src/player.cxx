@@ -12,32 +12,40 @@
 #include "resource_manager.h"
 
 Player::Player()
+: state { PlayerState::PLAYER_IDLE }
+, models
 {
-    models.emplace_back
-    (
-        AnimatedModel
-        {
-            8,
-            true,
-            { .0f, .0f },
-            .05f
-        }
-    );
+    AnimatedModel
+    {
+        TextureResource::PLAYER_IDLE,
+        ShaderResource::PLAYER,
+        ModelResource::PLAYER_IDLE,
+        true,
+        { .0f, .0f },
+        .25f
+    },
+    
+    AnimatedModel
+    {
+        TextureResource::PLAYER_RUN,
+        ShaderResource::PLAYER,
+        ModelResource::PLAYER_RUN,
+        true,
+        { .0f, .0f },
+        .25f
+    },
 
-    // models.emplace_back
-    // (
-    //     AnimatedModel
-    //     {
-    //         8,
-    //         true,
-    //         { .0f, .0f },
-    //         "../resources/warrior/run/warrior_run",
-    //         "../resources/shaders/glsl/vertex.vs",
-    //         "../resources/shaders/glsl/fragment.fs",
-    //         .05f
-    //     }
-    // );
-
+    AnimatedModel
+    {
+        TextureResource::PLAYER_SLIDE,
+        ShaderResource::PLAYER,
+        ModelResource::PLAYER_SLIDE,
+        true,
+        { .0f, .0f },
+        .25f
+    },
+}
+{
     bodyIDs.resize(models.size());
 
     for (size_t i = 0; i < models.size(); i++)
@@ -47,22 +55,18 @@ Player::Player()
         bodyIDs[i] = b2CreateBody(ResourceManager::instance().world_id(), &bodydef);
 
         b2Vec2 extent {};
-
         extent.x = models[i].width() / 2;
         extent.y = models[i].height() / 2;
 
         b2Polygon box = b2MakeBox(extent.x, extent.y);
-
         b2ShapeDef shape_def = b2DefaultShapeDef();
         shape_def.material.friction = 1.0f;
-
         b2CreatePolygonShape(bodyIDs[i], &shape_def, &box);
 
         b2MassData massdata {};
         massdata.mass = 1.0f;
         massdata.center = { .0f, .0f };
         massdata.rotationalInertia = .0f;
-
         b2Body_SetMassData(bodyIDs[i], massdata);
 
         b2Body_Disable(bodyIDs[i]);
@@ -123,14 +127,14 @@ void Player::animate()
 {
     switch (state.state())
     {
-        case PLAYER_IDLE:
+        case PlayerState::PLAYER_IDLE:
             models[0].animate();
         break;
 
-        case PLAYER_MOVING:
+        case PlayerState::PLAYER_MOVING:
         break;
 
-        case PLAYER_JUMPING:
+        case PlayerState::PLAYER_JUMPING:
         break;
     }
 }
@@ -143,16 +147,16 @@ void Player::draw()
 
     switch (state.state())
     {
-        case PLAYER_IDLE:
-        //     DrawModelEx(model.model(),
-        //     { position.x, position.y , .0f },
-        //     { .0f, .0f, 1.0f }, degrees, Vector3Ones, WHITE);
+        case PlayerState::PLAYER_IDLE:
+            DrawModelEx(m_model.model(),
+            { position.x, position.y , .0f },
+            { .0f, .0f, 1.0f }, degrees, Vector3Ones, WHITE);
         break;
 
-        case PLAYER_MOVING:
+        case PlayerState::PLAYER_MOVING:
         break;
 
-        case PLAYER_JUMPING:
+        case PlayerState::PLAYER_JUMPING:
         break;
     }
 }
