@@ -1,4 +1,4 @@
-# Game from Scratch in C/C++ via Raylib and Bullet
+# Game from Scratch in C/C++ via Raylib and Box2D
 
 ## About
 
