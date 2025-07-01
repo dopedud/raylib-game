@@ -14,17 +14,20 @@ physics engine powered by
 
 ## Running the Game
 
-Use the `run.bat` file via typing in console `run`. There's nothing special about `run.bat`; it only acts as an alias
+Use the `run.bat` file via typing `run` in console. There's nothing special about `run.bat`; it only acts as an alias
 to the full path to the executable `build\lib\main.exe`.
 
 ## Development Notes
 
-More information can be found by opening the documentation under the `docs` directory.
+More information can be found by opening the documentation under the `docs` directory. You must first generate the
+`docs` directory with Doxygen by following the steps at [here](#generating-the-documentation).
 
 ### Generating the Documentation
 
 Assuming you have [Doxygen](https://www.doxygen.nl/index.html) installed, you can build the documentation files by
-entering `doxygen Doxyfile` in the command prompt with this project's root directory as the working directory.
+entering `doxygen Doxyfile` in the command prompt with this project's root directory as the working directory. A `docs`
+directory will then be created, and Doxygen provides different forms of output to view the documentation. For this
+project, a static HTML page will suffice, and can be accessed under `docs/html/index.html`.
 
 ## Compilation Notes
 
