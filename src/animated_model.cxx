@@ -18,7 +18,7 @@ AnimatedModel::AnimatedModel
     ModelResource model_resource,
     bool looping,
     Vector2 pivot,
-    std::vector<std::pair<int, float>> timing
+    std::vector<std::pair<int, float>>& timing
 )
 : textures          { ResourceManager::instance().get_texture_resource(texture_resource) }
 , shader            { ResourceManager::instance().get_shader_resource(shader_resource) }
@@ -49,7 +49,7 @@ AnimatedModel::AnimatedModel
     model_resource,
     looping,
     pivot,
-    {{}}
+    {}
 }
 {
     int frame_count {};
@@ -209,6 +209,8 @@ int AnimatedModel::bsearch_frameindex()
         if (timer >= timing_cumulative[mid]) low = mid + 1;
         else high = mid - 1;
     }
+    
+    return 0;
 }
 
 void AnimatedModel::initialise_timings()

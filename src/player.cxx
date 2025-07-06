@@ -79,9 +79,6 @@ Player::Player()
 
 Player::~Player()
 {
-    for (AnimatedModel& model : models)
-    model.~AnimatedModel();
-
     for (b2BodyId& bodyID : bodyIDs) b2DestroyBody(bodyID);
 }
 

@@ -88,7 +88,7 @@ public:
         ModelResource model_resource,
         bool looping,
         Vector2 pivot,
-        std::vector<std::pair<int, float>> timing
+        std::vector<std::pair<int, float>>& timing
     );
 
     /**
