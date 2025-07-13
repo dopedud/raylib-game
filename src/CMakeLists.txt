@@ -15,7 +15,7 @@ set(BOX2D_VERSION 3.1.0)
 set(BUILD_SHARED_LIBS ON CACHE BOOL "build shared libraries" FORCE)
 
 # set dependencies folder
-set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/../_deps")
+set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/../_deps")
 include(FetchContent)
 # verbose option for FetchContent
 set(FETCHCONTENT_QUIET NO)
@@ -31,14 +31,9 @@ set(BUILD_EXAMPLES OFF CACHE BOOL "build raylib examples" FORCE)
 FetchContent_Declare(
     raylib
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
-    URL https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz
+    URL "https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz"
 )
-
-FetchContent_GetProperties(raylib)
-
-if (NOT raylib_POPULATED) # have we downloaded raylib yet?
-    FetchContent_MakeAvailable(raylib)
-endif()
+FetchContent_MakeAvailable(raylib)
 
 # raygui options
 set(BUILD_RAYGUI_EXAMPLES OFF CACHE BOOL "build raygui examples" FORCE)
@@ -47,19 +42,15 @@ set(BUILD_RAYGUI_EXAMPLES OFF CACHE BOOL "build raygui examples" FORCE)
 FetchContent_Declare(
     raygui
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
-    URL https://github.com/raysan5/raygui/archive/refs/tags/${RAYGUI_VERSION}.tar.gz
+    URL "https://github.com/raysan5/raygui/archive/refs/tags/${RAYGUI_VERSION}.tar.gz"
 )
-
-FetchContent_GetProperties(raygui)
-
-if (NOT raygui_POPULATED) # have we downloaded raygui yet?
-    FetchContent_MakeAvailable(raygui)
-endif()
+FetchContent_MakeAvailable(raygui)
 
 # use raygui header file as an interface library since raygui doesn't have its own CMakeLists.txt
 # unlike raylib which does
 add_library(raygui INTERFACE)
 target_include_directories(raygui INTERFACE ${raygui_SOURCE_DIR}/src)
+
 # use the compiler flag "-w" to ignore all warnings when compiling raygui
 target_compile_options(raygui INTERFACE -w)
 
@@ -79,12 +70,8 @@ target_compile_options(raygui INTERFACE -w)
 #     DOWNLOAD_EXTRACT_TIMESTAMP OFF
 #     URL https://github.com/bulletphysics/bullet3/archive/refs/tags/${BULLET_VERSION}.tar.gz
 # )
+# FetchContent_MakeAvailable(bullet)
 
-# FetchContent_GetProperties(bullet)
-
-# if (NOT bullet_POPULATED) # have we downloaded bullet yet?
-#     FetchContent_MakeAvailable(bullet)
-# endif()
 
 # use the compiler flag "-w" to ignore all warnings when compiling bullet's libraries
 # target_compile_options(Bullet3Common PUBLIC -w)
@@ -106,14 +93,9 @@ target_compile_options(raygui INTERFACE -w)
 FetchContent_Declare(
     box2d
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
-    URL https://github.com/erincatto/box2d/archive/refs/tags/v${BOX2D_VERSION}.tar.gz
+    URL "https://github.com/erincatto/box2d/archive/refs/tags/v${BOX2D_VERSION}.tar.gz"
 )
-
-FetchContent_GetProperties(box2d)
-
-if (NOT box2d_POPULATED) # have we downloaded box2d yet?
-    FetchContent_MakeAvailable(box2d)
-endif()
+FetchContent_MakeAvailable(box2d)
 
 #########################
 ######################### END FETCHING DEPENDENCIES
@@ -153,13 +135,6 @@ target_include_directories(${EXECUTABLE_NAME} INTERFACE ${raygui_SOURCE_DIR}/src
 # target_include_directories(${EXECUTABLE_NAME} PRIVATE ${bullet_SOURCE_DIR}/src)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE ${LIBRARIES})
 
-# web configurations
-if (${PLATFORM} STREQUAL "Web")
-    set_target_properties(${EXECUTABLE_NAME} PROPERTIES SUFFIX ".html") # tell Emscripten to build an example.html file
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} 
-    -s USE_GLFW=3 -s ASSERTIONS=1 -s WASM=1 -s ASYNCIFY -s GL_ENABLE_GET_PROC_ADDRESS=1")
-endif()
-
 # checks if OSX and links appropriate frameworks (only required on MacOS)
 if (APPLE)
     target_link_libraries(${EXECUTABLE_NAME} "-framework IOKit")
@@ -176,7 +151,7 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
 set(CMAKE_INSTALL_MESSAGE LAZY)
-set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/../installs)
+set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/../installs")
 
 install(TARGETS ${EXECUTABLE_NAME} ${LIBRARIES}
     RUNTIME DESTINATION bin
@@ -198,7 +173,8 @@ add_custom_target(clean_install
 add_custom_target(full_clean
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_INSTALL_PREFIX}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
-    COMMENT "removing build and install directory"
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${PLANTUML_JAR_PATH}
+    COMMENT "removing build, tools, and install directory"
 )
 
 # create a custom target for full clean including dependencies
@@ -208,5 +184,6 @@ add_custom_target(full_clean_dependency
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${FETCHCONTENT_BASE_DIR}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_INSTALL_PREFIX}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
-    COMMENT "removing build, install, and dependency directory"
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${PLANTUML_JAR_PATH}
+    COMMENT "removing build, tools, install, and dependency directory"
 )

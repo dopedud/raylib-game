@@ -4,9 +4,7 @@
 
 This is the git repository for a project about making a game from scratch, written in C and C++ powered by
 [Raylib](https://www.raylib.com/index.html) ([Github link](https://github.com/raysan5/raylib?tab=readme-ov-file)) and
-physics engine powered by
-[Box2D](https://box2d.org/)
-([Github link](https://github.com/erincatto/box2d)).
+physics engine powered by [Box2D](https://box2d.org/) ([Github link](https://github.com/erincatto/box2d)).
 <!-- 
 [Bullet](https://pybullet.org/wordpress/)
 ([Github link](https://github.com/bulletphysics/bullet3)).
@@ -16,18 +14,6 @@ physics engine powered by
 
 Use the `run.bat` file via typing `run` in console. There's nothing special about `run.bat`; it only acts as an alias
 to the full path to the executable `build\lib\main.exe`.
-
-## Development Notes
-
-More information can be found by opening the documentation under the `docs` directory. You must first generate the
-`docs` directory with Doxygen by following the steps at [here](#generating-the-documentation).
-
-### Generating the Documentation
-
-Assuming you have [Doxygen](https://www.doxygen.nl/index.html) installed, you can build the documentation files by
-entering `doxygen Doxyfile` in the command prompt with this project's root directory as the working directory. A `docs`
-directory will then be created, and Doxygen provides different forms of output to view the documentation. For this
-project, a static HTML page will suffice, and can be accessed under `docs/html/index.html`.
 
 ## Compilation Notes
 
@@ -58,8 +44,113 @@ One can also delete the `_deps` directory (the directory where this project's de
 `full_clean_dependency`.
 
 common commands (for easy copy):
-- `cmake --build build --target clean_install`
-- `cmake --build build --target full_clean`
-- `cmake --build build --target full_clean_dependency`
-- `cmake --fresh --preset debug src -B build`
-- `cmake --build build`
+
+```
+cmake --build build --target clean_install
+cmake --build build --target full_clean
+cmake --build build --target full_clean_dependency
+cmake --fresh --preset debug src -B build
+cmake --build build
+```
+
+## Development Notes
+
+Overview of the architecture of this project can be illustrated by the diagram below:
+
+![](docs/architecture.png "architecture")
+
+More information can be found by opening the documentation under the `docs` directory. You must first generate the
+`docs` directory with Doxygen by following the steps [here](#generating-the-documentation).
+
+### Generating the Documentation
+
+To generate this project's architecture diagram, [PlantUML](https://plantuml.com/) must be installed. Version
+`1.2025.4` is used to generate the diagram. It is packaged as a `.jar` file, and be placed in this project's root
+directory. To generate the diagram, type in the command below in command prompt:
+
+```
+java -jar plantuml-1.2025.4.jar architecture.puml -o docs
+```
+
+To generate this project's documentation, [Doxygen](https://www.doxygen.nl/index.html) must be installed. You can then
+build the documentation files by entering the command below in command prompt with this project's root directory as the
+working directory:
+
+```
+doxygen Doxyfile
+```
+
+The `docs` directory will then be modified, and Doxygen provides different forms of output to view the documentation.
+For this project, a static HTML page will suffice, and can be accessed under:
+
+```
+docs\html\index.html
+```
+
+## Development Issues
+
+Critical Bugs
+
+1. Player Drawing Bug (player.cxx:148)
+    - Player::draw() calls m_model.model() but m_model is never initialized
+    - Should use models[0].model() instead
+
+2. Backwards Input Controls (player.cxx:112-120)
+    - A key applies positive force (moves right), D key applies negative force (moves left)
+    - Should be reversed for intuitive controls
+
+3. State Management Never Used
+    - Player starts in IDLE state and never transitions
+    - MOVING and JUMPING states are empty in both animate() and draw() methods
+
+Unused/Incomplete Systems
+
+1. Multiple Physics Bodies
+    - Player creates 3 physics bodies (one per animation state) but only uses the first
+    - switch_to_body() method exists but never called after initialization
+    - Entire body-switching system is unused
+
+2. Camera Following
+    - PlayerCameraController::follow() is empty (player_camera_controller.cxx:15)
+    - Camera just moves right at fixed speed instead of following player
+    - No actual player tracking logic
+
+3. Dead Code
+    - Entire Bullet physics system commented out but variables/references remain
+    - dummy model loaded but only used for testing
+
+Missing Core Implementations
+
+1. State Transition Logic
+    - No detection of when to switch between IDLE/MOVING/JUMPING states
+    - Missing velocity-based state detection
+    - No ground detection for jumping mechanics
+
+2. Animation System Completion
+    - Only IDLE animation works
+    - MOVING and JUMPING cases are empty
+    - No model switching based on player state
+
+3. Proper Game Mechanics
+    - No ground detection system
+    - No collision feedback
+    - Limited jumping mechanics (just force application)
+
+Recommendations
+
+Immediate Fixes:
+
+1. Fix m_model bug in Player::draw()
+2. Reverse input controls (A=left, D=right)
+3. Implement basic state transitions based on velocity
+4. Complete MOVING/JUMPING animation cases
+
+Architecture Improvements:
+
+1. Implement proper camera following with player position
+2. Add ground detection for realistic jumping
+3. Remove all Bullet physics references
+4. Add resource loading error handling
+5. Implement the body-switching system or remove unused bodies
+
+The project has excellent architectural foundations but needs completion of core game mechanics to be fully functional.

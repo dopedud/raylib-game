@@ -1,35 +1,35 @@
 ### C files
-# Prerequisites
+# prerequisites
 *.d
 
-# Object files
+# object files
 *.o
 *.ko
 *.obj
 *.elf
 
-# Linker output
+# linker output
 *.ilk
 *.map
 *.exp
 
-# Precompiled Headers
+# precompiled headers
 *.gch
 *.pch
 
-# Libraries
+# libraries
 *.lib
 *.a
 *.la
 *.lo
 
-# Shared objects (inc. Windows DLLs)
+# shared objects (inc. Windows DLLs)
 *.dll
 *.so
 *.so.*
 *.dylib
 
-# Executables
+# executables
 *.exe
 *.out
 *.app
@@ -37,13 +37,13 @@
 *.x86_64
 *.hex
 
-# Debug files
+# debug files
 *.dSYM/
 *.su
 *.idb
 *.pdb
 
-# Kernel Module Compile Results
+# kernel module compile results
 *.mod*
 *.cmd
 .tmp_versions/
@@ -65,7 +65,7 @@ dkms.conf
 .cache
 compile_commands.json
 
-# Build folder
+# build folder
 [Bb]uild
 
 # Android
@@ -90,8 +90,12 @@ installs
 ### VSCode files
 .vscode
 
-# doxygen generated documentation
-docs
+# Doxygen generated documentation (exception made for architecture.png)
+docs/*
+!docs/architecture.png
 
-# doxygen warnings file
+# Doxygen warnings file
 doxygen_warnings.txt
+
+# PlantUML .jar file
+plantuml-*.jar

@@ -1,0 +1,188 @@
+@startuml architecture
+
+    !theme vibrant
+    skinparam classAttributeIconSize 0
+    skinparam classFontSize 10
+    skinparam packageFontSize 12
+
+    package "Core Systems" {
+        class ResourceManager <<Singleton>> {
+            - b2WorldId m_world_id
+            - vector<vector<Texture>> texture_resources
+            - vector<Shader> shader_resources
+            - vector<Model> model_resources
+            --
+            + {static} instance() : ResourceManager&
+            + world_id() : b2WorldId
+            + get_texture_resource(TextureResource) : vector<Texture>*
+            + get_shader_resource(ShaderResource) : Shader*
+            + get_model_resource(ModelResource) : Model*
+            - load_texture_resource(int, string_view) : vector<Texture>
+            - load_shader_resource(string_view) : Shader
+            - load_model_resource(string_view) : Model
+            - ResourceManager()
+            - ~ResourceManager()
+        }
+
+        class "StateManager<E>" <<template>> {
+            - E m_state
+            - E m_previous_state
+            --
+            + state() : E
+            + previous_state() : E
+            + set_state(E) : void
+            + is_state(E) : bool
+            + transition(E) : bool
+        }
+
+        namespace settings {
+            class settings {
+                + {static} SCREEN_WIDTH : int
+                + {static} TARGET_FPS : int
+                + {static} TIMESTEP : float
+                + {static} SUBSTEP_COUNT : int
+                --
+                + {static} initialise() : void
+                + {static} TimestampLogCallback() : void
+            }
+        }
+    }
+
+    package "Game Entities" {
+        class Player {
+            - StateManager<PlayerState> state
+            - b2BodyId m_bodyID
+            - vector<b2BodyId> bodyIDs
+            - AnimatedModel* m_model
+            - vector<AnimatedModel> models
+            - float MAX_MOVE_VELOCITY
+            - float move_force
+            - float jump_force
+            - bool facingleft
+            - bool receive_input
+            --
+            + handle_input() : void
+            + animate() : void
+            + draw() : void
+            + set_input(bool) : void
+            - switch_to_body(b2BodyId) : void
+        }
+
+        class AnimatedModel {
+            - bool looping
+            - Vector2 pivot
+            - vector<pair<int, float>> textures_timing
+            - int frameindex
+            - float timer
+            - float duration
+            - bool finished
+            - vector<Texture>* textures
+            - Shader* shader
+            - Model* m_model
+            --
+            + animate() : void
+            + width() : float
+            + height() : float
+            + model() : Model*
+            - bsearch_frameindex() : int
+            - initialise_timings() : void
+        }
+
+        class PlayerCameraController {
+            - Camera3D m_camera
+            --
+            + camera() : Camera3D
+            + follow(Transform) : void
+            + move_right(float) : void
+        }
+
+        enum PlayerState {
+            PLAYER_IDLE
+            PLAYER_MOVING
+            PLAYER_SLIDE
+            PLAYER_JUMPING
+        }
+
+        enum TextureResource {
+            PLAYER_IDLE
+            PLAYER_RUN
+            PLAYER_SLIDE
+            COUNT
+        }
+
+        enum ShaderResource {
+            PLAYER
+            COUNT
+        }
+
+        enum ModelResource {
+            PLAYER_IDLE
+            PLAYER_RUN
+            PLAYER_SLIDE
+            COUNT
+        }
+    }
+
+    package "External Dependencies" {
+        class "Box2D" <<external>> {
+            + b2WorldId
+            + b2BodyId
+            + b2CreateWorld()
+            + b2CreateBody()
+            + b2World_Step()
+        }
+
+        class "Raylib" <<external>> {
+            + Model
+            + Texture
+            + Shader
+            + Camera3D
+            + DrawModel()
+            + LoadModel()
+        }
+    }
+
+    package "Main Application" {
+        class main {
+            + main(argc, argv) : int
+            --
+            Game Loop:
+            - Physics simulation (fixed timestep)
+            - Animation updates
+            - Input handling
+            - 3D rendering
+        }
+    }
+
+    ' Relationships
+    ResourceManager --> Box2D : uses
+    ResourceManager --> Raylib : manages
+    Player --> "StateManager<PlayerState>" : has
+    Player --> AnimatedModel : contains 3
+    Player --> Box2D : physics body
+    Player --> PlayerState : uses
+    AnimatedModel --> ResourceManager : gets resources from
+    AnimatedModel --> TextureResource : uses
+    AnimatedModel --> ShaderResource : uses
+    AnimatedModel --> ModelResource : uses
+    AnimatedModel --> Raylib : renders with
+    PlayerCameraController --> Raylib : uses Camera3D
+    main --> Player : creates & updates
+    main --> PlayerCameraController : uses
+    main --> ResourceManager : initializes
+    main --> settings : configures
+    main --> Box2D : steps physics
+    main --> Raylib : renders scene
+
+    ' Notes
+    note right of Player : CRITICAL BUGS:\n- m_model never initialized (null pointer)\n- State transitions not implemented\n- Only IDLE animation works\n- draw() uses wrong model reference\n- Multiple physics bodies created but only one used
+
+    note right of PlayerCameraController : INCOMPLETE IMPLEMENTATION:\n- follow() method is empty\n- Camera moves at fixed speed\n- No smooth following or boundaries
+
+    note right of ResourceManager : WORKING CORRECTLY:\n- Singleton pattern\n- Manages all game resources\n- Integrates Box2D physics world\n- Loads textures, shaders, models on demand
+
+    note bottom of "StateManager<E>" : Generic template for\nany enum-based state machine\nCurrently only used for PlayerState
+
+    note right of AnimatedModel : WORKING CORRECTLY:\n- Binary search for frame indexing\n- Sophisticated timing system\n- Supports looping/non-looping\n- Properly integrates with ResourceManager
+
+@enduml

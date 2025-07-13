@@ -79,7 +79,7 @@ public:
      * @param timing            The set of integer float pairs that determines the sequence of textures by their
      *                          orders, and for how long will it be played. For example, for the set [(1, 1.0f), (2,
      *                          1.0f), (1, 2.0f)], the 1st texture will be played for 1 second, followed by the 2nd
-     *                          texture for 1 second, and lastly the 3rd texture for 2 seconds.
+     *                          texture for 1 second, and lastly the 1st texture again for 2 seconds.
      */
     AnimatedModel
     (

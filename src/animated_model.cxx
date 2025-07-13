@@ -54,18 +54,20 @@ AnimatedModel::AnimatedModel
 {
     int frame_count {};
 
+    using namespace resourcevars;
+    
     switch (texture_resource)
     {
         case TextureResource::PLAYER_IDLE:
-            frame_count = resourcevars::FRAMES_AMOUNT_PLAYER_IDLE;
+            frame_count = FRAMES_AMOUNT::PLAYER::IDLE;
         break;
 
         case TextureResource::PLAYER_RUN:
-            frame_count = resourcevars::FRAMES_AMOUNT_PLAYER_RUN;
+            frame_count = FRAMES_AMOUNT::PLAYER::RUN;
         break;
 
         case TextureResource::PLAYER_SLIDE:
-            frame_count = resourcevars::FRAMES_AMOUNT_PLAYER_SLIDE;
+            frame_count = FRAMES_AMOUNT::PLAYER::SLIDE;
         break;
     }
     

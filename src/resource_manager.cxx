@@ -26,17 +26,17 @@ ResourceManager::ResourceManager()
         {
             case static_cast<int>(TextureResource::PLAYER_IDLE):
                 texture_resources[i] =
-                load_texture_resource(FRAMES_AMOUNT_PLAYER_IDLE, TEXTUREPATH_PLAYER_IDLE);
+                load_texture_resource(FRAMES_AMOUNT::PLAYER::IDLE, TEXTUREPATH::PLAYER::IDLE);
             break;
 
             case static_cast<int>(TextureResource::PLAYER_RUN):
                 texture_resources[i] = 
-                load_texture_resource(FRAMES_AMOUNT_PLAYER_RUN, TEXTUREPATH_PLAYER_RUN);
+                load_texture_resource(FRAMES_AMOUNT::PLAYER::RUN, TEXTUREPATH::PLAYER::RUN);
             break;
 
             case static_cast<int>(TextureResource::PLAYER_SLIDE):
                 texture_resources[i] =
-                load_texture_resource(FRAMES_AMOUNT_PLAYER_SLIDE, TEXTUREPATH_PLAYER_SLIDE);
+                load_texture_resource(FRAMES_AMOUNT::PLAYER::SLIDE, TEXTUREPATH::PLAYER::SLIDE);
             break;
         }
     }

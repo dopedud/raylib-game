@@ -1,0 +1,79 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Build Commands
+
+### Configuration
+- **Debug build**: `cmake --preset debug src -B build`
+- **Release build**: `cmake --preset release src -B build`
+- **Fresh configuration** (when CMakeLists.txt changes): `cmake --fresh --preset debug src -B build`
+
+### Building
+- **Build project**: `cmake --build build`
+- **Full clean** (removes build directory): `cmake --build build --target full_clean`
+- **Full clean with dependencies**: `cmake --build build --target full_clean_dependency`
+
+### Installation
+- **Install to installs/ directory**: `cmake --build build --target install`
+- **Clean install**: `cmake --build build --target clean_install`
+
+### Running
+- **Run game**: `run` (uses run.bat which executes `build\lib\main.exe`)
+
+### Documentation
+- **Generate docs**: `doxygen Doxyfile` (creates `docs/html/index.html`)
+
+## Architecture Overview
+
+### Core Systems
+- **ResourceManager**: Singleton pattern managing game resources (textures, shaders, models, Box2D physics world)
+- **StateManager**: Generic template class for state management using enums
+- **AnimatedModel**: Custom 2D sprite animation system applied to 3D models
+- **Player**: Main game entity with physics body, animation, and input handling
+- **PlayerCameraController**: Camera management for following player
+
+### Game Loop Structure
+The main game loop in `main.cxx` follows this pattern:
+1. **Physics simulation** (fixed timestep): Box2D world step, camera movement
+2. **Animation update**: Player animation state updates
+3. **Input handling**: Player input processing
+4. **Rendering**: 3D scene with grid, models, and UI elements
+
+### Resource Management
+- **Texture resources**: Organized by animation type (idle, run, slide) with frame sequences
+- **Shader resources**: Custom GLSL shaders for rendering
+- **Model resources**: 3D models with 1:1 relationship to texture resources
+- **Physics bodies**: Box2D bodies managed through ResourceManager
+
+### Key Design Patterns
+- **Singleton**: ResourceManager for global resource access
+- **Component composition**: Player combines physics body, animated model, and state management
+- **Template-based state management**: StateManager works with any enum type
+- **Resource enumeration**: Type-safe resource access through enums
+
+### Directory Structure
+- `src/`: All source code (.cxx, .h files)
+- `src/resources/`: Game assets (textures, shaders, models)
+- `build/`: CMake build output
+- `installs/`: Final installation directory
+- `docs/`: Generated Doxygen documentation
+- `_deps/`: External dependencies (raylib, box2d)
+
+### Dependencies
+- **Raylib 5.5**: Graphics and windowing
+- **Box2D 3.1.0**: Physics simulation
+- **RayGUI 4.0**: UI elements
+- **C++17**: Language standard
+
+### Physics Integration
+- World managed by ResourceManager singleton
+- Fixed timestep simulation (60 FPS target)
+- Box2D bodies tied to game entities
+- Ground plane for collision testing
+
+### Animation System
+- Custom AnimatedModel class for 2D sprite sequences on 3D models
+- Timing-based frame progression
+- Support for looping and non-looping animations
+- Texture dimensions must be consistent within animation sets

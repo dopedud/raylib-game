@@ -16,13 +16,25 @@
  */
 namespace resourcevars
 {
-    constexpr int FRAMES_AMOUNT_PLAYER_IDLE { 6 };
-    constexpr int FRAMES_AMOUNT_PLAYER_RUN { 8 };
-    constexpr int FRAMES_AMOUNT_PLAYER_SLIDE { 8 };
+    struct FRAMES_AMOUNT 
+    {
+        struct PLAYER
+        {
+            static constexpr int IDLE { 6 };
+            static constexpr int RUN { 8 };
+            static constexpr int SLIDE { 8 };
+        };
+    };
 
-    constexpr std::string_view TEXTUREPATH_PLAYER_IDLE { "../resources/warrior/idle/warrior_idle" };
-    constexpr std::string_view TEXTUREPATH_PLAYER_RUN { "../resources/warrior/run/warrior_run" };
-    constexpr std::string_view TEXTUREPATH_PLAYER_SLIDE { "../resources/warrior/slide/warrior_slide" };
+    struct TEXTUREPATH
+    {
+        struct PLAYER
+        {
+            static constexpr std::string_view IDLE { "../resources/warrior/idle/warrior_idle" };
+            static constexpr std::string_view RUN { "../resources/warrior/run/warrior_run" };
+            static constexpr std::string_view SLIDE { "../resources/warrior/slide/warrior_slide" };
+        };
+    };
 
     constexpr std::string_view SHADERPATH_PLAYER { "../resources/shaders/glsl/player" };
 }

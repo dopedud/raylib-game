@@ -97,15 +97,11 @@ int main(int argc, char* argv[])
         */
 
         /*
-        ** RECEIVE USER INPUT
+        ** USER INPUT HANDLING
         */
         player.handle_input();
         /*
-        ** END RECEIVE USER INPUT
-        */
-
-        /*
-        ** CAMERA MOVEMENT
+        ** END USER INPUT HANDLING
         */
 
         /*
