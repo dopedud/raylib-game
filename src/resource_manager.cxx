@@ -9,14 +9,14 @@
 
 ResourceManager::ResourceManager()
 {
-    using namespace resourcevars;
-
     b2WorldDef world_def { b2DefaultWorldDef() };
 
     b2SetLengthUnitsPerMeter(settings::TEXELS_PER_UNIT);
     world_def.gravity.y = settings::GRAVITY_ACCELERATION * settings::TEXELS_PER_UNIT;
 
     m_world_id = b2CreateWorld(&world_def);
+
+    using namespace resourcevars;
 
     for (int i = 0; i < static_cast<int>(TextureResource::COUNT); i++)
     {
@@ -46,7 +46,7 @@ ResourceManager::ResourceManager()
         switch (i)
         {
             case static_cast<int>(ShaderResource::PLAYER):
-                shader_resources.emplace_back(load_shader_resource(SHADERPATH_PLAYER));
+                shader_resources.emplace_back(load_shader_resource(SHADERPATH::PLAYER::SHADER));
             break;
         }
     }

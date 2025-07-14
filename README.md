@@ -95,10 +95,6 @@ Critical Bugs
     - Player::draw() calls m_model.model() but m_model is never initialized
     - Should use models[0].model() instead
 
-2. Backwards Input Controls (player.cxx:112-120)
-    - A key applies positive force (moves right), D key applies negative force (moves left)
-    - Should be reversed for intuitive controls
-
 3. State Management Never Used
     - Player starts in IDLE state and never transitions
     - MOVING and JUMPING states are empty in both animate() and draw() methods
@@ -114,10 +110,6 @@ Unused/Incomplete Systems
     - PlayerCameraController::follow() is empty (player_camera_controller.cxx:15)
     - Camera just moves right at fixed speed instead of following player
     - No actual player tracking logic
-
-3. Dead Code
-    - Entire Bullet physics system commented out but variables/references remain
-    - dummy model loaded but only used for testing
 
 Missing Core Implementations
 
@@ -141,7 +133,6 @@ Recommendations
 Immediate Fixes:
 
 1. Fix m_model bug in Player::draw()
-2. Reverse input controls (A=left, D=right)
 3. Implement basic state transitions based on velocity
 4. Complete MOVING/JUMPING animation cases
 

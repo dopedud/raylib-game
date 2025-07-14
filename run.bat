@@ -1,3 +1,3 @@
 cmake --build build
 cmake --install build
-@REM installs\bin\game.exe
+installs\bin\game.exe

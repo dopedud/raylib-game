@@ -22,7 +22,7 @@ namespace resourcevars
         {
             static constexpr int IDLE { 6 };
             static constexpr int RUN { 8 };
-            static constexpr int SLIDE { 8 };
+            static constexpr int SLIDE { 5 };
         };
     };
 
@@ -36,8 +36,14 @@ namespace resourcevars
         };
     };
 
-    constexpr std::string_view SHADERPATH_PLAYER { "../resources/shaders/glsl/player" };
-}
+    struct SHADERPATH
+    {
+        struct PLAYER
+        {
+            static constexpr std::string_view SHADER { "../resources/shaders/glsl/player" };
+        };
+    };
+};
 
 /**
  * @enum

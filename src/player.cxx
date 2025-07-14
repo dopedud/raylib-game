@@ -22,7 +22,7 @@ Player::Player()
         ModelResource::PLAYER_IDLE,
         true,
         { .0f, .0f },
-        .25f
+        .1f
     },
     
     AnimatedModel
@@ -32,7 +32,7 @@ Player::Player()
         ModelResource::PLAYER_RUN,
         true,
         { .0f, .0f },
-        .25f
+        .1f
     },
 
     AnimatedModel
@@ -42,7 +42,7 @@ Player::Player()
         ModelResource::PLAYER_SLIDE,
         true,
         { .0f, .0f },
-        .25f
+        .1f
     },
 }
 {
@@ -75,6 +75,8 @@ Player::Player()
     m_bodyID = bodyIDs[0];
 
     switch_to_body(bodyIDs[0]);
+
+    m_model = &models[1];
 }
 
 Player::~Player()
@@ -122,18 +124,19 @@ void Player::handle_input()
 
 void Player::animate()
 {
-    switch (state.state())
-    {
-        case PlayerState::PLAYER_IDLE:
-            models[0].animate();
-        break;
+    m_model->animate();
 
-        case PlayerState::PLAYER_MOVING:
-        break;
+    // switch (state.state())
+    // {
+    //     case PlayerState::PLAYER_IDLE:
+    //     break;
 
-        case PlayerState::PLAYER_JUMPING:
-        break;
-    }
+    //     case PlayerState::PLAYER_MOVING:
+    //     break;
+
+    //     case PlayerState::PLAYER_JUMPING:
+    //     break;
+    // }
 }
 
 void Player::draw()
@@ -145,7 +148,7 @@ void Player::draw()
     switch (state.state())
     {
         case PlayerState::PLAYER_IDLE:
-            DrawModelEx(m_model.model(),
+            DrawModelEx(*(m_model->model()),
             { position.x, position.y , .0f },
             { .0f, .0f, 1.0f }, degrees, Vector3Ones, WHITE);
         break;

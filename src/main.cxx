@@ -81,7 +81,6 @@ int main(int argc, char* argv[])
         while (physics_sim_count >= settings::TIMESTEP)
         {
             b2World_Step(ResourceManager::instance().world_id(), settings::TIMESTEP, settings::SUBSTEP_COUNT);
-            playercam.move_right(.1f);
             physics_sim_count -= settings::TIMESTEP;
         }
         /*

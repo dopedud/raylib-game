@@ -36,6 +36,16 @@ private:
 
     /**
      * @brief Holds how long should each texture lasts in an animation.
+     * 
+     * A set of integer-float pairs that act as keyframes for the AnimatedModel where the integer part indicates the
+     * order of a texture in the list of textures to animate, and the float part indicates how long should the texture
+     * stay during the animation sequence.
+     * 
+     * For example, for a list of textures (for instance, @c texture1.png, @c texture2.png, and @c texture3.png) with
+     * the given timings (0 - 1.0f, 1 - 2.0f, 2 - 1.0f), when played normally, would proceed as normal; play 1 second
+     * for @c texture1.png, play 2 seconds for @c texture2.png, and play 1 second for @c texture3.png. One can modify
+     * this and have a more complex animation playthrough, such as with the timings (0 - 1.0f, 1 - 2.0f, 0 - 2.0f, 2 -
+     * 1.0f).This will play like before, with the 3rd frame being played at @c texture1.png again for 2 seconds.
      */
     std::vector<std::pair<int, float>> textures_timing {};
 
@@ -48,6 +58,9 @@ private:
     Shader* shader {};
     Model* m_model {};
 
+    /**
+     * @brief like textures_timing, but only keeping track of how many seconds has passed for each passing key frame.
+     */
     std::vector<float> timing_cumulative {};
 
     /**
@@ -76,10 +89,7 @@ public:
      * @param model_resource    ModelResource enumeration that determines which model this AnimatedModel should have.
      * @param looping           Determines whether this AnimatedModel loops.
      * @param pivot             The center of the texture relative to the surface of the model.
-     * @param timing            The set of integer float pairs that determines the sequence of textures by their
-     *                          orders, and for how long will it be played. For example, for the set [(1, 1.0f), (2,
-     *                          1.0f), (1, 2.0f)], the 1st texture will be played for 1 second, followed by the 2nd
-     *                          texture for 1 second, and lastly the 1st texture again for 2 seconds.
+     * @param timing            @copydoc AnimatedModel::textures_timing()
      */
     AnimatedModel
     (
@@ -88,7 +98,7 @@ public:
         ModelResource model_resource,
         bool looping,
         Vector2 pivot,
-        std::vector<std::pair<int, float>>& timing
+        std::vector<std::pair<int, float>>&& timing
     );
 
     /**
@@ -127,7 +137,7 @@ public:
 
     /**
      * @fn
-     * @brief Function to animate texture on a model by a step.
+     * @brief Function to animate texture on a model by a game's timestep.
      * @note It needs to be called every game update for the animation to play, which will likely be called inside a
      * @c while loop.
      */

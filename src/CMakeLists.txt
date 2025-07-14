@@ -173,8 +173,7 @@ add_custom_target(clean_install
 add_custom_target(full_clean
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_INSTALL_PREFIX}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${PLANTUML_JAR_PATH}
-    COMMENT "removing build, tools, and install directory"
+    COMMENT "removing build and install directory"
 )
 
 # create a custom target for full clean including dependencies
@@ -184,6 +183,5 @@ add_custom_target(full_clean_dependency
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${FETCHCONTENT_BASE_DIR}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_INSTALL_PREFIX}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${PLANTUML_JAR_PATH}
-    COMMENT "removing build, tools, install, and dependency directory"
+    COMMENT "removing build, install, and dependency directory"
 )

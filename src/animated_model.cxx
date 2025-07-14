@@ -17,9 +17,10 @@ AnimatedModel::AnimatedModel
     ShaderResource shader_resource,
     ModelResource model_resource,
     bool looping,
-    Vector2 pivot,
-    std::vector<std::pair<int, float>>& timing
+    Vector2 pivot, 
+    std::vector<std::pair<int, float>>&& timing
 )
+
 : textures          { ResourceManager::instance().get_texture_resource(texture_resource) }
 , shader            { ResourceManager::instance().get_shader_resource(shader_resource) }
 , m_model           { ResourceManager::instance().get_model_resource(model_resource) }
@@ -49,7 +50,7 @@ AnimatedModel::AnimatedModel
     model_resource,
     looping,
     pivot,
-    {}
+    std::vector<std::pair<int, float>>{}
 }
 {
     int frame_count {};
@@ -186,6 +187,8 @@ void AnimatedModel::animate()
         finished = true;
     }
 
+    // TraceLog(LOG_DEBUG, "animation timer: %f", timer);
+
     frameindex = AnimatedModel::bsearch_frameindex();
 
     m_model->materials[0].maps[MATERIAL_MAP_ALBEDO].texture = (*textures)[frameindex];
@@ -217,7 +220,7 @@ int AnimatedModel::bsearch_frameindex()
 
 void AnimatedModel::initialise_timings()
 {
-    timing_cumulative.resize(textures_timing.size());
+    timing_cumulative.clear();
     
     float acc {};
     for (const std::pair<int, float>& pair : textures_timing)
@@ -226,5 +229,5 @@ void AnimatedModel::initialise_timings()
         timing_cumulative.emplace_back(acc);
     }
 
-    duration = timing_cumulative[textures_timing.size() - 1];
+    if (timing_cumulative.size() > 0) duration = timing_cumulative[timing_cumulative.size() - 1];
 }

@@ -45,7 +45,7 @@ public:
     ~Player();
 
     b2BodyId bodyID() const { return m_bodyID; }
-    AnimatedModel model() const { return m_model; }
+    AnimatedModel* model() const { return m_model; }
 
     void set_input(bool toggle) { receive_input = toggle; }
 
