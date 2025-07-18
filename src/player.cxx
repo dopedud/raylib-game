@@ -64,7 +64,7 @@ Player::Player()
         b2CreatePolygonShape(bodyIDs[i], &shape_def, &box);
 
         b2MassData massdata {};
-        massdata.mass = 1.0f;
+        massdata.mass = 72.0f;
         massdata.center = { .0f, .0f };
         massdata.rotationalInertia = .0f;
         b2Body_SetMassData(bodyIDs[i], massdata);
@@ -76,7 +76,7 @@ Player::Player()
 
     switch_to_body(bodyIDs[0]);
 
-    m_model = &models[1];
+    m_model = &models[0];
 }
 
 Player::~Player()
@@ -104,39 +104,27 @@ void Player::switch_to_body(b2BodyId newbody)
 
 void Player::handle_input()
 {
-    if (!receive_input) return;
+    // if (!receive_input) return;
 
-    if (IsKeyPressed(KEY_SPACE))
-    {
-        b2Body_ApplyForceToCenter(m_bodyID, { .0f, jump_force * JUMP_FORCE_MULTIPLIER }, true);
-    }
+    // if (IsKeyPressed(KEY_SPACE))
+    // {
+    //     b2Body_ApplyForceToCenter(m_bodyID, { .0f, jump_force * JUMP_FORCE_MULTIPLIER }, true);
+    // }
 
-    if (IsKeyDown(KEY_A))
-    {
-        b2Body_ApplyForceToCenter(m_bodyID, { move_force, .0f }, true);
-    }
+    // if (IsKeyDown(KEY_A))
+    // {
+    //     b2Body_ApplyForceToCenter(m_bodyID, { move_force, .0f }, true);
+    // }
 
-    if (IsKeyDown(KEY_D))
-    {
-        b2Body_ApplyForceToCenter(m_bodyID, { -move_force, .0f }, true);
-    }
+    // if (IsKeyDown(KEY_D))
+    // {
+    //     b2Body_ApplyForceToCenter(m_bodyID, { -move_force, .0f }, true);
+    // }
 }
 
 void Player::animate()
 {
     m_model->animate();
-
-    // switch (state.state())
-    // {
-    //     case PlayerState::PLAYER_IDLE:
-    //     break;
-
-    //     case PlayerState::PLAYER_MOVING:
-    //     break;
-
-    //     case PlayerState::PLAYER_JUMPING:
-    //     break;
-    // }
 }
 
 void Player::draw()

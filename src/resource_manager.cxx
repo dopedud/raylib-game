@@ -11,10 +11,10 @@ ResourceManager::ResourceManager()
 {
     b2WorldDef world_def { b2DefaultWorldDef() };
 
-    b2SetLengthUnitsPerMeter(settings::TEXELS_PER_UNIT);
-    world_def.gravity.y = settings::GRAVITY_ACCELERATION * settings::TEXELS_PER_UNIT;
+    b2SetLengthUnitsPerMeter(1.0f);
+    world_def.gravity.y = settings::PHYSICS::GRAVITY_ACCELERATION;
 
-    m_world_id = b2CreateWorld(&world_def);
+    m_world_id = b2CreateWorld(&world_def); 
 
     using namespace resourcevars;
 
@@ -75,8 +75,8 @@ ResourceManager::ResourceManager()
 
         if (textures.size() > 0)
         {
-            width = (static_cast<float>(textures[0].width)) / settings::TEXELS_PER_UNIT;
-            height = (static_cast<float>(textures[0].height)) / settings::TEXELS_PER_UNIT;
+            width = (static_cast<float>(textures[0].width)) / settings::GENERAL::TEXELS_PER_UNIT;
+            height = (static_cast<float>(textures[0].height)) / settings::GENERAL::TEXELS_PER_UNIT;
         } else TraceLog(LOG_WARNING, "Error reading texture resources array, setting width and height to 0 to create model...");
 
         model_resources.emplace_back(LoadModelFromMesh(

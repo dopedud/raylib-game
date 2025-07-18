@@ -102,7 +102,7 @@ FetchContent_MakeAvailable(box2d)
 #########################
 
 # set your sources here
-set(SOURCES
+set(SOURCE
     main.cxx
     settings.cxx
 
@@ -112,6 +112,11 @@ set(SOURCES
     player.cxx
     animated_model.cxx
     player_camera_controller.cxx
+)
+
+# set your tests here
+set(TEST
+    ../test/main.cxx
 )
 
 set(LIBRARIES
@@ -130,7 +135,7 @@ set(LIBRARIES
 )
 
 # add main executable
-add_executable(${EXECUTABLE_NAME} ${SOURCES})
+add_executable(${EXECUTABLE_NAME} ${SOURCE})
 target_include_directories(${EXECUTABLE_NAME} INTERFACE ${raygui_SOURCE_DIR}/src)
 # target_include_directories(${EXECUTABLE_NAME} PRIVATE ${bullet_SOURCE_DIR}/src)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE ${LIBRARIES})

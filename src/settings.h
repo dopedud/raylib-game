@@ -26,16 +26,22 @@
 
 namespace settings
 {
-    constexpr int SCREEN_WIDTH { 1280 };
-    constexpr int SCREEN_HEIGHT { 720 };
+    struct GENERAL
+    {
+        static constexpr int SCREEN_WIDTH { 1280 };
+        static constexpr int SCREEN_HEIGHT { 720 };
 
-    constexpr int TARGET_FPS { 512 };
+        static constexpr int TARGET_FPS { 512 };
 
-    constexpr float TEXELS_PER_UNIT { 32.0f };
+        static constexpr float TEXELS_PER_UNIT { 32.0f };
+    };
 
-    constexpr float GRAVITY_ACCELERATION { -1.0f };
-    constexpr float TIMESTEP { 1.0f / 60.0f };
-    constexpr int SUBSTEP_COUNT { 4 };
+    struct PHYSICS
+    {
+        static constexpr float GRAVITY_ACCELERATION { -9.81f };
+        static constexpr float TIMESTEP { 1.0f / 60.0f };
+        static constexpr int SUBSTEP_COUNT { 4 };
+    };
 
     /**
      * @fn

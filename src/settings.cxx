@@ -17,10 +17,10 @@ void settings::initialise()
 
     SetRandomSeed(time(NULL));
 
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "WINDOW");
+    InitWindow(GENERAL::SCREEN_WIDTH, GENERAL::SCREEN_HEIGHT, "WINDOW");
 
     SetWindowState(FLAG_WINDOW_RESIZABLE);
-    SetWindowMinSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    SetWindowMinSize(GENERAL::SCREEN_WIDTH, GENERAL::SCREEN_HEIGHT);
 
     SetExitKey(KEY_NULL);
 }

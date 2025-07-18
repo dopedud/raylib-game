@@ -187,8 +187,6 @@ void AnimatedModel::animate()
         finished = true;
     }
 
-    // TraceLog(LOG_DEBUG, "animation timer: %f", timer);
-
     frameindex = AnimatedModel::bsearch_frameindex();
 
     m_model->materials[0].maps[MATERIAL_MAP_ALBEDO].texture = (*textures)[frameindex];

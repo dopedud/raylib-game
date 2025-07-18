@@ -91,10 +91,6 @@ docs\html\index.html
 
 Critical Bugs
 
-1. Player Drawing Bug (player.cxx:148)
-    - Player::draw() calls m_model.model() but m_model is never initialized
-    - Should use models[0].model() instead
-
 3. State Management Never Used
     - Player starts in IDLE state and never transitions
     - MOVING and JUMPING states are empty in both animate() and draw() methods
@@ -132,7 +128,6 @@ Recommendations
 
 Immediate Fixes:
 
-1. Fix m_model bug in Player::draw()
 3. Implement basic state transitions based on velocity
 4. Complete MOVING/JUMPING animation cases
 

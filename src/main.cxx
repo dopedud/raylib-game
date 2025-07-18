@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
     // creating physics ground
     b2BodyDef ground_def = b2DefaultBodyDef();
 
-    ground_def.position = { .0f, -2.0f };
+    ground_def.position = { .0f, -5.0f };
 
     b2BodyId ground_id = b2CreateBody(ResourceManager::instance().world_id(), &ground_def);
 
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
     Model dummy { LoadModel("../resources/monke.glb") };
 
     EnableCursor();
-    SetTargetFPS(settings::TARGET_FPS);
+    SetTargetFPS(settings::GENERAL::TARGET_FPS);
 
     float physics_sim_count {};
 
@@ -78,10 +78,12 @@ int main(int argc, char* argv[])
         */
         physics_sim_count += GetFrameTime();
 
-        while (physics_sim_count >= settings::TIMESTEP)
+        TraceLog(LOG_DEBUG, "%f, %f", b2Body_GetPosition(player.bodyID()).x, b2Body_GetPosition(player.bodyID()).y);
+
+        while (physics_sim_count >= settings::PHYSICS::TIMESTEP)
         {
-            b2World_Step(ResourceManager::instance().world_id(), settings::TIMESTEP, settings::SUBSTEP_COUNT);
-            physics_sim_count -= settings::TIMESTEP;
+            b2World_Step(ResourceManager::instance().world_id(), settings::PHYSICS::TIMESTEP, settings::PHYSICS::SUBSTEP_COUNT);
+            physics_sim_count -= settings::PHYSICS::TIMESTEP;
         }
         /*
         ** END PHYSICS SIMULATION
