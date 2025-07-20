@@ -6,6 +6,7 @@
 #include "raylib.h"
 
 #include "resource_manager.h"
+#include "settings.h"
 
 /**
  * @class
@@ -130,8 +131,8 @@ public:
 
     ~AnimatedModel(); /**< @private */
 
-    float width() const { return (*textures)[0].width; }
-    float height() const { return (*textures)[0].height; }
+    float width() const { return static_cast<float>((*textures)[0].width) / settings::GENERAL::TEXELS_PER_UNIT; }
+    float height() const { return static_cast<float>((*textures)[0].height) / settings::GENERAL::TEXELS_PER_UNIT; }
 
     Model* model() const { return m_model; }
 

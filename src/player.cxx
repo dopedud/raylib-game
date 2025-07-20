@@ -52,6 +52,7 @@ Player::Player()
     {
         b2BodyDef bodydef = b2DefaultBodyDef();
         bodydef.type = b2_dynamicBody;
+        bodydef.position = { .0f, 20.0f };
         bodyIDs[i] = b2CreateBody(ResourceManager::instance().world_id(), &bodydef);
 
         b2Vec2 extent {};
@@ -93,6 +94,7 @@ void Player::switch_to_body(b2BodyId newbody)
     float angular_velocity = b2Body_GetAngularVelocity(m_bodyID);
     
     b2Body_Disable(m_bodyID);
+
     b2Body_SetTransform(newbody, position, rotation);
     b2Body_SetFixedRotation(newbody, fixed_rotation);
     b2Body_SetLinearVelocity(newbody, velocity);
@@ -133,11 +135,13 @@ void Player::draw()
     b2Rot rotation = b2Body_GetRotation(m_bodyID);
     float degrees = b2Rot_GetAngle(rotation) * RAD2DEG;
 
+    // TraceLog(LOG_DEBUG, "%f, %f", position.x, position.y);
+
     switch (state.state())
     {
         case PlayerState::PLAYER_IDLE:
             DrawModelEx(*(m_model->model()),
-            { position.x, position.y , .0f },
+            { position.x, position.y, .0f },
             { .0f, .0f, 1.0f }, degrees, Vector3Ones, WHITE);
         break;
 

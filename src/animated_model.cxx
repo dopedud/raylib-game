@@ -28,7 +28,7 @@ AnimatedModel::AnimatedModel
 , pivot             { pivot }
 , textures_timing   { timing }
 {
-    m_model->materials[0].maps[MATERIAL_MAP_ALBEDO].texture = (*textures)[0];
+    m_model->materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = (*textures)[0];
     m_model->materials[0].shader = *shader;
 
     AnimatedModel::initialise_timings();
