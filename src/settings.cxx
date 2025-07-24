@@ -7,6 +7,7 @@
 #include <ctime>
 
 #include "raylib.h"
+#include "rlgl.h"
 
 void settings::initialise()
 {
@@ -56,4 +57,29 @@ void settings::TimestampLogCallback(int logType, const char *text, va_list args)
 
     // if fatal logging, exit program
     if (logType == LOG_FATAL) exit(EXIT_FAILURE);
+}
+
+void settings::DrawGridY(int slices, float spacing)
+{
+    int halfSlices = slices/2;
+
+    rlBegin(RL_LINES);
+        for (int i = -halfSlices; i <= halfSlices; i++)
+        {
+            if (i == 0)
+            {
+                rlColor3f(0.5f, 0.5f, 0.5f);
+            }
+            else
+            {
+                rlColor3f(0.75f, 0.75f, 0.75f);
+            }
+
+            rlVertex3f((float)i*spacing, (float)-halfSlices*spacing, 0.0f);
+            rlVertex3f((float)i*spacing, (float)halfSlices*spacing, 0.0f);
+
+            rlVertex3f((float)-halfSlices*spacing, (float)i*spacing, 0.0f);
+            rlVertex3f((float)halfSlices*spacing, (float)i*spacing, 0.0f);
+        }
+    rlEnd();
 }

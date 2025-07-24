@@ -111,7 +111,7 @@ set(SOURCE
 
     player.cxx
     animated_model.cxx
-    player_camera_controller.cxx
+    camera_controller.cxx
 )
 
 # set your tests here

@@ -5,7 +5,7 @@
 This is the git repository for a project about making a game from scratch, written in C and C++ powered by
 [Raylib](https://www.raylib.com/index.html) ([Github link](https://github.com/raysan5/raylib?tab=readme-ov-file)) and
 physics engine powered by [Box2D](https://box2d.org/) ([Github link](https://github.com/erincatto/box2d)).
-<!-- 
+<!--
 [Bullet](https://pybullet.org/wordpress/)
 ([Github link](https://github.com/bulletphysics/bullet3)).
 -->

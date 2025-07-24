@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Clean install**: `cmake --build build --target clean_install`
 
 ### Running
-- **Run game**: `run` (uses run.bat which executes `build\lib\main.exe`)
+- **Run game**: `run` (uses run.bat which executes `build\bin\game.exe`)
 
 ### Documentation
 - **Generate docs**: `doxygen Doxyfile` (creates `docs/html/index.html`)
@@ -28,23 +28,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Core Systems
 - **ResourceManager**: Singleton pattern managing game resources (textures, shaders, models, Box2D physics world)
-- **StateManager**: Generic template class for state management using enums
-- **AnimatedModel**: Custom 2D sprite animation system applied to 3D models
+- **StateManager**: Generic template class for state management using enums (with static_assert for type safety)
+- **AnimatedModel**: Custom 2D sprite animation system applied to 3D models with sophisticated timing controls
 - **Player**: Main game entity with physics body, animation, and input handling
 - **PlayerCameraController**: Camera management for following player
+- **Settings**: Namespace containing game configuration constants separated into GENERAL and PHYSICS
 
 ### Game Loop Structure
 The main game loop in `main.cxx` follows this pattern:
-1. **Physics simulation** (fixed timestep): Box2D world step, camera movement
-2. **Animation update**: Player animation state updates
-3. **Input handling**: Player input processing
-4. **Rendering**: 3D scene with grid, models, and UI elements
+1. **Cursor toggle handling**: ESC key to enable/disable cursor
+2. **Physics simulation** (fixed timestep): Box2D world step with timestep accumulation
+3. **Animation update**: Player animation state updates  
+4. **Input handling**: Player input processing
+5. **Rendering**: 3D scene with dual grids (XZ and Y planes), models, and FPS display
 
 ### Resource Management
-- **Texture resources**: Organized by animation type (idle, run, slide) with frame sequences
-- **Shader resources**: Custom GLSL shaders for rendering
-- **Model resources**: 3D models with 1:1 relationship to texture resources
-- **Physics bodies**: Box2D bodies managed through ResourceManager
+- **Texture resources**: Organized by animation type (idle, run, slide) with frame sequences loaded via resourcevars namespace
+- **Shader resources**: Custom GLSL shaders for rendering (vertex and fragment shaders)
+- **Model resources**: 3D models with 1:1 relationship to texture resources (generated from cube meshes)
+- **Physics bodies**: Box2D bodies managed through ResourceManager singleton
+- **Resource paths**: Centralized in resourcevars namespace with FRAMES_AMOUNT, TEXTUREPATH, and SHADERPATH structs
 
 ### Key Design Patterns
 - **Singleton**: ResourceManager for global resource access
@@ -56,9 +59,12 @@ The main game loop in `main.cxx` follows this pattern:
 - `src/`: All source code (.cxx, .h files)
 - `src/resources/`: Game assets (textures, shaders, models)
 - `build/`: CMake build output
+  - `build/bin/`: Built executables
+  - `build/lib/`: Static libraries
 - `installs/`: Final installation directory
 - `docs/`: Generated Doxygen documentation
 - `_deps/`: External dependencies (raylib, box2d)
+- `test/`: Test files
 
 ### Dependencies
 - **Raylib 5.5**: Graphics and windowing
@@ -68,9 +74,9 @@ The main game loop in `main.cxx` follows this pattern:
 
 ### Physics Integration
 - World managed by ResourceManager singleton
-- Fixed timestep simulation (60 FPS target)
-- Box2D bodies tied to game entities
-- Ground plane for collision testing
+- Fixed timestep simulation (60 FPS physics, configurable display FPS)
+- Box2D 3.1.0 bodies tied to game entities
+- Ground plane for collision testing with proper collision shapes
 
 ### Animation System
 - Custom AnimatedModel class for 2D sprite sequences on 3D models

@@ -57,4 +57,9 @@ namespace settings
      * @private
      */
     void TimestampLogCallback(int logType, const char *text, va_list args);
+
+    /**
+     * @private
+     */
+    void DrawGridY(int slices, float spacing);
 }

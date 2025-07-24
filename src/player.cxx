@@ -52,7 +52,7 @@ Player::Player()
     {
         b2BodyDef bodydef = b2DefaultBodyDef();
         bodydef.type = b2_dynamicBody;
-        bodydef.position = { .0f, 20.0f };
+        bodydef.position = { .0f, 2.0f };
         bodyIDs[i] = b2CreateBody(ResourceManager::instance().world_id(), &bodydef);
 
         b2Vec2 extent {};
@@ -106,22 +106,22 @@ void Player::switch_to_body(b2BodyId newbody)
 
 void Player::handle_input()
 {
-    // if (!receive_input) return;
+    if (!receive_input) return;
 
-    // if (IsKeyPressed(KEY_SPACE))
-    // {
-    //     b2Body_ApplyForceToCenter(m_bodyID, { .0f, jump_force * JUMP_FORCE_MULTIPLIER }, true);
-    // }
+    if (IsKeyPressed(KEY_SPACE))
+    {
+        b2Body_ApplyForceToCenter(m_bodyID, { .0f, jump_force }, true);
+    }
 
-    // if (IsKeyDown(KEY_A))
-    // {
-    //     b2Body_ApplyForceToCenter(m_bodyID, { move_force, .0f }, true);
-    // }
+    if (IsKeyDown(KEY_A))
+    {
+        b2Body_ApplyForceToCenter(m_bodyID, { move_force, .0f }, true);
+    }
 
-    // if (IsKeyDown(KEY_D))
-    // {
-    //     b2Body_ApplyForceToCenter(m_bodyID, { -move_force, .0f }, true);
-    // }
+    if (IsKeyDown(KEY_D))
+    {
+        b2Body_ApplyForceToCenter(m_bodyID, { -move_force, .0f }, true);
+    }
 }
 
 void Player::animate()
@@ -131,6 +131,17 @@ void Player::animate()
 
 void Player::draw()
 {
+    b2Vec2 velocity = b2Body_GetLinearVelocity(m_bodyID);
+
+    if (b2Length(velocity) > MAX_MOVE_VELOCITY)
+    {
+        velocity = b2Normalize(velocity);
+        velocity *= MAX_MOVE_VELOCITY;
+        b2Body_SetLinearVelocity(m_bodyID, velocity);
+    }
+
+    // TraceLog(LOG_DEBUG, "VELOCITY: %f", b2Length(velocity));
+
     b2Vec2 position = b2Body_GetPosition(m_bodyID);
     b2Rot rotation = b2Body_GetRotation(m_bodyID);
     float degrees = b2Rot_GetAngle(rotation) * RAD2DEG;

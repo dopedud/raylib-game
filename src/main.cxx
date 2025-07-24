@@ -11,13 +11,12 @@
 #include "raymath.h"
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
-#include "rlgl.h"
 
 #include "box2d/box2d.h"
 
 #include "settings.h"
 #include "player.h"
-#include "player_camera_controller.h"
+#include "camera_controller.h"
 #include "resource_manager.h"
 
 __declspec(dllexport) unsigned long NvOptimusEnablement = 1;
@@ -59,7 +58,7 @@ int main(int argc, char* argv[])
     ground_model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = LoadTextureFromImage(imageGen);
     UnloadImage(imageGen);
 
-    PlayerCameraController playercam {};
+    CameraController camera {};
 
     Player player {};
 
@@ -90,6 +89,9 @@ int main(int argc, char* argv[])
         {
             b2World_Step(ResourceManager::instance().world_id(), settings::PHYSICS::TIMESTEP, settings::PHYSICS::SUBSTEP_COUNT);
             physics_sim_count -= settings::PHYSICS::TIMESTEP;
+			
+			camera.handle_move();
+			// player.handle_input();
         }
         /*
         ** END PHYSICS SIMULATION
@@ -104,22 +106,14 @@ int main(int argc, char* argv[])
         */
 
         /*
-        ** USER INPUT HANDLING
-        */
-        player.handle_input();
-        /*
-        ** END USER INPUT HANDLING
-        */
-
-        /*
         ** DRAWING FUNCTIONS
         */
         BeginDrawing();
             ClearBackground(BLACK);
 
-            BeginMode3D(playercam.camera());
-                DrawGridY(100, 1);
-                DrawGrid(100, 1);
+            BeginMode3D(camera.camera());
+				DrawGrid(100, 1);
+                settings::DrawGridY(100, 1);
                 DrawModel(dummy, { .0f, .0f, 10.0f }, 1.0f, WHITE);
                 DrawModelEx(ground_model, { ground_position.x, ground_position.y, .0f }, 
                 { .0f, .0f, 1.0f }, .0f, Vector3Ones, DARKGRAY);
@@ -141,29 +135,4 @@ int main(int argc, char* argv[])
     CloseWindow();
 
     return 0;
-}
-
-void DrawGridY(int slices, float spacing)
-{
-    int halfSlices = slices/2;
-
-    rlBegin(RL_LINES);
-        for (int i = -halfSlices; i <= halfSlices; i++)
-        {
-            if (i == 0)
-            {
-                rlColor3f(0.5f, 0.5f, 0.5f);
-            }
-            else
-            {
-                rlColor3f(0.75f, 0.75f, 0.75f);
-            }
-
-            rlVertex3f((float)i*spacing, (float)-halfSlices*spacing, 0.0f);
-            rlVertex3f((float)i*spacing, (float)halfSlices*spacing, 0.0f);
-
-            rlVertex3f((float)-halfSlices*spacing, (float)i*spacing, 0.0f);
-            rlVertex3f((float)halfSlices*spacing, (float)i*spacing, 0.0f);
-        }
-    rlEnd();
 }

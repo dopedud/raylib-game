@@ -7,8 +7,6 @@
 #include "animated_model.h"
 #include "state_manager.h"
 
-#define JUMP_FORCE_MULTIPLIER 500.0f
-
 enum class PlayerState 
 {
     PLAYER_IDLE,
@@ -26,9 +24,9 @@ private:
     b2BodyId m_bodyID {};
     std::vector<b2BodyId> bodyIDs {};
 
-    const float MAX_MOVE_VELOCITY { 10.0f };
-    float move_force { 10.0f };
-    float jump_force { 2.5f };
+    static constexpr float MAX_MOVE_VELOCITY { 10.0f };
+    float move_force { 1000.0f };
+    float jump_force { 10000.0f };
 
     AnimatedModel* m_model {};
     std::vector<AnimatedModel> models {};
