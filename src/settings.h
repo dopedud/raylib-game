@@ -43,6 +43,11 @@ namespace settings
         static constexpr int SUBSTEP_COUNT { 4 };
     };
 
+    struct INPUT
+    {
+        static constexpr float TIMESTEP { 1.0f / 512.0f };
+    };
+
     /**
      * @fn
      * @brief Game settings initialiser.

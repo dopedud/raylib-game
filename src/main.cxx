@@ -68,6 +68,7 @@ int main(int argc, char* argv[])
     SetTargetFPS(settings::GENERAL::TARGET_FPS);
 
     float physics_sim_count {};
+    float input_poll_count {};
 
     /*
     ** GAME SIMULATION UPDATE (UPDATES EVERY FRAME)
@@ -88,13 +89,27 @@ int main(int argc, char* argv[])
         while (physics_sim_count >= settings::PHYSICS::TIMESTEP)
         {
             b2World_Step(ResourceManager::instance().world_id(), settings::PHYSICS::TIMESTEP, settings::PHYSICS::SUBSTEP_COUNT);
+            
             physics_sim_count -= settings::PHYSICS::TIMESTEP;
-			
-			camera.handle_move();
-			// player.handle_input();
         }
         /*
-        ** END PHYSICS SIMULATION
+        ** END PHYSICS SIMULATION UPDATE
+        */
+        
+        /*
+        ** INPUT POLLING UPDATE (UPDATES EVERY FIXED INTERVAL WITH HIGH FREQUENCY)
+        */
+        input_poll_count += GetFrameTime();
+
+        while (input_poll_count >= settings::INPUT::TIMESTEP)
+        {
+            camera.handle_move();
+            // player.handle_input();
+
+            input_poll_count -= settings::INPUT::TIMESTEP;
+        }
+        /*
+        ** END INPUT POLLING UPDATE
         */
 
         /*
@@ -112,7 +127,7 @@ int main(int argc, char* argv[])
             ClearBackground(BLACK);
 
             BeginMode3D(camera.camera());
-				DrawGrid(100, 1);
+                DrawGrid(100, 1);
                 settings::DrawGridY(100, 1);
                 DrawModel(dummy, { .0f, .0f, 10.0f }, 1.0f, WHITE);
                 DrawModelEx(ground_model, { ground_position.x, ground_position.y, .0f }, 

@@ -4,6 +4,8 @@
 #include "raymath.h"
 #include "rcamera.h"
 
+#include "settings.h"
+
 CameraController::CameraController()
 {
     m_camera.position = { 5.0f, 2.5f, -5.0f };
@@ -33,11 +35,6 @@ void CameraController::handle_move()
     
     local_move_vector = Vector3Normalize(local_move_vector);
     
-    //
-    // FIX THIS SHIT BRUH
-    // USE LERP DUMBASS
-    //
-    
     if (!FloatEquals(Vector3Length(local_move_vector), .0f))
     move_vector = Vector3Lerp(
 		move_vector,
@@ -45,7 +42,11 @@ void CameraController::handle_move()
 		ACCELERATION_MULTIPLIER
 	);
 
-    else move_vector = Vector3Lerp(move_vector, Vector3Zeros, DRAG_MULTIPLIER);
+    else move_vector = Vector3Lerp(
+        move_vector, 
+        Vector3Zeros, 
+        DRAG_MULTIPLIER
+    );
     
     move_vector = Vector3ClampValue(move_vector, .0f, MAX_SPEED);
     
