@@ -8,8 +8,8 @@ private:
 
     Camera3D m_camera;
 	
-	static constexpr float MAX_SPEED { .01f };
-	static constexpr float SMOOTH_MULTIPLIER { .1f };
+	static constexpr float MAX_SPEED { .05f };
+	static constexpr float SMOOTH_MULTIPLIER { MAX_SPEED / 10.0f };
 		
 	Vector3 move_vector {};
 

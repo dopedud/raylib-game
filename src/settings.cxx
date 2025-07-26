@@ -8,6 +8,7 @@
 
 #include "raylib.h"
 #include "rlgl.h"
+#include "rlImGui.h"
 
 void settings::initialise()
 {
@@ -24,6 +25,14 @@ void settings::initialise()
     SetWindowMinSize(GENERAL::SCREEN_WIDTH, GENERAL::SCREEN_HEIGHT);
 
     SetExitKey(KEY_NULL);
+
+    rlImGuiSetup(true);
+}
+
+void settings::deinitialise()
+{
+    rlImGuiShutdown();
+    CloseWindow();
 }
 
 void settings::TimestampLogCallback(int logType, const char *text, va_list args)

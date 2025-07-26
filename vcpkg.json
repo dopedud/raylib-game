@@ -1,0 +1,20 @@
+{
+    "builtin-baseline": "ef7dbf94b9198bc58f45951adcf1f041fcbc5ea0",
+    "dependencies": 
+    [
+        {
+            "name": "raylib",
+            "version>=": "5.5"
+        },
+
+        {
+            "name": "box2d",
+            "version>=": "3.1.0"
+        },
+
+        {
+            "name": "imgui",
+            "version>=": "1.91.9"
+        }
+    ]
+}

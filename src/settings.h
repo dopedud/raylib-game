@@ -58,6 +58,8 @@ namespace settings
      */
     void initialise();
 
+    void deinitialise();
+
     /**
      * @private
      */

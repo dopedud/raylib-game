@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.11) # FetchContent is available in 3.11+
-project(raylib-game)
-set(EXECUTABLE_NAME game)
+
+set(CMAKE_GENERATOR "MinGW Makefiles")
+
+set(CMAKE_C_COMPILER "C:/msys64/ucrt64/bin/gcc.exe")
+set(CMAKE_CXX_COMPILER "C:/msys64/ucrt64/bin/g++.exe")
+set(CMAKE_MAKE_PROGRAM "C:/msys64/ucrt64/bin/mingw32-make.exe")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -15,6 +19,17 @@ set(BOX2D_VERSION 3.1.0)
 # set to use shared libraries so the main executable's size remains small
 set(BUILD_SHARED_LIBS ON CACHE BOOL "build shared libraries" FORCE)
 
+# use vcpkg toolchain if available
+if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    message(STATUS "vcpkg found, using it to download pre-built binaries for dependencies...")
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+    # enable vcpkg manifest mode
+    set(VCPKG_MANIFEST_MODE ON)
+endif()
+
+project(raylib-game)
+set(EXECUTABLE_NAME game)
+
 # set dependencies folder
 set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/../_deps")
 include(FetchContent)
@@ -25,40 +40,54 @@ set(FETCHCONTENT_QUIET NO)
 ######################### START FETCHING DEPENDENCIES
 #########################
 
-# raylib options
-set(BUILD_EXAMPLES OFF CACHE BOOL "build raylib examples" FORCE)
+# try to find raylib via vcpkg first, fallback to FetchContent
+find_package(raylib QUIET)
+if(NOT raylib_FOUND)
+    message(STATUS "raylib not found via vcpkg, using FetchContent")
+    # raylib options
+    set(BUILD_EXAMPLES OFF CACHE BOOL "build raylib examples" FORCE)
 
-# fetch raylib
-FetchContent_Declare(
-    raylib
-    DOWNLOAD_EXTRACT_TIMESTAMP OFF
-    URL "https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz"
-)
-FetchContent_MakeAvailable(raylib)
+    # fetch raylib
+    FetchContent_Declare(
+        raylib
+        DOWNLOAD_EXTRACT_TIMESTAMP OFF
+        URL "https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz"
+    )
+    FetchContent_MakeAvailable(raylib)
+else()
+    message(STATUS "raylib found via vcpkg")
+endif()
 
-# imgui options
-set(IMGUI_BUILD_EXAMPLES OFF CACHE BOOL "build imgui examples" FORCE)
+# try to find imgui via vcpkg first, fallback to FetchContent
+find_package(imgui QUIET)
+if(NOT imgui_FOUND)
+    message(STATUS "imgui not found via vcpkg, using FetchContent")
+    # imgui options
+    set(IMGUI_BUILD_EXAMPLES OFF CACHE BOOL "build imgui examples" FORCE)
 
-# fetch imgui
-FetchContent_Declare(
-    imgui
-    DOWNLOAD_EXTRACT_TIMESTAMP OFF
-    URL "https://github.com/ocornut/imgui/archive/refs/tags/v${IMGUI_VERSION}.tar.gz"
-)
-FetchContent_MakeAvailable(imgui)
+    # fetch imgui
+    FetchContent_Declare(
+        imgui
+        DOWNLOAD_EXTRACT_TIMESTAMP OFF
+        URL "https://github.com/ocornut/imgui/archive/refs/tags/v${IMGUI_VERSION}.tar.gz"
+    )
+    FetchContent_MakeAvailable(imgui)
 
-# create imgui library from source files
-set(IMGUI_SOURCES
-    ${imgui_SOURCE_DIR}/imgui.cpp
-    ${imgui_SOURCE_DIR}/imgui_demo.cpp
-    ${imgui_SOURCE_DIR}/imgui_draw.cpp
-    ${imgui_SOURCE_DIR}/imgui_tables.cpp
-    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-)
+    # create imgui library from source files
+    set(IMGUI_SOURCES
+        ${imgui_SOURCE_DIR}/imgui.cpp
+        ${imgui_SOURCE_DIR}/imgui_demo.cpp
+        ${imgui_SOURCE_DIR}/imgui_draw.cpp
+        ${imgui_SOURCE_DIR}/imgui_tables.cpp
+        ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+    )
 
-add_library(imgui_sources STATIC ${IMGUI_SOURCES})
-target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
-target_compile_options(imgui PUBLIC -w)
+    add_library(imgui SHARED ${IMGUI_SOURCES})
+    target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
+    target_compile_options(imgui PUBLIC -w)
+else()
+    message(STATUS "imgui found via vcpkg")
+endif()
 
 # fetch rlimgui
 FetchContent_Declare(
@@ -69,10 +98,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(rlimgui)
 
 # create rlimgui library
-# add_library(rlimgui STATIC ${rlimgui_SOURCE_DIR}/rlImGui.cpp)
-# target_include_directories(rlimgui INTERFACE ${rlimgui_SOURCE_DIR})
-# target_link_libraries(rlimgui PUBLIC raylib imgui)
-# target_compile_options(rlimgui PUBLIC -w)
+add_library(rlimgui SHARED ${rlimgui_SOURCE_DIR}/rlImGui.cpp)
+target_include_directories(rlimgui PUBLIC ${rlimgui_SOURCE_DIR})
+target_link_libraries(rlimgui PUBLIC raylib imgui)
+target_compile_options(rlimgui PUBLIC -w)
 
 # # bullet options
 # set(USE_MSVC_RUNTIME_LIBRARY_DLL    ON CACHE BOOL "use MSVC runtime library" FORCE)
@@ -107,15 +136,22 @@ FetchContent_MakeAvailable(rlimgui)
 # target_compile_options(Bullet2FileLoader PUBLIC -w)
 # target_compile_options(Bullet3OpenCL_clew PUBLIC -w)
 
-# box2d options
+# try to find box2d via vcpkg first, fallback to FetchContent
+find_package(box2d QUIET)
+if(NOT box2d_FOUND)
+    message(STATUS "box2d not found via vcpkg, using FetchContent")
+    # box2d options
 
-# fetch box2d
-FetchContent_Declare(
-    box2d
-    DOWNLOAD_EXTRACT_TIMESTAMP OFF
-    URL "https://github.com/erincatto/box2d/archive/refs/tags/v${BOX2D_VERSION}.tar.gz"
-)
-FetchContent_MakeAvailable(box2d)
+    # fetch box2d
+    FetchContent_Declare(
+        box2d
+        DOWNLOAD_EXTRACT_TIMESTAMP OFF
+        URL "https://github.com/erincatto/box2d/archive/refs/tags/v${BOX2D_VERSION}.tar.gz"
+    )
+    FetchContent_MakeAvailable(box2d)
+else()
+    message(STATUS "box2d found via vcpkg")
+endif()
 
 #########################
 ######################### END FETCHING DEPENDENCIES
@@ -136,12 +172,12 @@ set(SOURCE
 
 # set your tests here
 set(TEST
-    ../test/main.cxx
+    main.cxx
 )
 
 set(LIBRARIES
     raylib
-    imgui
+    imgui::imgui
     rlimgui
     box2d
 
@@ -156,7 +192,7 @@ set(LIBRARIES
 )
 
 # add main executable
-add_executable(${EXECUTABLE_NAME} ${SOURCE})
+add_executable(${EXECUTABLE_NAME} "${CMAKE_SOURCE_DIR}/src/${SOURCE}")
 # target_include_directories(${EXECUTABLE_NAME} PRIVATE ${bullet_SOURCE_DIR}/src)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE ${LIBRARIES})
 

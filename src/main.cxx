@@ -135,7 +135,10 @@ int main(int argc, char* argv[])
                 player.draw();
             EndMode3D();
 
-            DrawFPS(10, 10);
+            rlImGuiBegin();
+                ImGui::ShowDemoWindow();
+            rlImGuiEnd();
+
         EndDrawing();
         /*
         ** END DRAWING FUNCTIONS
@@ -147,7 +150,7 @@ int main(int argc, char* argv[])
 
     UnloadModel(dummy);
 
-    CloseWindow();
+    settings::deinitialise();
 
     return 0;
 }
