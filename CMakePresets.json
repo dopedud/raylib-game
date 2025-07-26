@@ -13,10 +13,11 @@
         {
             "name": "debug",
             "displayName": "Debug Config",
-            "generator": "MinGW Makefiles",
-            "binaryDir": "build_debug",
+            "binaryDir": "build",
             "cacheVariables":
             {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_CXX_FLAGS": "-g -O0 -Wall -Wextra -Wpedantic -DDEBUG"
             }
@@ -24,13 +25,14 @@
 
         {
             "name": "release",
-            "displayName": "Release Config",
-            "generator": "MinGW Makefiles",
-            "binaryDir": "build_release",
+            "displayName": "Release Config", 
+            "binaryDir": "build",
             "cacheVariables":
             {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
                 "CMAKE_BUILD_TYPE": "Release",
-                "CMAKE_CXX_FLAGS": "-O3 -DNDEBUG -march=native -mwindows"
+                "CMAKE_CXX_FLAGS": "-O3 -DNDEBUG"
             }
         }
     ]

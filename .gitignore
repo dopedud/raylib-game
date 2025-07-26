@@ -1,4 +1,6 @@
+###
 ### C files
+###
 # prerequisites
 *.d
 
@@ -72,7 +74,9 @@ compile_commands.json
 *apk*
 android.*
 
+###
 ### CMake files
+###
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -87,7 +91,9 @@ _deps
 CMakeUserPresets.json
 installs
 
+###
 ### VSCode files
+###
 .vscode
 
 # Doxygen generated documentation (exception made for architecture.png)

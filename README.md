@@ -49,6 +49,7 @@ common commands (for easy copy):
 cmake --build build --target clean_install
 cmake --build build --target full_clean
 cmake --build build --target full_clean_dependency
+cmake --fresh --preset user-debug . -B build
 cmake --fresh --preset debug . -B build
 cmake --build build
 ```
