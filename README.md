@@ -19,12 +19,13 @@ Use the `run.bat` file via typing `run` in console. It will run `cmake --build b
 
 This project uses [CMake](https://cmake.org/) to build its files. Therefore, CMake is required to build this project.
 All the build parameters and overall settings are written in `CMakeLists.txt`, project-wide build presets are written in
-`CmakePresets.json`, and user-specific build presets are written in `CMakeUserPresets.json`. All CMake operations are done within the console, with this project's root directory as its
+`CmakePresets.json`, and user-specific build presets are written in `CMakeUserPresets.json`. All CMake operations are
+done within the console, with this project's root directory as its
 working directory.
 
 Build files are required to build this project, and CMake will first need to configure those build files. To configure,
 you first need to have `CMakeUserPresets.json` that defines what Make generators are available in your system for
-CMake to use. One such `CMakeUserPresets.json` is shown below:
+CMake to use. One such `CMakeUserPresets.json` is as shown below:
 
 ```json
 {
@@ -51,7 +52,8 @@ CMake to use. One such `CMakeUserPresets.json` is shown below:
 ```
 
 Both of these JSON objects are put inside `configurePresets` JSON array. Otherwise, `CMakeUserPresets.json` follows the
-same JSON structure as `CMakePresets.json`.
+same JSON structure as `CMakePresets.json`. Note that you can define your own `CMakeUserPresets.json`, the ones shown
+above are just an example.
 
 The `--preset` command allows the user to choose which configuration or build preset should CMake use for this project.
 This can range from determining which build generators to use (for this project it's `MinGW Makefiles`), to setting the

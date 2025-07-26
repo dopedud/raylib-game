@@ -24,6 +24,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Documentation
 - **Generate docs**: `doxygen Doxyfile` (creates `docs/html/index.html`)
 
+## Build Configuration
+
+The project uses CMake with FetchContent to manage dependencies:
+- **Build type**: Shared libraries (BUILD_SHARED_LIBS=ON) to keep executable size small
+- **Dependencies location**: `_deps/` directory via FETCHCONTENT_BASE_DIR
+- **Output directories**: 
+  - Executables: `build/bin/`
+  - Libraries: `build/lib/`
+  - Install prefix: `installs/`
+
 ## Architecture Overview
 
 ### Core Systems
@@ -63,13 +73,14 @@ The main game loop in `main.cxx` follows this pattern:
   - `build/lib/`: Static libraries
 - `installs/`: Final installation directory
 - `docs/`: Generated Doxygen documentation
-- `_deps/`: External dependencies (raylib, box2d)
+- `_deps/`: External dependencies (raylib, box2d, imgui, rlimgui)
 - `test/`: Test files
 
 ### Dependencies
 - **Raylib 5.5**: Graphics and windowing
 - **Box2D 3.1.0**: Physics simulation
-- **RayGUI 4.0**: UI elements
+- **Dear ImGui 1.92.1**: UI framework (migrated from RayGUI)
+- **rlImGui**: Raylib-ImGui integration layer
 - **C++17**: Language standard
 
 ### Physics Integration
