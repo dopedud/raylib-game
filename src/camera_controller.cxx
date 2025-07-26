@@ -26,10 +26,8 @@ void CameraController::handle_move()
         
     if (IsKeyDown(KEY_W)) local_move_vector += Vector3UnitZ;
     if (IsKeyDown(KEY_S)) local_move_vector += Vector3Negate(Vector3UnitZ);
-    
     if (IsKeyDown(KEY_D)) local_move_vector += Vector3UnitX;
     if (IsKeyDown(KEY_A)) local_move_vector += Vector3Negate(Vector3UnitX);
-    
     if (IsKeyDown(KEY_SPACE)) local_move_vector += Vector3UnitY;
     if (IsKeyDown(KEY_LEFT_CONTROL)) local_move_vector += Vector3Negate(Vector3UnitY);
     
@@ -39,13 +37,13 @@ void CameraController::handle_move()
     move_vector = Vector3Lerp(
 		move_vector,
 		Vector3Normalize(local_move_vector) * MAX_SPEED,
-		ACCELERATION_MULTIPLIER
+		SMOOTH_MULTIPLIER
 	);
 
     else move_vector = Vector3Lerp(
-        move_vector, 
-        Vector3Zeros, 
-        DRAG_MULTIPLIER
+        move_vector,
+        Vector3Zeros,
+        SMOOTH_MULTIPLIER
     );
     
     move_vector = Vector3ClampValue(move_vector, .0f, MAX_SPEED);

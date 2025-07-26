@@ -7,7 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # dependencies' versions
 set(RAYLIB_VERSION 5.5)
-set(RAYGUI_VERSION 4.0)
+set(IMGUI_VERSION 1.92.1)
+set(RLIMGUI_VERSION master)
 set(BULLET_VERSION 3.25)
 set(BOX2D_VERSION 3.1.0)
 
@@ -35,24 +36,43 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(raylib)
 
-# raygui options
-set(BUILD_RAYGUI_EXAMPLES OFF CACHE BOOL "build raygui examples" FORCE)
+# imgui options
+set(IMGUI_BUILD_EXAMPLES OFF CACHE BOOL "build imgui examples" FORCE)
 
-# fetch raygui
+# fetch imgui
 FetchContent_Declare(
-    raygui
+    imgui
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
-    URL "https://github.com/raysan5/raygui/archive/refs/tags/${RAYGUI_VERSION}.tar.gz"
+    URL "https://github.com/ocornut/imgui/archive/refs/tags/v${IMGUI_VERSION}.tar.gz"
 )
-FetchContent_MakeAvailable(raygui)
+FetchContent_MakeAvailable(imgui)
 
-# use raygui header file as an interface library since raygui doesn't have its own CMakeLists.txt
-# unlike raylib which does
-add_library(raygui INTERFACE)
-target_include_directories(raygui INTERFACE ${raygui_SOURCE_DIR}/src)
+# create imgui library from source files
+set(IMGUI_SOURCES
+    ${imgui_SOURCE_DIR}/imgui.cpp
+    ${imgui_SOURCE_DIR}/imgui_demo.cpp
+    ${imgui_SOURCE_DIR}/imgui_draw.cpp
+    ${imgui_SOURCE_DIR}/imgui_tables.cpp
+    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+)
 
-# use the compiler flag "-w" to ignore all warnings when compiling raygui
-target_compile_options(raygui INTERFACE -w)
+add_library(imgui_sources STATIC ${IMGUI_SOURCES})
+target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
+target_compile_options(imgui PUBLIC -w)
+
+# fetch rlimgui
+FetchContent_Declare(
+    rlimgui
+    DOWNLOAD_EXTRACT_TIMESTAMP OFF
+    URL "https://github.com/raylib-extras/rlImGui/archive/refs/heads/${RLIMGUI_VERSION}.tar.gz"
+)
+FetchContent_MakeAvailable(rlimgui)
+
+# create rlimgui library
+# add_library(rlimgui STATIC ${rlimgui_SOURCE_DIR}/rlImGui.cpp)
+# target_include_directories(rlimgui INTERFACE ${rlimgui_SOURCE_DIR})
+# target_link_libraries(rlimgui PUBLIC raylib imgui)
+# target_compile_options(rlimgui PUBLIC -w)
 
 # # bullet options
 # set(USE_MSVC_RUNTIME_LIBRARY_DLL    ON CACHE BOOL "use MSVC runtime library" FORCE)
@@ -121,7 +141,8 @@ set(TEST
 
 set(LIBRARIES
     raylib
-    raygui
+    imgui
+    rlimgui
     box2d
 
     # Bullet3Common
@@ -136,7 +157,6 @@ set(LIBRARIES
 
 # add main executable
 add_executable(${EXECUTABLE_NAME} ${SOURCE})
-target_include_directories(${EXECUTABLE_NAME} INTERFACE ${raygui_SOURCE_DIR}/src)
 # target_include_directories(${EXECUTABLE_NAME} PRIVATE ${bullet_SOURCE_DIR}/src)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE ${LIBRARIES})
 

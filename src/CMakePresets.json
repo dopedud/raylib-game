@@ -18,7 +18,6 @@
             "cacheVariables":
             {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
                 "CMAKE_CXX_FLAGS": "-g -O0 -Wall -Wextra -Wpedantic -DDEBUG"
             }
         },
@@ -31,7 +30,6 @@
             "cacheVariables":
             {
                 "CMAKE_BUILD_TYPE": "Release",
-                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
                 "CMAKE_CXX_FLAGS": "-O3 -DNDEBUG -march=native -mwindows"
             }
         }

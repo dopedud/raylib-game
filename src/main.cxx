@@ -9,8 +9,8 @@
 
 #include "raylib.h"
 #include "raymath.h"
-#define RAYGUI_IMPLEMENTATION
-#include "raygui.h"
+#include "imgui.h"
+#include "rlImGui.h"
 
 #include "box2d/box2d.h"
 
