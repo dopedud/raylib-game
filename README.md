@@ -10,24 +10,52 @@ physics engine powered by [Box2D](https://box2d.org/) ([Github link](https://git
 ([Github link](https://github.com/bulletphysics/bullet3)).
 -->
 
-## Running the Game
+## Compiling Running the Game
 
-Use the `run.bat` file via typing `run` in console. There's nothing special about `run.bat`; it only acts as an alias
-to the full path to the executable `build\lib\main.exe`.
+Use the `run.bat` file via typing `run` in console. It will run `cmake --build build`, `cmake --install build`, and
+`installs\bin\game` on the console to build and run the game accordingly.
 
 ## Compilation Notes
 
 This project uses [CMake](https://cmake.org/) to build its files. Therefore, CMake is required to build this project.
-All the build parameters and overall settings are written in `CMakeLists.txt`, and build presets are written in
-`CmakePresets.json`. All CMake operations are done within the console, with this project's root directory as its
+All the build parameters and overall settings are written in `CMakeLists.txt`, project-wide build presets are written in
+`CmakePresets.json`, and user-specific build presets are written in `CMakeUserPresets.json`. All CMake operations are done within the console, with this project's root directory as its
 working directory.
 
 Build files are required to build this project, and CMake will first need to configure those build files. To configure,
-type `cmake --preset debug src -B build` in console.
+you first need to have `CMakeUserPresets.json` that defines what Make generators are available in your system for
+CMake to use. One such `CMakeUserPresets.json` is shown below:
+
+```json
+{
+    "name": "user-debug",
+    "inherits": "debug",
+    "displayName": "Debug Config (User)",
+    "generator": "MinGW Makefiles",
+    "cacheVariables":
+    {
+        "CMAKE_MAKE_PROGRAM": "C:/msys64/mingw64/bin/mingw32-make.exe"
+    }
+},
+
+{
+    "name": "user-release",
+    "inherits": "release",
+    "displayName": "Release Config (User)",
+    "generator": "MinGW Makefiles",
+    "cacheVariables":
+    {
+        "CMAKE_MAKE_PROGRAM": "C:/msys64/mingw64/bin/mingw32-make.exe"
+    }
+}
+```
+
+Both of these JSON objects are put inside `configurePresets` JSON array. Otherwise, `CMakeUserPresets.json` follows the
+same JSON structure as `CMakePresets.json`.
 
 The `--preset` command allows the user to choose which configuration or build preset should CMake use for this project.
 This can range from determining which build generators to use (for this project it's `MinGW Makefiles`), to setting the
-cache variables before reading `CMakeLists.txt`. In the case of this project, it's only used to specify which build
+cache variables before reading `CMakeLists.txt`. In the case of this project, it's used to both specify which build
 generator should CMake use, and the compiler flags for both debug and release build respectively.
 
 Optionally, the `--fresh` argument should be used if `CMakeLists.txt` file was changed. The `--fresh` argument rewrites
@@ -43,14 +71,13 @@ command execution, which is an expected behaviour. One can then enter the config
 One can also delete the `_deps` directory (the directory where this project's dependencies reside) via the target
 `full_clean_dependency`.
 
-common commands (for easy copy):
+Common commands (for easy copy):
 
 ```
 cmake --build build --target clean_install
 cmake --build build --target full_clean
 cmake --build build --target full_clean_dependency
 cmake --fresh --preset user-debug . -B build
-cmake --fresh --preset debug . -B build
 cmake --build build
 ```
 
@@ -66,7 +93,7 @@ More information can be found by opening the documentation under the `docs` dire
 ### Generating the Documentation
 
 To generate this project's architecture diagram, [PlantUML](https://plantuml.com/) must be installed. Version
-`1.2025.4` is used to generate the diagram. It is packaged as a `.jar` file, and be placed in this project's root
+`1.2025.4` is used to generate the diagram. It is packaged as a `.jar` file, and can placed in this project's root
 directory. To generate the diagram, type in the command below in command prompt:
 
 ```

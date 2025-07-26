@@ -188,25 +188,7 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
 set(CMAKE_INSTALL_MESSAGE LAZY)
-set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/../installs")
-
-# set(INSTALLABLE_TARGETS ${EXECUTABLE_NAME})
-
-# # add targets only if they were built locally
-# if(NOT raylib_FOUND)
-#     list(APPEND INSTALLABLE_TARGETS raylib)
-# endif()
-
-# if(NOT imgui_FOUND)
-#     list(APPEND INSTALLABLE_TARGETS imgui)
-# endif()
-
-# if(NOT box2d_FOUND)
-#     list(APPEND INSTALLABLE_TARGETS box2d)
-# endif()
-
-# # always add custom targets
-# list(APPEND INSTALLABLE_TARGETS rlimgui)
+set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/installs")
 
 install(TARGETS ${EXECUTABLE_NAME} ${LIBRARIES}
     RUNTIME DESTINATION bin
@@ -214,7 +196,7 @@ install(TARGETS ${EXECUTABLE_NAME} ${LIBRARIES}
     ARCHIVE DESTINATION lib
 )
 
-install(DIRECTORY resources/ DESTINATION resources)
+install(DIRECTORY src/resources/ DESTINATION resources)
 
 # create a custom target to clean (remove) install files
 add_custom_target(clean_install
