@@ -37,8 +37,6 @@ int main(int argc, char* argv[])
 {
     settings::initialise();
 
-    ResourceManager::instance();
-
     Vector2 ground_size { 200.0f, .25f };
     Vector2 ground_position { .0f, -2.0f };
 
@@ -97,13 +95,13 @@ int main(int argc, char* argv[])
         */
         
         /*
-        ** INPUT POLLING UPDATE (UPDATES EVERY FIXED INTERVAL WITH HIGH FREQUENCY)
+        ** INPUT POLLING UPDATE (UPDATES EVERY FIXED HIGH FREQUENCY INTERVAL)
         */
         input_poll_count += GetFrameTime();
 
         while (input_poll_count >= settings::INPUT::TIMESTEP)
         {
-            camera.handle_move();
+            camera.handle_input();
             // player.handle_input();
 
             input_poll_count -= settings::INPUT::TIMESTEP;
@@ -124,7 +122,7 @@ int main(int argc, char* argv[])
         ** DRAWING FUNCTIONS
         */
         BeginDrawing();
-            ClearBackground(BLACK);
+            ClearBackground((Color){253, 246, 227, 255});
 
             BeginMode3D(camera.camera());
                 DrawGrid(100, 1);
@@ -136,7 +134,33 @@ int main(int argc, char* argv[])
             EndMode3D();
 
             rlImGuiBegin();
-                ImGui::ShowDemoWindow();
+            ImGui::PushFont(ResourceManager::instance().get_default_font_resource(), .0f);
+
+            ImGui::Begin("Variables", NULL);
+                float max_speed = camera.max_speed();
+                ImGui::SliderFloat("Camera Max Speed",
+                    &max_speed,
+                    CameraController::MAX_SPEED_MIN,
+                    CameraController::MAX_SPEED_MAX,
+                    "%.0f",
+                    ImGuiSliderFlags_AlwaysClamp
+                );
+                camera.set_max_speed(max_speed);
+
+                float smooth_multiplier = camera.smooth_multiplier();
+                ImGui::SliderFloat("Camera Smooth Multiplier", 
+                    &smooth_multiplier,
+                    CameraController::SMOOTH_MULTIPLIER_MIN,
+                    CameraController::SMOOTH_MULTIPLIER_MAX,
+                    "%.0f",
+                    ImGuiSliderFlags_AlwaysClamp
+                );
+                camera.set_smooth_multiplier(smooth_multiplier);
+            ImGui::End();
+            
+            ImGui::ShowDemoWindow();
+
+            ImGui::PopFont();
             rlImGuiEnd();
 
         EndDrawing();

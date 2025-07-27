@@ -4,11 +4,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # dependencies' versions
-set(RAYLIB_VERSION 5.5)
-set(IMGUI_VERSION 1.92.1)
-set(RLIMGUI_VERSION master)
-set(BULLET_VERSION 3.25)
-set(BOX2D_VERSION 3.1.0)
+set(RAYLIB_VERSION "5.5")
+set(IMGUI_VERSION "v1.92.1-docking")
+set(RLIMGUI_VERSION "main")
+set(BULLET_VERSION "3.25")
+set(BOX2D_VERSION "3.1.0")
 
 project(raylib-game)
 set(EXECUTABLE_NAME game)
@@ -44,7 +44,8 @@ set(IMGUI_BUILD_EXAMPLES OFF CACHE BOOL "build imgui examples" FORCE)
 FetchContent_Declare(
     imgui
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
-    URL "https://github.com/ocornut/imgui/archive/refs/tags/v${IMGUI_VERSION}.tar.gz"
+    GIT_REPOSITORY "https://github.com/ocornut/imgui.git"
+    GIT_TAG "${IMGUI_VERSION}"
 )
 FetchContent_MakeAvailable(imgui)
 
@@ -65,7 +66,8 @@ target_compile_options(imgui PUBLIC -w)
 FetchContent_Declare(
     rlimgui
     DOWNLOAD_EXTRACT_TIMESTAMP OFF
-    URL "https://github.com/raylib-extras/rlImGui/archive/refs/heads/${RLIMGUI_VERSION}.tar.gz"
+    GIT_REPOSITORY "https://github.com/raylib-extras/rlImGui.git"
+    GIT_TAG "${RLIMGUI_VERSION}"
 )
 FetchContent_MakeAvailable(rlimgui)
 

@@ -83,6 +83,10 @@ ResourceManager::ResourceManager()
             GenMeshCube(-width, -height, .0f)
         ));
     }
+
+    ImGuiIO& io = ImGui::GetIO();
+    default_font = io.Fonts->AddFontFromFileTTF(FONTPATH::CASCADIA_CODE.data(), 32.0f);
+    if (default_font == nullptr) io.Fonts->AddFontDefault();
 }
 
 ResourceManager::~ResourceManager()

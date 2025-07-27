@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "raylib.h"
+#include "imgui.h"
 
 #include "box2d/box2d.h"
 
@@ -42,6 +43,11 @@ namespace resourcevars
         {
             static constexpr std::string_view SHADER { "../resources/shaders/glsl/player" };
         };
+    };
+
+    struct FONTPATH
+    {
+        static constexpr std::string_view CASCADIA_CODE { "../resources/CascadiaCode.ttf" };
     };
 };
 
@@ -107,6 +113,8 @@ private:
     std::vector<Shader> shader_resources {};                /**< @public */
     std::vector<Model> model_resources {};                  /**< @public */
 
+    ImFont* default_font {};
+
     /** @} */
 
     ResourceManager();
@@ -140,27 +148,32 @@ public:
      * allowed at any given time. In C++, the implementation below is one of the common ways to implement such design
      * pattern.
      */
-    static ResourceManager& instance()
+    inline static ResourceManager& instance()
     {
         // created only once, thread-safe in C++11+
         static ResourceManager instance {};
         return instance;
     }
 
-    b2WorldId world_id() { return m_world_id; }
+    inline b2WorldId world_id() { return m_world_id; }
 
-    std::vector<Texture>* get_texture_resource(const TextureResource texture_resource)
+    inline std::vector<Texture>* get_texture_resource(const TextureResource texture_resource)
     {
         return &texture_resources[static_cast<int>(texture_resource)];
     }
 
-    Shader* get_shader_resource(const ShaderResource shader_resource)
+    inline Shader* get_shader_resource(const ShaderResource shader_resource)
     {
         return &shader_resources[static_cast<int>(shader_resource)];
     }
 
-    Model* get_model_resource(const ModelResource model_resource)
+    inline Model* get_model_resource(const ModelResource model_resource)
     {
         return &model_resources[static_cast<int>(model_resource)];
+    }
+
+    inline ImFont* get_default_font_resource()
+    {
+        return default_font;
     }
 };

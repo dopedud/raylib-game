@@ -7,8 +7,13 @@
 #include <ctime>
 
 #include "raylib.h"
+#include "raymath.h"
+#include "rcamera.h"
 #include "rlgl.h"
+#include "imgui.h"
 #include "rlImGui.h"
+
+#include "resource_manager.h"
 
 void settings::initialise()
 {
@@ -27,6 +32,11 @@ void settings::initialise()
     SetExitKey(KEY_NULL);
 
     rlImGuiSetup(true);
+
+    ResourceManager::instance();
+
+    ImGuiIO& imgui_io = ImGui::GetIO();
+    imgui_io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 }
 
 void settings::deinitialise()

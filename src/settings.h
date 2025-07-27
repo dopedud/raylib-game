@@ -22,6 +22,8 @@
 
 #include <cstdarg>
 
+#include "raylib.h"
+
 #define MAX_TRACELOG_MSG_LENGTH 1024
 
 namespace settings
@@ -58,6 +60,9 @@ namespace settings
      */
     void initialise();
 
+    /**
+     * @private
+     */
     void deinitialise();
 
     /**
