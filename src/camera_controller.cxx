@@ -20,12 +20,12 @@ void CameraController::follow(Transform target)
 
 void CameraController::handle_input()
 {
-    Vector2 mouse_delta = GetMouseDelta() * m_mouse_sensitivity * COMMON_FACTOR;
+    Vector2 mouse_delta { GetMouseDelta() * m_mouse_sensitivity * COMMON_FACTOR };
 
     if (Vector2Length(mouse_delta) > .0f)
     {
-        float yaw = mouse_delta.x;
-        float pitch = mouse_delta.y;
+        float yaw { mouse_delta.x };
+        float pitch { mouse_delta.y };
         
         CameraYaw(&m_camera, -yaw, false);
         CameraPitch(&m_camera, -pitch, true, false, false);
@@ -42,8 +42,8 @@ void CameraController::handle_input()
     
     local_move_vector = Vector3Normalize(local_move_vector);
 
-    float max_speed = m_max_speed * COMMON_FACTOR;
-    float smooth_multiplier = m_smooth_multiplier * COMMON_FACTOR;
+    float max_speed { m_max_speed * COMMON_FACTOR };
+    float smooth_multiplier { m_smooth_multiplier * COMMON_FACTOR };
     
     if (!FloatEquals(Vector3Length(local_move_vector), .0f))
     move_vector = Vector3Lerp(
@@ -67,9 +67,9 @@ void CameraController::handle_input()
     if (!FloatEquals(move_vector.y, 0.0f))
     {
         // calculate camera's local coordinate system
-        Vector3 forward = Vector3Normalize(Vector3Subtract(m_camera.target, m_camera.position));
-        Vector3 right = Vector3Normalize(Vector3CrossProduct(forward, m_camera.up));
-        Vector3 local_up = Vector3CrossProduct(right, forward);
+        Vector3 forward { Vector3Normalize(Vector3Subtract(m_camera.target, m_camera.position)) };
+        Vector3 right { Vector3Normalize(Vector3CrossProduct(forward, m_camera.up)) };
+        Vector3 local_up { Vector3CrossProduct(right, forward) };
         
         // move both position and target to maintain camera orientation
         m_camera.position = Vector3Add(m_camera.position, Vector3Scale(local_up, move_vector.y));

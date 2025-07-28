@@ -31,12 +31,15 @@ void settings::initialise()
 
     SetExitKey(KEY_NULL);
 
+    SetTargetFPS(settings::GENERAL::TARGET_FPS);
+
     rlImGuiSetup(true);
 
     ResourceManager::instance();
 
     ImGuiIO& imgui_io = ImGui::GetIO();
     imgui_io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    imgui_io.ConfigDockingWithShift = true;
 }
 
 void settings::deinitialise()

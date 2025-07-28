@@ -85,7 +85,7 @@ ResourceManager::ResourceManager()
     }
 
     ImGuiIO& io = ImGui::GetIO();
-    default_font = io.Fonts->AddFontFromFileTTF(FONTPATH::CASCADIA_CODE.data(), 32.0f);
+    default_font = io.Fonts->AddFontFromFileTTF(FONTPATH::CASCADIA_CODE.data());
     if (default_font == nullptr) io.Fonts->AddFontDefault();
 }
 

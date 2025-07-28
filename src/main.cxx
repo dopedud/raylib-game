@@ -41,18 +41,18 @@ int main(int argc, char* argv[])
     Vector2 ground_position { .0f, -2.0f };
 
     // defining physics body for ground
-    b2BodyDef ground_def = b2DefaultBodyDef();
+    b2BodyDef ground_def { b2DefaultBodyDef() };
     ground_def.position = { ground_position.x, ground_position.y };
-    b2BodyId ground_id = b2CreateBody(ResourceManager::instance().world_id(), &ground_def);
+    b2BodyId ground_id { b2CreateBody(ResourceManager::instance().world_id(), &ground_def) };
 
     // creating physics shape for ground
-    b2ShapeDef shape_def = b2DefaultShapeDef();
-    b2Polygon polygon_box = b2MakeBox(ground_size.x / 2, ground_size.y / 2);
+    b2ShapeDef shape_def { b2DefaultShapeDef() };
+    b2Polygon polygon_box { b2MakeBox(ground_size.x / 2, ground_size.y / 2) };
     b2CreatePolygonShape(ground_id, &shape_def, &polygon_box);
 
     // generating mesh and material for ground
-    Image imageGen = GenImageColor(1024, 1024, WHITE);
-    Model ground_model = LoadModelFromMesh(GenMeshCube(-ground_size.x, -ground_size.y, .0f));
+    Image imageGen { GenImageColor(1024, 1024, WHITE) };
+    Model ground_model { LoadModelFromMesh(GenMeshCube(-ground_size.x, -ground_size.y, .0f)) };
     ground_model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = LoadTextureFromImage(imageGen);
     UnloadImage(imageGen);
 
@@ -63,7 +63,6 @@ int main(int argc, char* argv[])
     Model dummy { LoadModel("../resources/monke.glb") };
 
     EnableCursor();
-    SetTargetFPS(settings::GENERAL::TARGET_FPS);
 
     float physics_sim_count {};
     float input_poll_count {};
@@ -122,7 +121,7 @@ int main(int argc, char* argv[])
         ** DRAWING FUNCTIONS
         */
         BeginDrawing();
-            ClearBackground((Color){253, 246, 227, 255});
+            ClearBackground(Color{253, 246, 227, 255});
 
             BeginMode3D(camera.camera());
                 DrawGrid(100, 1);
@@ -134,11 +133,49 @@ int main(int argc, char* argv[])
             EndMode3D();
 
             rlImGuiBegin();
-            ImGui::PushFont(ResourceManager::instance().get_default_font_resource(), .0f);
+            ImGui::PushFont(ResourceManager::instance().get_default_font_resource(), 18.0f);
 
-            ImGui::Begin("Variables", NULL);
+            ImGuiViewport* viewport { ImGui::GetMainViewport() };
+            ImVec2 WorkPos { viewport->WorkPos };
+            ImVec2 WorkSize { viewport->WorkSize };
+
+            ImGui::SetNextWindowViewport(viewport->ID);
+            ImGui::SetNextWindowPos(WorkPos);
+            ImGui::SetNextWindowSize(WorkSize);
+            ImGui::Begin("DockSpace", nullptr, 
+                ImGuiWindowFlags_NoDocking |
+                ImGuiWindowFlags_NoDecoration |
+                ImGuiWindowFlags_NoMove |
+                ImGuiWindowFlags_NoBringToFrontOnFocus |
+                ImGuiWindowFlags_NoNavFocus |
+
+                ImGuiWindowFlags_MenuBar
+            );
+                if (ImGui::BeginMenuBar())
+                {
+                    if (ImGui::BeginMenu("About"))
+                    {
+                        ImGui::MenuItem("Undo", "CTRL+Z");
+                        ImGui::MenuItem("Undo", "CTRL+Z");
+                        ImGui::MenuItem("Undo", "CTRL+Z");
+                        ImGui::EndMenu();
+                    }
+
+                    ImGui::EndMenuBar();
+                }
+                
+                ImGuiID dockspace_id = ImGui::GetID("DockSpace");
+                ImGui::DockSpace(dockspace_id, ImVec2(.0f, .0f), ImGuiDockNodeFlags_None);
+            ImGui::End();
+
+            ImGui::SetNextWindowPos(ImVec2(), ImGuiCond_FirstUseEver, ImVec2(1.0f, .0f));
+            ImGui::SetNextWindowSize(ImVec2(200.0f, .0f), ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
+            ImGui::Begin("Variables", nullptr, ImGuiWindowFlags_NoCollapse);
+                ImGui::TextWrapped("Camera Max Speed");
+
                 float max_speed = camera.max_speed();
-                ImGui::SliderFloat("Camera Max Speed",
+                ImGui::SliderFloat("##camera_max_speed",
                     &max_speed,
                     CameraController::MAX_SPEED_MIN,
                     CameraController::MAX_SPEED_MAX,
@@ -147,8 +184,10 @@ int main(int argc, char* argv[])
                 );
                 camera.set_max_speed(max_speed);
 
+                ImGui::TextWrapped("Camera Smooth Multiplier");
+
                 float smooth_multiplier = camera.smooth_multiplier();
-                ImGui::SliderFloat("Camera Smooth Multiplier", 
+                ImGui::SliderFloat("##camera_smooth_multiplier", 
                     &smooth_multiplier,
                     CameraController::SMOOTH_MULTIPLIER_MIN,
                     CameraController::SMOOTH_MULTIPLIER_MAX,
@@ -157,8 +196,13 @@ int main(int argc, char* argv[])
                 );
                 camera.set_smooth_multiplier(smooth_multiplier);
             ImGui::End();
-            
+
+            ImGui::SetNextWindowPos(ImVec2(), ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowSize(ImVec2(200.0f, .0f), ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
             ImGui::ShowDemoWindow();
+
+            ImGui::ShowMetricsWindow();
 
             ImGui::PopFont();
             rlImGuiEnd();
