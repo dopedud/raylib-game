@@ -10,6 +10,7 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "rlImGui.h"
 
 #include "box2d/box2d.h"
@@ -136,13 +137,13 @@ int main(int argc, char* argv[])
             ImGui::PushFont(ResourceManager::instance().get_default_font_resource(), 18.0f);
 
             ImGuiViewport* viewport { ImGui::GetMainViewport() };
+            ImGui::SetNextWindowViewport(viewport->ID);
             ImVec2 WorkPos { viewport->WorkPos };
             ImVec2 WorkSize { viewport->WorkSize };
 
-            ImGui::SetNextWindowViewport(viewport->ID);
             ImGui::SetNextWindowPos(WorkPos);
             ImGui::SetNextWindowSize(WorkSize);
-            ImGui::Begin("DockSpace", nullptr, 
+            ImGui::Begin("Main", nullptr, 
                 ImGuiWindowFlags_NoDocking |
                 ImGuiWindowFlags_NoDecoration |
                 ImGuiWindowFlags_NoMove |
@@ -151,6 +152,9 @@ int main(int argc, char* argv[])
 
                 ImGuiWindowFlags_MenuBar
             );
+                ImGuiID dockspace_id = ImGui::GetID("DockSpace");
+                ImGui::DockSpace(dockspace_id, ImVec2(), ImGuiDockNodeFlags_None);
+
                 if (ImGui::BeginMenuBar())
                 {
                     if (ImGui::BeginMenu("About"))
@@ -163,44 +167,61 @@ int main(int argc, char* argv[])
 
                     ImGui::EndMenuBar();
                 }
-                
-                ImGuiID dockspace_id = ImGui::GetID("DockSpace");
-                ImGui::DockSpace(dockspace_id, ImVec2(.0f, .0f), ImGuiDockNodeFlags_None);
             ImGui::End();
 
-            ImGui::SetNextWindowPos(ImVec2(), ImGuiCond_FirstUseEver, ImVec2(1.0f, .0f));
-            ImGui::SetNextWindowSize(ImVec2(200.0f, .0f), ImGuiCond_FirstUseEver);
-            ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
-            ImGui::Begin("Variables", nullptr, ImGuiWindowFlags_NoCollapse);
-                ImGui::TextWrapped("Camera Max Speed");
+            // SETUP DOCK WINDOWS ONCE
+            static bool init { true };
+            if (init)
+            {
+                init = false;
 
-                float max_speed = camera.max_speed();
-                ImGui::SliderFloat("##camera_max_speed",
-                    &max_speed,
-                    CameraController::MAX_SPEED_MIN,
-                    CameraController::MAX_SPEED_MAX,
-                    "%.0f",
-                    ImGuiSliderFlags_AlwaysClamp
-                );
-                camera.set_max_speed(max_speed);
+                ImGui::DockBuilderRemoveNode(dockspace_id); 
+                ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+                ImGui::DockBuilderSetNodeSize(dockspace_id, WorkSize);
 
-                ImGui::TextWrapped("Camera Smooth Multiplier");
+                ImGui::DockBuilderDockWindow("MyPanel", dockspace_id);
+                ImGui::DockBuilderFinish(dockspace_id);
+            }
 
-                float smooth_multiplier = camera.smooth_multiplier();
-                ImGui::SliderFloat("##camera_smooth_multiplier", 
-                    &smooth_multiplier,
-                    CameraController::SMOOTH_MULTIPLIER_MIN,
-                    CameraController::SMOOTH_MULTIPLIER_MAX,
-                    "%.0f",
-                    ImGuiSliderFlags_AlwaysClamp
-                );
-                camera.set_smooth_multiplier(smooth_multiplier);
+            ImGui::Begin("MyPanel");
+                ImGui::Text("Hello from MyPanel!");
             ImGui::End();
 
-            ImGui::SetNextWindowPos(ImVec2(), ImGuiCond_FirstUseEver);
-            ImGui::SetNextWindowSize(ImVec2(200.0f, .0f), ImGuiCond_FirstUseEver);
-            ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
-            ImGui::ShowDemoWindow();
+            // ImGui::SetNextWindowPos(ImVec2(), ImGuiCond_FirstUseEver, ImVec2(1.0f, .0f));
+            // ImGui::SetNextWindowSize(ImVec2(.0f, .0f), ImGuiCond_FirstUseEver);
+            // ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
+            // ImGui::Begin("Variables", nullptr, ImGuiWindowFlags_NoCollapse);
+            //     ImGui::DockSpace(dockspace_id, ImVec2(.0f, .0f));
+
+            //     ImGui::TextWrapped("Camera Max Speed");
+
+            //     float max_speed { camera.max_speed() };
+            //     ImGui::SliderFloat("##camera_max_speed",
+            //         &max_speed,
+            //         CameraController::MAX_SPEED_MIN,
+            //         CameraController::MAX_SPEED_MAX,
+            //         "%.0f",
+            //         ImGuiSliderFlags_AlwaysClamp
+            //     );
+            //     camera.set_max_speed(max_speed);
+
+            //     ImGui::TextWrapped("Camera Smooth Multiplier");
+
+            //     float smooth_multiplier { camera.smooth_multiplier() };
+            //     ImGui::SliderFloat("##camera_smooth_multiplier",
+            //         &smooth_multiplier,
+            //         CameraController::SMOOTH_MULTIPLIER_MIN,
+            //         CameraController::SMOOTH_MULTIPLIER_MAX,
+            //         "%.0f",
+            //         ImGuiSliderFlags_AlwaysClamp
+            //     );
+            //     camera.set_smooth_multiplier(smooth_multiplier);
+            // ImGui::End();
+
+            // ImGui::SetNextWindowPos(ImVec2(), ImGuiCond_FirstUseEver);
+            // ImGui::SetNextWindowSize(ImVec2(.0f, .0f), ImGuiCond_FirstUseEver);
+            // ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
+            // ImGui::ShowDemoWindow();
 
             ImGui::ShowMetricsWindow();
 
