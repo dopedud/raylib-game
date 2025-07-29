@@ -68,9 +68,9 @@ int main(int argc, char* argv[])
     float physics_sim_count {};
     float input_poll_count {};
 
-    /*
-    ** GAME SIMULATION UPDATE (UPDATES EVERY FRAME)
-    */
+    /**
+     * GAME SIMULATION UPDATE (UPDATES EVERY FRAME)
+     */
     while (!WindowShouldClose())
     {
         if (IsKeyPressed(KEY_ESCAPE))
@@ -79,9 +79,9 @@ int main(int argc, char* argv[])
             else DisableCursor();
         }
 
-        /*
-        ** PHYSICS SIMULATION UPDATE (UPDATES EVERY FIXED INTERVAL)
-        */
+        /**
+         * PHYSICS SIMULATION UPDATE (UPDATES EVERY FIXED INTERVAL)
+         */
         physics_sim_count += GetFrameTime();
 
         while (physics_sim_count >= settings::PHYSICS::TIMESTEP)
@@ -90,13 +90,13 @@ int main(int argc, char* argv[])
             
             physics_sim_count -= settings::PHYSICS::TIMESTEP;
         }
-        /*
-        ** END PHYSICS SIMULATION UPDATE
-        */
+        /**
+         * END PHYSICS SIMULATION UPDATE
+         */
         
-        /*
-        ** INPUT POLLING UPDATE (UPDATES EVERY FIXED HIGH FREQUENCY INTERVAL)
-        */
+        /**
+         * INPUT POLLING UPDATE (UPDATES EVERY FIXED HIGH FREQUENCY INTERVAL)
+         */
         input_poll_count += GetFrameTime();
 
         while (input_poll_count >= settings::INPUT::TIMESTEP)
@@ -106,22 +106,22 @@ int main(int argc, char* argv[])
 
             input_poll_count -= settings::INPUT::TIMESTEP;
         }
-        /*
-        ** END INPUT POLLING UPDATE
-        */
+        /**
+         * END INPUT POLLING UPDATE
+         */
 
-        /*
-        ** ANIMATION SIMULATION
-        */
+        /**
+         * ANIMATION SIMULATION
+         */
         player.animate();
-        /*
-        ** END ANIMATION SIMULATION
-        */
+        /**
+         * END ANIMATION SIMULATION
+         */
 
-        /*
-        ** DRAWING FUNCTIONS
-        */
-        BeginDrawing();
+        /**
+         * DRAWING FUNCTIONS
+         */
+        BeginTextureMode(*ResourceManager::instance().get_rt());
             ClearBackground(Color{253, 246, 227, 255});
 
             BeginMode3D(camera.camera());
@@ -132,7 +132,29 @@ int main(int argc, char* argv[])
                 { .0f, .0f, 1.0f }, .0f, Vector3Ones, DARKGRAY);
                 player.draw();
             EndMode3D();
+        EndTextureMode();
 
+        BeginDrawing();
+            // ClearBackground(Color{253, 246, 227, 255});  
+
+            // /**
+            //  * DRAW WORLD
+            //  */
+            // BeginMode3D(camera.camera());
+            //     DrawGrid(100, 1);
+            //     settings::DrawGridY(100, 1);
+            //     DrawModel(dummy, { .0f, .0f, 10.0f }, 1.0f, WHITE);
+            //     DrawModelEx(ground_model, { ground_position.x, ground_position.y, .0f }, 
+            //     { .0f, .0f, 1.0f }, .0f, Vector3Ones, DARKGRAY);
+            //     player.draw();
+            // EndMode3D();
+            /**
+             * END DRAW WORLD
+             */
+
+            /**
+             * DRAW UI
+             */
             rlImGuiBegin();
             ImGui::PushFont(ResourceManager::instance().get_default_font_resource(), 18.0f);
 
@@ -155,84 +177,98 @@ int main(int argc, char* argv[])
                 ImGuiID dockspace_id = ImGui::GetID("DockSpace");
                 ImGui::DockSpace(dockspace_id, ImVec2(), ImGuiDockNodeFlags_None);
 
+                static bool show_demo {};
+                static bool show_metrics {};
+
                 if (ImGui::BeginMenuBar())
                 {
-                    if (ImGui::BeginMenu("About"))
+                    if (ImGui::BeginMenu("Settings"))
                     {
-                        ImGui::MenuItem("Undo", "CTRL+Z");
-                        ImGui::MenuItem("Undo", "CTRL+Z");
-                        ImGui::MenuItem("Undo", "CTRL+Z");
+                        ImGui::MenuItem("Show Demo Window", nullptr, &show_demo);
+                        ImGui::MenuItem("Show Metrics Window", nullptr, &show_metrics);
                         ImGui::EndMenu();
                     }
+
+                    ImGui::MenuItem("About");
 
                     ImGui::EndMenuBar();
                 }
             ImGui::End();
 
+            if (show_demo) ImGui::ShowDemoWindow();
+            if (show_metrics) ImGui::ShowMetricsWindow();
+
             // SETUP DOCK WINDOWS ONCE
-            static bool init { true };
-            if (init)
+            static bool init_dock { true };
+            if (init_dock)
             {
-                init = false;
+                init_dock = false;
 
                 ImGui::DockBuilderRemoveNode(dockspace_id); 
                 ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
                 ImGui::DockBuilderSetNodeSize(dockspace_id, WorkSize);
 
-                ImGui::DockBuilderDockWindow("MyPanel", dockspace_id);
+                ImGuiID left {};
+                ImGuiID right {};
+
+                ImGui::DockBuilderSplitNode(
+                    dockspace_id,
+                    ImGuiDir_Left,
+                    .3f,
+                    &left,
+                    &right
+                );
+
+                ImGui::DockBuilderDockWindow("Variables", left);
+                ImGui::DockBuilderDockWindow("Game", right);
                 ImGui::DockBuilderFinish(dockspace_id);
             }
 
-            ImGui::Begin("MyPanel");
-                ImGui::Text("Hello from MyPanel!");
+            ImGui::Begin("Variables", nullptr, ImGuiWindowFlags_NoCollapse);
+
+                ImGui::TextWrapped("Camera Max Speed");
+
+                float max_speed { camera.max_speed() };
+                ImGui::SliderFloat("##camera_max_speed",
+                    &max_speed,
+                    CameraController::MAX_SPEED_MIN,
+                    CameraController::MAX_SPEED_MAX,
+                    "%.0f",
+                    ImGuiSliderFlags_AlwaysClamp
+                );
+                camera.set_max_speed(max_speed);
+
+                ImGui::TextWrapped("Camera Smooth Multiplier");
+
+                float smooth_multiplier { camera.smooth_multiplier() };
+                ImGui::SliderFloat("##camera_smooth_multiplier",
+                    &smooth_multiplier,
+                    CameraController::SMOOTH_MULTIPLIER_MIN,
+                    CameraController::SMOOTH_MULTIPLIER_MAX,
+                    "%.0f",
+                    ImGuiSliderFlags_AlwaysClamp
+                );
+                camera.set_smooth_multiplier(smooth_multiplier);
             ImGui::End();
-
-            // ImGui::SetNextWindowPos(ImVec2(), ImGuiCond_FirstUseEver, ImVec2(1.0f, .0f));
-            // ImGui::SetNextWindowSize(ImVec2(.0f, .0f), ImGuiCond_FirstUseEver);
-            // ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
-            // ImGui::Begin("Variables", nullptr, ImGuiWindowFlags_NoCollapse);
-            //     ImGui::DockSpace(dockspace_id, ImVec2(.0f, .0f));
-
-            //     ImGui::TextWrapped("Camera Max Speed");
-
-            //     float max_speed { camera.max_speed() };
-            //     ImGui::SliderFloat("##camera_max_speed",
-            //         &max_speed,
-            //         CameraController::MAX_SPEED_MIN,
-            //         CameraController::MAX_SPEED_MAX,
-            //         "%.0f",
-            //         ImGuiSliderFlags_AlwaysClamp
-            //     );
-            //     camera.set_max_speed(max_speed);
-
-            //     ImGui::TextWrapped("Camera Smooth Multiplier");
-
-            //     float smooth_multiplier { camera.smooth_multiplier() };
-            //     ImGui::SliderFloat("##camera_smooth_multiplier",
-            //         &smooth_multiplier,
-            //         CameraController::SMOOTH_MULTIPLIER_MIN,
-            //         CameraController::SMOOTH_MULTIPLIER_MAX,
-            //         "%.0f",
-            //         ImGuiSliderFlags_AlwaysClamp
-            //     );
-            //     camera.set_smooth_multiplier(smooth_multiplier);
-            // ImGui::End();
-
-            // ImGui::SetNextWindowPos(ImVec2(), ImGuiCond_FirstUseEver);
-            // ImGui::SetNextWindowSize(ImVec2(.0f, .0f), ImGuiCond_FirstUseEver);
-            // ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
-            // ImGui::ShowDemoWindow();
-
-            ImGui::ShowMetricsWindow();
+                
+            ImGui::Begin("Game", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+                rlImGuiImageRenderTexture(ResourceManager::instance().get_rt());
+            ImGui::End();
 
             ImGui::PopFont();
             rlImGuiEnd();
+            /**
+             * END DRAW UI
+             */
 
         EndDrawing();
-        /*
-        ** END DRAWING FUNCTIONS
-        */
+        /**
+         * END DRAWING FUNCTIONS
+         */
     }
+    /**
+     * END GAME SIMULATION UPDATE
+     */
 
     b2DestroyBody(ground_id);
     UnloadModel(ground_model);

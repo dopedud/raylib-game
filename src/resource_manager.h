@@ -39,6 +39,11 @@ namespace resourcevars
 
     struct SHADERPATH
     {
+        struct DEFAULT
+        {
+            static constexpr std::string_view SHADER { "../resources/shaders/glsl/default" };
+        };
+
         struct PLAYER
         {
             static constexpr std::string_view SHADER { "../resources/shaders/glsl/player" };
@@ -69,6 +74,7 @@ enum class TextureResource
  */
 enum class ShaderResource
 {
+    DEFAULT,
     PLAYER,
     COUNT
 };
@@ -113,6 +119,8 @@ private:
     std::vector<Shader> shader_resources {};                /**< @public */
     std::vector<Model> model_resources {};                  /**< @public */
 
+    RenderTexture rt_target {};
+
     ImFont* default_font {};
 
     /** @} */
@@ -137,6 +145,7 @@ private:
     std::vector<Texture> load_texture_resource(const int frame_count, const std::string_view path_sv);
     
     Shader load_shader_resource(const std::string_view path_sv);
+    Shader load_shader_resource_fs(const std::string_view path_sv);
 
 public:
 
@@ -170,6 +179,11 @@ public:
     inline Model* get_model_resource(const ModelResource model_resource)
     {
         return &model_resources[static_cast<int>(model_resource)];
+    }
+
+    inline RenderTexture* get_rt()
+    {
+        return &rt_target;
     }
 
     inline ImFont* get_default_font_resource()

@@ -14,7 +14,9 @@ ResourceManager::ResourceManager()
     b2SetLengthUnitsPerMeter(1.0f);
     world_def.gravity.y = settings::PHYSICS::GRAVITY_ACCELERATION;
 
-    m_world_id = b2CreateWorld(&world_def); 
+    m_world_id = b2CreateWorld(&world_def);
+    
+    rt_target = LoadRenderTexture(1024, 1024);
 
     using namespace resourcevars;
 
@@ -47,6 +49,10 @@ ResourceManager::ResourceManager()
         {
             case static_cast<int>(ShaderResource::PLAYER):
                 shader_resources.emplace_back(load_shader_resource(SHADERPATH::PLAYER::SHADER));
+            break;
+
+            case static_cast<int>(ShaderResource::DEFAULT):
+                shader_resources.emplace_back(load_shader_resource(SHADERPATH::DEFAULT::SHADER));
             break;
         }
     }
@@ -103,6 +109,8 @@ ResourceManager::~ResourceManager()
 
     for (auto& model : model_resources)
     UnloadModel(model);
+
+    UnloadRenderTexture(rt_target);
 }
 
 std::vector<Texture> ResourceManager::load_texture_resource(const int frame_count, const std::string_view path_sv)
@@ -132,9 +140,11 @@ std::vector<Texture> ResourceManager::load_texture_resource(const int frame_coun
 Shader ResourceManager::load_shader_resource(const std::string_view path_sv)
 {
     std::string path { std::string(path_sv) };
+    return LoadShader((path + ".vs").c_str(), (path + ".fs").c_str());
+}
 
-    return LoadShader(
-        (path + ".vs").c_str(),
-        (path + ".fs").c_str()
-    );
+Shader ResourceManager::load_shader_resource_fs(const std::string_view path_sv)
+{
+    std::string path { std::string(path_sv) };
+    return LoadShader(0, (path + ".fs").c_str());
 }
