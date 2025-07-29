@@ -35,6 +35,8 @@ CMake to use. One such `CMakeUserPresets.json` is as shown below:
     "generator": "MinGW Makefiles",
     "cacheVariables":
     {
+        "CMAKE_C_COMPILER": "C:/msys64/ucrt64/bin/gcc.exe",
+        "CMAKE_CXX_COMPILER": "C:/msys64/ucrt64/bin/g++.exe",
         "CMAKE_MAKE_PROGRAM": "C:/msys64/mingw64/bin/mingw32-make.exe"
     }
 },
@@ -46,6 +48,8 @@ CMake to use. One such `CMakeUserPresets.json` is as shown below:
     "generator": "MinGW Makefiles",
     "cacheVariables":
     {
+        "CMAKE_C_COMPILER": "C:/msys64/ucrt64/bin/gcc.exe",
+        "CMAKE_CXX_COMPILER": "C:/msys64/ucrt64/bin/g++.exe",
         "CMAKE_MAKE_PROGRAM": "C:/msys64/mingw64/bin/mingw32-make.exe"
     }
 }
