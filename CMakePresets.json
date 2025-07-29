@@ -27,8 +27,6 @@
             "binaryDir": "build",
             "cacheVariables":
             {
-                "CMAKE_C_COMPILER": "gcc",
-                "CMAKE_CXX_COMPILER": "g++",
                 "CMAKE_BUILD_TYPE": "Release",
                 "CMAKE_CXX_FLAGS": "-O3 -DNDEBUG"
             }
