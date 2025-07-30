@@ -136,7 +136,6 @@ int main(int argc, char* argv[])
 #ifdef DEBUG
         BeginTextureMode(*ResourceManagerEditor::instance().game_view());
             ClearBackground(Color{253, 246, 227, 255});
-
             BeginMode3D(camera.camera());
                 DrawGrid(100, 1);
                 settings_editor::DrawGridY(100, 1);
@@ -271,18 +270,22 @@ int main(int argc, char* argv[])
                 camera.set_smooth_multiplier(smooth_multiplier);
             ImGui::End();
                 
-            ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
-                    if (ImGui::BeginMenuBar())
-                    {
-                        ImGui::MenuItem("Setings");
-                        ImGui::EndMenuBar();
-                    }
+            ImGui::Begin("Viewport", nullptr, 
+                ImGuiWindowFlags_NoCollapse |
+                ImGuiWindowFlags_MenuBar |
+                ImGuiWindowFlags_HorizontalScrollbar
+            );
+                if (ImGui::BeginMenuBar())
+                {
+                    ImGui::MenuItem("Setings");
+                    ImGui::EndMenuBar();
+                }
 
                 ImVec2 content_region = ImGui::GetContentRegionAvail();
 
                 RenderTexture* game_view = ResourceManagerEditor::instance().game_view();
 
-                if ((float)game_view->texture.width != content_region.x || 
+                if ((float)game_view->texture.width != content_region.x ||
                 (float)game_view->texture.height != content_region.y)
                 game_view = ResourceManagerEditor::instance().reload_game_view(content_region);
 
