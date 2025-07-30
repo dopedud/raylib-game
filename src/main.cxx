@@ -150,13 +150,11 @@ int main(int argc, char* argv[])
 
         BeginDrawing();
             ClearBackground(Color{253, 246, 227, 255});
-
 #ifndef DEBUG
             /**
              * DRAW WORLD
              */
             BeginMode3D(camera.camera());
-                DrawGrid(100, 1);
                 DrawModel(dummy, { .0f, .0f, 10.0f }, 1.0f, WHITE);
                 DrawModelEx(ground_model, { ground_position.x, ground_position.y, .0f }, 
                 { .0f, .0f, 1.0f }, .0f, Vector3Ones, DARKGRAY);
@@ -297,7 +295,6 @@ int main(int argc, char* argv[])
              * END DRAW EDITOR
              */
 #endif
-
         EndDrawing();
         /**
          * END DRAWING FUNCTIONS
