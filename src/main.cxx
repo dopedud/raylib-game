@@ -242,7 +242,7 @@ int main(int argc, char* argv[])
                 );
 
                 ImGui::DockBuilderDockWindow("Variables", left);
-                ImGui::DockBuilderDockWindow("Game", right);
+                ImGui::DockBuilderDockWindow("Viewport", right);
                 ImGui::DockBuilderFinish(dockspace_id);
             }
 
@@ -288,7 +288,7 @@ int main(int argc, char* argv[])
                 (float)game_view->texture.height != content_region.y)
                 game_view = ResourceManagerEditor::instance().reload_game_view(content_region);
 
-                // rlImGuiImageRenderTexture(game_view);
+                rlImGuiImageRenderTexture(game_view);
             ImGui::End();
 
             ImGui::PopFont();
