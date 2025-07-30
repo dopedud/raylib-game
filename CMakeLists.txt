@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.11) # FetchContent is available in 3.11+
 
+project(raylib-game)
+set(EXECUTABLE_NAME game)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -9,9 +12,6 @@ set(IMGUI_VERSION "v1.92.1-docking")
 set(RLIMGUI_VERSION "main")
 set(BULLET_VERSION "3.25")
 set(BOX2D_VERSION "3.1.0")
-
-project(raylib-game)
-set(EXECUTABLE_NAME game)
 
 # set to use shared libraries so the main executable's size remains small
 set(BUILD_SHARED_LIBS ON CACHE BOOL "build shared libraries" FORCE)
@@ -136,6 +136,9 @@ set(SRC
     player.cxx
     animated_model.cxx
     camera_controller.cxx
+
+    editor/settings_editor.cxx
+    editor/resource_manager_editor.cxx
 )
 
 # set your tests here
@@ -173,6 +176,10 @@ endforeach()
 add_executable(${EXECUTABLE_NAME} ${SRC_FILES})
 # target_include_directories(${EXECUTABLE_NAME} PRIVATE ${bullet_SOURCE_DIR}/src)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE ${LIBRARIES})
+target_include_directories(${EXECUTABLE_NAME} PRIVATE 
+    "${CMAKE_SOURCE_DIR}/src"
+    "${CMAKE_SOURCE_DIR}/src/editor"
+)
 
 # checks if OSX and links appropriate frameworks (only required on MacOS)
 if (APPLE)

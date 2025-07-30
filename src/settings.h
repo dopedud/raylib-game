@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include <cstdarg>
-
 #include "raylib.h"
 
 #define MAX_TRACELOG_MSG_LENGTH 1024
@@ -30,8 +28,10 @@ namespace settings
 {
     struct GENERAL
     {
-        static constexpr int SCREEN_WIDTH { 1280 };
-        static constexpr int SCREEN_HEIGHT { 720 };
+        static constexpr int INITIAL_SCREEN_WIDTH { 1280 };
+        static constexpr int INITIAL_SCREEN_HEIGHT { 720 };
+        static constexpr float INITIAL_ASPECT_RATIO 
+        { (float)INITIAL_SCREEN_WIDTH / (float)INITIAL_SCREEN_HEIGHT };
 
         static constexpr int TARGET_FPS { 512 };
 
@@ -65,13 +65,5 @@ namespace settings
      */
     void deinitialise();
 
-    /**
-     * @private
-     */
     void TimestampLogCallback(int logType, const char *text, va_list args);
-
-    /**
-     * @private
-     */
-    void DrawGridY(int slices, float spacing);
 }

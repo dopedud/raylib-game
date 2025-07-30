@@ -17,34 +17,24 @@
 
 void settings::initialise()
 {
-    ChangeDirectory(GetApplicationDirectory());
-
-    SetTraceLogLevel(LOG_DEBUG);
     SetTraceLogCallback(TimestampLogCallback);
 
-    SetRandomSeed(time(NULL));
+    ChangeDirectory(GetApplicationDirectory());
 
-    InitWindow(GENERAL::SCREEN_WIDTH, GENERAL::SCREEN_HEIGHT, "WINDOW");
+    InitWindow(GENERAL::INITIAL_SCREEN_WIDTH, GENERAL::INITIAL_SCREEN_HEIGHT, "WINDOW");
 
     SetWindowState(FLAG_WINDOW_RESIZABLE);
-    SetWindowMinSize(GENERAL::SCREEN_WIDTH, GENERAL::SCREEN_HEIGHT);
+    SetWindowMinSize(GENERAL::INITIAL_SCREEN_WIDTH, GENERAL::INITIAL_SCREEN_HEIGHT);
 
     SetExitKey(KEY_NULL);
 
     SetTargetFPS(settings::GENERAL::TARGET_FPS);
 
-    rlImGuiSetup(true);
-
     ResourceManager::instance();
-
-    ImGuiIO& imgui_io = ImGui::GetIO();
-    imgui_io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    imgui_io.ConfigDockingWithShift = true;
 }
 
 void settings::deinitialise()
 {
-    rlImGuiShutdown();
     CloseWindow();
 }
 
@@ -79,29 +69,4 @@ void settings::TimestampLogCallback(int logType, const char *text, va_list args)
 
     // if fatal logging, exit program
     if (logType == LOG_FATAL) exit(EXIT_FAILURE);
-}
-
-void settings::DrawGridY(int slices, float spacing)
-{
-    int halfSlices = slices/2;
-
-    rlBegin(RL_LINES);
-        for (int i = -halfSlices; i <= halfSlices; i++)
-        {
-            if (i == 0)
-            {
-                rlColor3f(0.5f, 0.5f, 0.5f);
-            }
-            else
-            {
-                rlColor3f(0.75f, 0.75f, 0.75f);
-            }
-
-            rlVertex3f((float)i*spacing, (float)-halfSlices*spacing, 0.0f);
-            rlVertex3f((float)i*spacing, (float)halfSlices*spacing, 0.0f);
-
-            rlVertex3f((float)-halfSlices*spacing, (float)i*spacing, 0.0f);
-            rlVertex3f((float)halfSlices*spacing, (float)i*spacing, 0.0f);
-        }
-    rlEnd();
 }

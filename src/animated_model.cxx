@@ -21,9 +21,9 @@ AnimatedModel::AnimatedModel
     std::vector<std::pair<int, float>>&& timing
 )
 
-: textures          { ResourceManager::instance().get_texture_resource(texture_resource) }
-, shader            { ResourceManager::instance().get_shader_resource(shader_resource) }
-, m_model           { ResourceManager::instance().get_model_resource(model_resource) }
+: textures          { ResourceManager::instance().texture_resource(texture_resource) }
+, shader            { ResourceManager::instance().shader_resource(shader_resource) }
+, m_model           { ResourceManager::instance().model_resource(model_resource) }
 , looping           { looping }
 , pivot             { pivot }
 , textures_timing   { timing }

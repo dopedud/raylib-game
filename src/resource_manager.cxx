@@ -15,8 +15,6 @@ ResourceManager::ResourceManager()
     world_def.gravity.y = settings::PHYSICS::GRAVITY_ACCELERATION;
 
     m_world_id = b2CreateWorld(&world_def);
-    
-    rt_target = LoadRenderTexture(1024, 1024);
 
     using namespace resourcevars;
 
@@ -64,15 +62,15 @@ ResourceManager::ResourceManager()
         switch (i)
         {
             case static_cast<int>(ModelResource::PLAYER_IDLE):
-                textures = *get_texture_resource(TextureResource::PLAYER_IDLE);
+                textures = *texture_resource(TextureResource::PLAYER_IDLE);
             break;
 
             case static_cast<int>(ModelResource::PLAYER_RUN):
-                textures = *get_texture_resource(TextureResource::PLAYER_RUN);
+                textures = *texture_resource(TextureResource::PLAYER_RUN);
             break;
 
             case static_cast<int>(ModelResource::PLAYER_SLIDE):
-                textures = *get_texture_resource(TextureResource::PLAYER_SLIDE);
+                textures = *texture_resource(TextureResource::PLAYER_SLIDE);
             break;
         }
 
@@ -86,14 +84,9 @@ ResourceManager::ResourceManager()
         } else TraceLog(LOG_WARNING, "Error reading texture resources array, setting width and height to 0 to create model...");
 
         model_resources.emplace_back(LoadModelFromMesh(
-            GenMeshCube(-width, -height, .0f)
+            GenMeshCube(width, -height, .0f)
         ));
     }
-
-    ImGuiIO& io = ImGui::GetIO();
-    io.IniFilename = NULL;
-    default_font = io.Fonts->AddFontFromFileTTF(FONTPATH::CASCADIA_CODE.data());
-    if (default_font == nullptr) io.Fonts->AddFontDefault();
 }
 
 ResourceManager::~ResourceManager()
@@ -109,19 +102,17 @@ ResourceManager::~ResourceManager()
 
     for (auto& model : model_resources)
     UnloadModel(model);
-
-    UnloadRenderTexture(rt_target);
 }
 
-std::vector<Texture> ResourceManager::load_texture_resource(const int frame_count, const std::string_view path_sv)
+std::vector<Texture> ResourceManager::load_texture_resource(const int count, const std::string_view path_sv)
 {
     std::string path { std::string(path_sv) };
 
     std::vector<Texture> textures {};
 
-    textures.resize(frame_count);
+    textures.resize(count);
 
-    for (int i = 0; i < frame_count; i++)
+    for (int i = 0; i < count; i++)
     {
         std::string formatted_path { path + "_" + std::to_string(i) + ".png" };
 

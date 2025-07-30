@@ -5,6 +5,8 @@
  * Main source file that act as the main entry point for the game program to start.
  */
 
+#define DEBUG ///// NOTE: TEMPORARY
+
 #include <iostream>
 
 #include "raylib.h"
@@ -19,6 +21,11 @@
 #include "player.h"
 #include "camera_controller.h"
 #include "resource_manager.h"
+
+#ifdef DEBUG
+#include "settings_editor.h"
+#include "resource_manager_editor.h"
+#endif
 
 __declspec(dllexport) unsigned long NvOptimusEnablement = 1;
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
@@ -37,6 +44,11 @@ void DrawGridY(int slices, float spacing);
 int main(int argc, char* argv[])
 {
     settings::initialise();
+    ResourceManager::instance();
+#ifdef DEBUG
+    settings_editor::initialise();
+    ResourceManagerEditor::instance();
+#endif
 
     Vector2 ground_size { 200.0f, .25f };
     Vector2 ground_position { .0f, -2.0f };
@@ -121,33 +133,35 @@ int main(int argc, char* argv[])
         /**
          * DRAWING FUNCTIONS
          */
-        BeginTextureMode(*ResourceManager::instance().get_rt());
+#ifdef DEBUG
+        BeginTextureMode(*ResourceManagerEditor::instance().game_view());
             ClearBackground(Color{253, 246, 227, 255});
 
             BeginMode3D(camera.camera());
                 DrawGrid(100, 1);
-                settings::DrawGridY(100, 1);
+                settings_editor::DrawGridY(100, 1);
                 DrawModel(dummy, { .0f, .0f, 10.0f }, 1.0f, WHITE);
                 DrawModelEx(ground_model, { ground_position.x, ground_position.y, .0f }, 
                 { .0f, .0f, 1.0f }, .0f, Vector3Ones, DARKGRAY);
                 player.draw();
             EndMode3D();
         EndTextureMode();
+#endif
 
         BeginDrawing();
-            // ClearBackground(Color{253, 246, 227, 255});  
+            ClearBackground(Color{253, 246, 227, 255});
 
-            // /**
-            //  * DRAW WORLD
-            //  */
-            // BeginMode3D(camera.camera());
-            //     DrawGrid(100, 1);
-            //     settings::DrawGridY(100, 1);
-            //     DrawModel(dummy, { .0f, .0f, 10.0f }, 1.0f, WHITE);
-            //     DrawModelEx(ground_model, { ground_position.x, ground_position.y, .0f }, 
-            //     { .0f, .0f, 1.0f }, .0f, Vector3Ones, DARKGRAY);
-            //     player.draw();
-            // EndMode3D();
+#ifndef DEBUG
+            /**
+             * DRAW WORLD
+             */
+            BeginMode3D(camera.camera());
+                DrawGrid(100, 1);
+                DrawModel(dummy, { .0f, .0f, 10.0f }, 1.0f, WHITE);
+                DrawModelEx(ground_model, { ground_position.x, ground_position.y, .0f }, 
+                { .0f, .0f, 1.0f }, .0f, Vector3Ones, DARKGRAY);
+                player.draw();
+            EndMode3D();
             /**
              * END DRAW WORLD
              */
@@ -155,8 +169,16 @@ int main(int argc, char* argv[])
             /**
              * DRAW UI
              */
+
+            /**
+             * END DRAW UI
+             */
+#else
+            /**
+             * DRAW EDITOR
+             */
             rlImGuiBegin();
-            ImGui::PushFont(ResourceManager::instance().get_default_font_resource(), 18.0f);
+            ImGui::PushFont(ResourceManagerEditor::instance().font_resource(), 18.0f);
 
             ImGuiViewport* viewport { ImGui::GetMainViewport() };
             ImGui::SetNextWindowViewport(viewport->ID);
@@ -204,7 +226,7 @@ int main(int argc, char* argv[])
             {
                 init_dock = false;
 
-                ImGui::DockBuilderRemoveNode(dockspace_id); 
+                ImGui::DockBuilderRemoveNode(dockspace_id);
                 ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
                 ImGui::DockBuilderSetNodeSize(dockspace_id, WorkSize);
 
@@ -251,15 +273,30 @@ int main(int argc, char* argv[])
                 camera.set_smooth_multiplier(smooth_multiplier);
             ImGui::End();
                 
-            ImGui::Begin("Game", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
-                rlImGuiImageRenderTexture(ResourceManager::instance().get_rt());
+            ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
+                    if (ImGui::BeginMenuBar())
+                    {
+                        ImGui::MenuItem("Setings");
+                        ImGui::EndMenuBar();
+                    }
+
+                ImVec2 content_region = ImGui::GetContentRegionAvail();
+
+                RenderTexture* game_view = ResourceManagerEditor::instance().game_view();
+
+                if ((float)game_view->texture.width != content_region.x || 
+                (float)game_view->texture.height != content_region.y)
+                game_view = ResourceManagerEditor::instance().reload_game_view(content_region);
+
+                // rlImGuiImageRenderTexture(game_view);
             ImGui::End();
 
             ImGui::PopFont();
             rlImGuiEnd();
             /**
-             * END DRAW UI
+             * END DRAW EDITOR
              */
+#endif
 
         EndDrawing();
         /**
@@ -276,6 +313,9 @@ int main(int argc, char* argv[])
     UnloadModel(dummy);
 
     settings::deinitialise();
+#ifdef DEBUG
+    settings_editor::deinitialise();
+#endif
 
     return 0;
 }

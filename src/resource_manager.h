@@ -119,10 +119,6 @@ private:
     std::vector<Shader> shader_resources {};                /**< @public */
     std::vector<Model> model_resources {};                  /**< @public */
 
-    RenderTexture rt_target {};
-
-    ImFont* default_font {};
-
     /** @} */
 
     ResourceManager();
@@ -139,10 +135,11 @@ private:
     /** @} */
 
     /**
-     * @param path Formatted path to textures. Paths are formatted (follow a certain regular expression) to allow
+     * @param 
+     * @param path_sv Formatted path to textures. Paths are formatted (follow a certain regular expression) to allow
      *             animations.
      */
-    std::vector<Texture> load_texture_resource(const int frame_count, const std::string_view path_sv);
+    std::vector<Texture> load_texture_resource(const int count, const std::string_view path_sv);
     
     Shader load_shader_resource(const std::string_view path_sv);
     Shader load_shader_resource_fs(const std::string_view path_sv);
@@ -166,28 +163,18 @@ public:
 
     inline b2WorldId world_id() { return m_world_id; }
 
-    inline std::vector<Texture>* get_texture_resource(const TextureResource texture_resource)
+    inline std::vector<Texture>* texture_resource(const TextureResource texture_resource)
     {
         return &texture_resources[static_cast<int>(texture_resource)];
     }
 
-    inline Shader* get_shader_resource(const ShaderResource shader_resource)
+    inline Shader* shader_resource(const ShaderResource shader_resource)
     {
         return &shader_resources[static_cast<int>(shader_resource)];
     }
 
-    inline Model* get_model_resource(const ModelResource model_resource)
+    inline Model* model_resource(const ModelResource model_resource)
     {
         return &model_resources[static_cast<int>(model_resource)];
-    }
-
-    inline RenderTexture* get_rt()
-    {
-        return &rt_target;
-    }
-
-    inline ImFont* get_default_font_resource()
-    {
-        return default_font;
     }
 };

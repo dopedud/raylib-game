@@ -10,8 +10,8 @@
 __declspec(dllexport) unsigned long NvOptimusEnablement = 1;
 __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
-constexpr int SCREEN_WIDTH { 1280 };
-constexpr int SCREEN_HEIGHT { 720 };
+constexpr int INITIAL_SCREEN_WIDTH { 1280 };
+constexpr int INITIAL_SCREEN_HEIGHT { 720 };
 
 void initialise();
 
@@ -28,10 +28,10 @@ int main()
     b2WorldId world_id = b2CreateWorld(&world_def);
 
     Vector2 ground_size { 2000.0f,  40.0f };
-    b2Vec2 ground_position { (float)SCREEN_WIDTH / 2, -(float)SCREEN_HEIGHT };
+    b2Vec2 ground_position { (float)INITIAL_SCREEN_WIDTH / 2, -(float)INITIAL_SCREEN_HEIGHT };
 
     Vector2 player_size { 40.0f, 40.0f };
-    b2Vec2 player_initial_position { (float)SCREEN_WIDTH / 2, -(float)SCREEN_HEIGHT + 10.0f };
+    b2Vec2 player_initial_position { (float)INITIAL_SCREEN_WIDTH / 2, -(float)INITIAL_SCREEN_HEIGHT + 10.0f };
 
     // defining physics body for ground
     b2BodyDef ground_body = b2DefaultBodyDef();
@@ -124,5 +124,5 @@ void initialise()
 {
     SetTraceLogLevel(LOG_DEBUG);
 
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "TEST WINDOW");
+    InitWindow(INITIAL_SCREEN_WIDTH, INITIAL_SCREEN_HEIGHT, "TEST WINDOW");
 }
