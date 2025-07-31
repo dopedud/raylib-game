@@ -281,9 +281,9 @@ int main(int argc, char* argv[])
                     ImGui::EndMenuBar();
                 }
 
-                ImVec2 content_region = ImGui::GetContentRegionAvail();
+                ImVec2 content_region { ImGui::GetContentRegionAvail() };
 
-                RenderTexture* game_view = ResourceManagerEditor::instance().game_view();
+                RenderTexture* game_view { ResourceManagerEditor::instance().game_view() };
 
                 if ((float)game_view->texture.width != content_region.x ||
                 (float)game_view->texture.height != content_region.y)

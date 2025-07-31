@@ -19,7 +19,7 @@ void settings_editor::initialise()
 
     rlImGuiSetup(true);
 
-    ImGuiIO& imgui_io = ImGui::GetIO();
+    ImGuiIO& imgui_io {  ImGui::GetIO() };
     imgui_io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     imgui_io.ConfigDockingWithShift = true;
 }

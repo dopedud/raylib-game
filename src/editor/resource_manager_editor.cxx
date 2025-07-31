@@ -10,7 +10,7 @@ ResourceManagerEditor::ResourceManagerEditor()
 
     rt_game_view = LoadRenderTexture(1024, 1024);
 
-    ImGuiIO& io = ImGui::GetIO();
+    ImGuiIO& io { ImGui::GetIO() };
     io.IniFilename = NULL;
     font = io.Fonts->AddFontFromFileTTF(FONTPATH::CASCADIA_CODE.data());
     if (font == nullptr) io.Fonts->AddFontDefault();
