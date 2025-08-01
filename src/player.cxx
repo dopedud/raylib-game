@@ -53,7 +53,7 @@ Player::Player()
         b2BodyDef bodydef = b2DefaultBodyDef();
         bodydef.type = b2_dynamicBody;
         bodydef.position = { .0f, 2.0f };
-        bodyIDs[i] = b2CreateBody(ResourceManager::instance().world_id(), &bodydef);
+        bodyIDs[i] = b2CreateBody(ResourceManager::instance()->world_id(), &bodydef);
 
         b2Vec2 extent {};
         extent.x = models[i].width() / 2;

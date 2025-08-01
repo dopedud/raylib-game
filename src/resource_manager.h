@@ -2,10 +2,11 @@
 
 #pragma once
 
+#include <memory>
 #include <vector>
 #include <utility>
-#include <string>
 #include <string_view>
+#include <mutex>
 
 #include "raylib.h"
 #include "imgui.h"
@@ -39,20 +40,14 @@ namespace resourcevars
 
     struct SHADERPATH
     {
-        struct DEFAULT
-        {
-            static constexpr std::string_view SHADER { "../resources/shaders/glsl/default" };
-        };
-
-        struct PLAYER
-        {
-            static constexpr std::string_view SHADER { "../resources/shaders/glsl/player" };
-        };
+        static constexpr std::string_view DEFAULT { "../resources/shaders/glsl/default" };
+        static constexpr std::string_view PLAYER { "../resources/shaders/glsl/player" };
     };
 
     struct FONTPATH
     {
         static constexpr std::string_view CASCADIA_CODE { "../resources/CascadiaCode.ttf" };
+        static constexpr std::string_view GOOGLE_SANS_CODE { "../resources/GoogleSansCode.ttf" };
     };
 };
 
@@ -106,6 +101,9 @@ class ResourceManager
 {
 private:
 
+    static std::unique_ptr<ResourceManager> m_instance;
+    static std::once_flag flag;
+
     /**
      * @name List of Resources
      * @brief A list of resources to maintain and be fetched from throughout the lifetime of this class.
@@ -120,9 +118,6 @@ private:
     std::vector<Model> model_resources {};                  /**< @public */
 
     /** @} */
-
-    ResourceManager();
-    ~ResourceManager();
 
     /**
      * @brief Delete copy constructors/assignment operators to disallow copying between resource managers.
@@ -147,6 +142,17 @@ private:
 public:
 
     /**
+     * @brief Constructors and destructors are made public to let std::unique_ptr get accessed to them, but they're
+     * intended to be private so as to prevent user from instantiating another resource manager.
+     * @{
+     */
+
+    ResourceManager();
+    ~ResourceManager();
+
+    /** @} */
+
+    /**
      * @fn
      * @brief ResourceManager static instance.
      * 
@@ -154,12 +160,7 @@ public:
      * allowed at any given time. In C++, the implementation below is one of the common ways to implement such design
      * pattern.
      */
-    inline static ResourceManager& instance()
-    {
-        // created only once, thread-safe in C++11+
-        static ResourceManager instance {};
-        return instance;
-    }
+    static ResourceManager* instance();
 
     inline b2WorldId world_id() { return m_world_id; }
 

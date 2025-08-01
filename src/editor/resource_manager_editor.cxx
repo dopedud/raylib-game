@@ -1,8 +1,16 @@
 #include "resource_manager_editor.h"
 
-#include "imgui.h"
-
 #include "resource_manager.h"
+
+ResourceManagerEditor* ResourceManagerEditor::instance()
+{
+    std::call_once(flag, []()
+    {
+        m_instance = std::make_unique<ResourceManagerEditor>();
+    });
+
+    return m_instance.get();
+}
 
 ResourceManagerEditor::ResourceManagerEditor()
 {
@@ -13,6 +21,7 @@ ResourceManagerEditor::ResourceManagerEditor()
     ImGuiIO& io { ImGui::GetIO() };
     io.IniFilename = NULL;
     font = io.Fonts->AddFontFromFileTTF(FONTPATH::CASCADIA_CODE.data());
+    font = io.Fonts->AddFontFromFileTTF(FONTPATH::GOOGLE_SANS_CODE.data());
     if (font == nullptr) io.Fonts->AddFontDefault();
 }
 

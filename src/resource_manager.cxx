@@ -7,6 +7,19 @@
 
 #include "settings.h"
 
+std::unique_ptr<ResourceManager> ResourceManager::m_instance { nullptr };
+std::once_flag ResourceManager::flag;
+
+ResourceManager* ResourceManager::instance()
+{
+    std::call_once(flag, []()
+    {
+        m_instance = std::make_unique<ResourceManager>();
+    });
+
+    return m_instance.get();
+}
+
 ResourceManager::ResourceManager()
 {
     b2WorldDef world_def { b2DefaultWorldDef() };
@@ -46,11 +59,11 @@ ResourceManager::ResourceManager()
         switch (i)
         {
             case static_cast<int>(ShaderResource::PLAYER):
-                shader_resources.emplace_back(load_shader_resource(SHADERPATH::PLAYER::SHADER));
+                shader_resources.emplace_back(load_shader_resource(SHADERPATH::PLAYER));
             break;
 
             case static_cast<int>(ShaderResource::DEFAULT):
-                shader_resources.emplace_back(load_shader_resource(SHADERPATH::DEFAULT::SHADER));
+                shader_resources.emplace_back(load_shader_resource(SHADERPATH::DEFAULT));
             break;
         }
     }

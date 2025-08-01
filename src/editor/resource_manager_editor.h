@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+#include <mutex>
+
 #include "raylib.h"
 #include "imgui.h"
 
@@ -7,23 +10,21 @@ class ResourceManagerEditor
 {
 private:
 
+    static std::unique_ptr<ResourceManagerEditor> m_instance;
+    static std::once_flag flag;
+
     RenderTexture rt_game_view {};
     ImFont* font {};
-
-    ResourceManagerEditor();
-    ~ResourceManagerEditor();
 
     ResourceManagerEditor(const ResourceManagerEditor&) = delete;
     ResourceManagerEditor& operator=(const ResourceManagerEditor&) = delete;
 
 public:
 
-    inline static ResourceManagerEditor& instance()
-    {
-        // created only once, thread-safe in C++11+
-        static ResourceManagerEditor instance {};
-        return instance;
-    }
+    ResourceManagerEditor();
+    ~ResourceManagerEditor();
+
+    static ResourceManagerEditor* instance();
 
     inline RenderTexture* game_view()
     {

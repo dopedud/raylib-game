@@ -29,8 +29,6 @@ void settings::initialise()
     SetExitKey(KEY_NULL);
 
     SetTargetFPS(settings::GENERAL::TARGET_FPS);
-
-    ResourceManager::instance();
 }
 
 void settings::deinitialise()

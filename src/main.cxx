@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
     // defining physics body for ground
     b2BodyDef ground_def { b2DefaultBodyDef() };
     ground_def.position = { ground_position.x, ground_position.y };
-    b2BodyId ground_id { b2CreateBody(ResourceManager::instance().world_id(), &ground_def) };
+    b2BodyId ground_id { b2CreateBody(ResourceManager::instance()->world_id(), &ground_def) };
 
     // creating physics shape for ground
     b2ShapeDef shape_def { b2DefaultShapeDef() };
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 
         while (physics_sim_count >= settings::PHYSICS::TIMESTEP)
         {
-            b2World_Step(ResourceManager::instance().world_id(), settings::PHYSICS::TIMESTEP, settings::PHYSICS::SUBSTEP_COUNT);
+            b2World_Step(ResourceManager::instance()->world_id(), settings::PHYSICS::TIMESTEP, settings::PHYSICS::SUBSTEP_COUNT);
             
             physics_sim_count -= settings::PHYSICS::TIMESTEP;
         }
@@ -134,7 +134,7 @@ int main(int argc, char* argv[])
          * DRAWING FUNCTIONS
          */
 #ifdef DEBUG
-        BeginTextureMode(*ResourceManagerEditor::instance().game_view());
+        BeginTextureMode(*ResourceManagerEditor::instance()->game_view());
             ClearBackground(Color{253, 246, 227, 255});
             BeginMode3D(camera.camera());
                 DrawGrid(100, 1);
@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
              * DRAW EDITOR
              */
             rlImGuiBegin();
-            ImGui::PushFont(ResourceManagerEditor::instance().font_resource(), 18.0f);
+            ImGui::PushFont(ResourceManagerEditor::instance()->font_resource(), 18.0f);
 
             ImGuiViewport* viewport { ImGui::GetMainViewport() };
             ImGui::SetNextWindowViewport(viewport->ID);
@@ -283,11 +283,11 @@ int main(int argc, char* argv[])
 
                 ImVec2 content_region { ImGui::GetContentRegionAvail() };
 
-                RenderTexture* game_view { ResourceManagerEditor::instance().game_view() };
+                RenderTexture* game_view { ResourceManagerEditor::instance()->game_view() };
 
                 if ((float)game_view->texture.width != content_region.x ||
                 (float)game_view->texture.height != content_region.y)
-                game_view = ResourceManagerEditor::instance().reload_game_view(content_region);
+                game_view = ResourceManagerEditor::instance()->reload_game_view(content_region);
 
                 rlImGuiImageRenderTexture(game_view);
             ImGui::End();
