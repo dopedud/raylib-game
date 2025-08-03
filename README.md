@@ -5,14 +5,10 @@
 This is the git repository for a project about making a game from scratch, written in C and C++ powered by
 [Raylib](https://www.raylib.com/index.html) ([Github link](https://github.com/raysan5/raylib?tab=readme-ov-file)) and
 physics engine powered by [Box2D](https://box2d.org/) ([Github link](https://github.com/erincatto/box2d)).
-<!--
-[Bullet](https://pybullet.org/wordpress/)
-([Github link](https://github.com/bulletphysics/bullet3)).
--->
 
-## Compiling Running the Game
+## Compiling and Running the Game
 
-Use the `run.bat` file via typing `run` in console. It will run `cmake --build build`, `cmake --install build`, and
+Use the `run.bat` file via typing `run` in terminal. It will run `cmake --build build`, `cmake --install build`, and
 `installs\bin\game` on the console to build and run the game accordingly.
 
 ## Compilation Notes
@@ -59,8 +55,8 @@ Both of these JSON objects are put inside `configurePresets` JSON array. Otherwi
 same JSON structure as `CMakePresets.json`. Note that you can define your own `CMakeUserPresets.json`, the ones shown
 above are just an example.
 
-The `--preset` command allows the user to choose which configuration or build preset should CMake use for this project.
-This can range from determining which build generators to use (for this project it's `MinGW Makefiles`), to setting the
+The `--preset` command allows you to choose which configuration or build preset should CMake use for this project. This
+can range from determining which build generators to use (for this project it's `MinGW Makefiles`), to setting the
 cache variables before reading `CMakeLists.txt`. In the case of this project, it's used to both specify which build
 generator should CMake use, and the compiler flags for both debug and release build respectively.
 
@@ -70,16 +66,16 @@ the `CMakeCache.txt` file which stores various variables and their values betwee
 After configuration, CMake can then build the project with the generated build files. To build, type in `cmake --build
 build` in console.
 
-In addition, if it is required to do a full clean of the build (basically deleting the whole `build` directory), the
-command `cmake --build build --target full_clean` should be used. It uses the custom target made in `CMakeLists.txt`
-file to delete the entire `build` directory to build this project from scratch. It may throw errors and the end of
-command execution, which is an expected behaviour. One can then enter the configuration stage, and proceed from there.
-One can also delete the `_deps` directory (the directory where this project's dependencies reside) via the target
+In addition, if you require a full clean of the build (basically deleting the whole `build` directory), the command
+`cmake --build build --target full_clean` should be used. It uses the custom target made in `CMakeLists.txt` file to
+delete the entire `build` directory to build this project from scratch. It may throw errors and the end of command
+execution, which is an expected behaviour. You can then enter the configuration stage, and proceed from there. You can
+also delete the `_deps` directory (the directory where this project's dependencies reside) via the target
 `full_clean_dependency`.
 
 Common commands (for easy copy):
 
-```
+```bash
 cmake --build build --target clean_install
 cmake --build build --target full_clean
 cmake --build build --target full_clean_dependency
@@ -87,22 +83,55 @@ cmake --fresh --preset user-debug . -B build
 cmake --build build
 ```
 
-## Development Notes
+## Architecture Overview
+
+### Tech Stack
+
+- **Programming Languages:** C and C++
+- **Windowing, Rendering, Audio, and Input Hanlding:** Raylib
+- **Debug GUI:** Dear IMGUI
+- **Physics Simulation:** Box2D
+
+
+### Project Structure
+
+```bash
+src/
+├─ main.cxx                # main game loop, physics, and rendering
+├─ resource_manager.*      # Singleton resource management
+├─ state_manager.*         # generic state management template
+├─ player.*                # player entity with physics and animation
+├─ animated_model.*        # 2D animation on 3D models
+├─ camera_controller.*     # camera handling
+├─ settings.*              # game configuration constants
+├─ editor/                 # debug editor (ImGui-based)
+└─ resources/              # game resources (audio, images, fonts, shader files,etc.)
+```
+
+### Architecture Diagram
 
 Overview of the architecture of this project can be illustrated by the diagram below:
 
 ![](docs/architecture.png "architecture")
 
 More information can be found by opening the documentation under the `docs` directory. You must first generate the
-`docs` directory with Doxygen by following the steps [here](#generating-the-documentation).
+`docs` directory with Doxygen by following the steps described [here](#documentation-generation).
 
-### Generating the Documentation
+### Important Notes
+
+This game has a feature in debug builds where you can switch between the normal view and the debug view, where Dear
+IMGUI comes into play and provide an editor-like experience to debug the game, without any code recompilation going on
+between mode transitions. This does mean that essentially you're not building the game in a game engine. You're just
+tweaking variables that you've already compiled in the code to be edited in the game in debug builds. This also means
+that the main development environment would still largely be building via code.
+
+## Documentation Generation
 
 To generate this project's architecture diagram, [PlantUML](https://plantuml.com/) must be installed. Version
-`1.2025.4` is used to generate the diagram. It is packaged as a `.jar` file, and can placed in this project's root
-directory. To generate the diagram, type in the command below in command prompt:
+`1.2025.4` is used to generate the diagram. It is packaged as a `.jar` file, and you can place it in this project's
+root directory. To generate the diagram, type in the command below in command prompt:
 
-```
+```bash
 java -jar plantuml-1.2025.4.jar architecture.puml -o docs
 ```
 
@@ -110,67 +139,29 @@ To generate this project's documentation, [Doxygen](https://www.doxygen.nl/index
 build the documentation files by entering the command below in command prompt with this project's root directory as the
 working directory:
 
-```
+```bash
 doxygen Doxyfile
 ```
 
 The `docs` directory will then be modified, and Doxygen provides different forms of output to view the documentation.
 For this project, a static HTML page will suffice, and can be accessed under:
 
-```
+```bash
 docs\html\index.html
 ```
 
+## Code Conventions
+
+- ALL_CAPS for `const` or `constepxr` variables and enum values
+- PascalCase for classes and enumerations
+- snake_case for namespaces, functions, variables, and file names
+- 4-space indentation
+- Allman brace style (opening and closing brace in newline)
+
+**Note:** Sometimes namespaces that should be snake_case are instead written in lowercase to avoid verbosity in code,
+granted that it can still convey the same message. For example, in `src/constants.h`, the namespace `resourcevars` should be
+`resource_variables` in snake_case, but in lowercase plus some character truncation it still contains the same meaning.
+
 ## Development Issues
 
-Critical Bugs
-
-3. State Management Never Used
-    - Player starts in IDLE state and never transitions
-    - MOVING and JUMPING states are empty in both animate() and draw() methods
-
-Unused/Incomplete Systems
-
-1. Multiple Physics Bodies
-    - Player creates 3 physics bodies (one per animation state) but only uses the first
-    - switch_to_body() method exists but never called after initialization
-    - Entire body-switching system is unused
-
-2. Camera Following
-    - PlayerCameraController::follow() is empty (player_camera_controller.cxx:15)
-    - Camera just moves right at fixed speed instead of following player
-    - No actual player tracking logic
-
-Missing Core Implementations
-
-1. State Transition Logic
-    - No detection of when to switch between IDLE/MOVING/JUMPING states
-    - Missing velocity-based state detection
-    - No ground detection for jumping mechanics
-
-2. Animation System Completion
-    - Only IDLE animation works
-    - MOVING and JUMPING cases are empty
-    - No model switching based on player state
-
-3. Proper Game Mechanics
-    - No ground detection system
-    - No collision feedback
-    - Limited jumping mechanics (just force application)
-
-Recommendations
-
-Immediate Fixes:
-
-3. Implement basic state transitions based on velocity
-4. Complete MOVING/JUMPING animation cases
-
-Architecture Improvements:
-
-1. Implement proper camera following with player position
-2. Add ground detection for realistic jumping
-3. Remove all Bullet physics references
-4. Add resource loading error handling
-5. Implement the body-switching system or remove unused bodies
-
-The project has excellent architectural foundations but needs completion of core game mechanics to be fully functional.
+There are issues to be addressed in this project, but for now I am too tired to list them out.

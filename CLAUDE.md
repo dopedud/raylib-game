@@ -1,6 +1,13 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file is the main `CLAUDE.md` that provides guidance to Claude Code (claude.ai/code) when working with code in
+this repository.
+
+## Project Description
+
+This is the git repository for a project about making a game from scratch, written in C and C++ powered by
+[Raylib](https://www.raylib.com/index.html) ([Github link](https://github.com/raysan5/raylib?tab=readme-ov-file)) and
+physics engine powered by [Box2D](https://box2d.org/) ([Github link](https://github.com/erincatto/box2d)).
 
 ## Build Commands
 
@@ -46,7 +53,30 @@ doxygen Doxyfile
 
 ## Architecture Overview
 
-This is a 3D game built with Raylib (graphics) and Box2D (physics), written in C++17. The project follows a component-based architecture with singleton resource management.
+This is a 3D game built with Raylib (graphics) and Box2D (physics), written in C++17. The project follows a
+component-based architecture with singleton resource management.
+
+### Tech Stack
+
+- **Programming Languages:** C and C++
+- **Windowing, Rendering, Audio, and Input Hanlding:** Raylib
+- **Debug GUI:** Dear IMGUI
+- **Physics Simulation:** Box2D
+
+### Project Structure
+
+```
+src/
+├─ main.cxx                # main game loop, physics, and rendering
+├─ resource_manager.*      # Singleton resource management
+├─ state_manager.*         # generic state management template
+├─ player.*                # player entity with physics and animation
+├─ animated_model.*        # 2D animation on 3D models
+├─ camera_controller.*     # camera handling
+├─ settings.*              # game configuration constants
+├─ editor/                 # debug editor (ImGui-based)
+└─ resources/              # game resources (audio, images, fonts, shader files,etc.)
+```
 
 ### Core Systems
 
@@ -73,20 +103,6 @@ This is a 3D game built with Raylib (graphics) and Box2D (physics), written in C
 **Camera System**
 - `CameraController` - Basic camera handling
 - `PlayerCameraController` - Intended for player following (incomplete)
-
-### Key Files Structure
-
-```
-src/
-├── main.cxx              # Main game loop, physics, and rendering
-├── resource_manager.*    # Singleton resource management
-├── state_manager.*       # Generic state management template
-├── player.*              # Player entity with physics and animation
-├── animated_model.*      # 2D animation on 3D models
-├── camera_controller.*   # Camera handling
-├── settings.*            # Game configuration constants
-└── editor/               # Debug editor (ImGui-based)
-```
 
 ### Known Issues & Incomplete Features
 
@@ -118,3 +134,22 @@ src/
 - CMake with FetchContent for dependencies (Raylib, ImGui, Box2D)
 - Separate debug/release presets with different compiler flags
 - User-specific presets in `CMakeUserPresets.json`
+
+## Code Conventions
+
+- ALL_CAPS for `const` or `constepxr` variables and enum values
+- PascalCase for classes and enumerations
+- snake_case for namespaces, functions, variables, and file names
+- 4-space indentation
+- Allman brace style (opening and closing brace in newline)
+
+**Note:** Sometimes namespaces that should be snake_case are instead written in lowercase to avoid verbosity in code,
+granted that it can still convey the same message. For example, in `src/constants.h`, the namespace `resourcevars`
+should be written as `resource_variables` in snake_case, but when writen in lowercase plus some character truncation,
+it can still contain the same meaning.
+
+## Instructions for Claude
+
+You are a senior game developer with 10+ years of experience, skilled in C and C++, game architecture, the ECS pattern,
+game rendering, and just game development in general. Respond as if mentoring a junior developer — be direct,
+low-level, and precise. Elaborate more on difficult concepts if necessary.
