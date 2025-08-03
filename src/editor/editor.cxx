@@ -1,15 +1,34 @@
 #include "editor.h"
 
+#include <memory>
+
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "rlImGui.h"
 
 #include "resource_manager_editor.h"
 #include "settings_editor.h"
+#include "camera_controller.h"
+
+std::unique_ptr<Editor> Editor::m_instance { nullptr };
+std::once_flag Editor::flag;
 
 Editor::Editor(PrivateKey)
 {
+    settings_editor::initialise();
+    ResourceManagerEditor::instance();
+}
 
+Editor::~Editor() {}
+
+Editor* Editor::instance()
+{
+    std::call_once(flag, []()
+    {
+        m_instance = std::make_unique<Editor>(PrivateKey{});
+    });
+
+    return m_instance.get();
 }
 
 void Editor::draw()

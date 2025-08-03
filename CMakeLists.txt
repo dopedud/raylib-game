@@ -136,7 +136,9 @@ set(SRC
     player.cxx
     animated_model.cxx
     camera_controller.cxx
+    camera_target.cxx
 
+    editor/editor.cxx
     editor/settings_editor.cxx
     editor/resource_manager_editor.cxx
 )

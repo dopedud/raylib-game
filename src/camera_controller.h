@@ -4,6 +4,7 @@
 #include "raymath.h"
 
 #include "settings.h"
+#include "camera_target.h"
 
 class CameraController
 {

@@ -25,8 +25,6 @@
 
 #ifdef DEBUG
 #include "editor.h"
-#include "settings_editor.h"
-#include "resource_manager_editor.h"
 #endif
 
 __declspec(dllexport) unsigned long NvOptimusEnablement = 1;
@@ -46,12 +44,9 @@ int main(int argc, char* argv[])
 #ifdef DEBUG
     Editor::instance();
 #endif
+
     settings::initialise();
     ResourceManager::instance();
-#ifdef DEBUG
-    settings_editor::initialise();
-    ResourceManagerEditor::instance();
-#endif
 
     Vector2 ground_size { 200.0f, .25f };
     Vector2 ground_position { .0f, -2.0f };
