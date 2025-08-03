@@ -14,7 +14,7 @@ private:
     struct PrivateKey { explicit PrivateKey() = default; };
 
     static std::unique_ptr<Editor> m_instance;
-    static std::once_flag flag;
+    static std::mutex locker;
 
     std::unique_ptr<EditorContext> context;
 
@@ -24,8 +24,9 @@ public:
     ~Editor();
 
     static Editor* instance();
+    static void destroy();
 
-    inline EditorContext context() const { return context; }
+    inline EditorContext* context() { return context.get(); }
 
     void draw();
 };

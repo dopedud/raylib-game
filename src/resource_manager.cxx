@@ -5,16 +5,19 @@
 #include "settings.h"
 
 std::unique_ptr<ResourceManager> ResourceManager::m_instance { nullptr };
-std::once_flag ResourceManager::flag;
+std::mutex ResourceManager::locker;
 
 ResourceManager* ResourceManager::instance()
 {
-    std::call_once(flag, []()
-    {
-        m_instance = std::make_unique<ResourceManager>(PrivateKey{});
-    });
-
+    std::lock_guard<std::mutex> lock { locker };
+    if (!m_instance) m_instance = std::make_unique<ResourceManager>(PrivateKey{});
     return m_instance.get();
+}
+
+void ResourceManager::destroy()
+{
+    std::lock_guard<std::mutex> lock { locker };
+    m_instance.reset();
 }
 
 ResourceManager::ResourceManager(PrivateKey)

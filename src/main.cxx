@@ -192,8 +192,10 @@ int main(int argc, char* argv[])
     UnloadModel(dummy);
 
     settings::deinitialise();
+    ResourceManager::destroy();
+
 #ifdef DEBUG
-    settings_editor::deinitialise();
+    Editor::destroy();
 #endif
 
     return 0;

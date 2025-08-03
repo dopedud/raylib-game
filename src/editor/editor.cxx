@@ -11,7 +11,7 @@
 #include "camera_controller.h"
 
 std::unique_ptr<Editor> Editor::m_instance { nullptr };
-std::once_flag Editor::flag;
+std::mutex Editor::locker;
 
 Editor::Editor(PrivateKey)
 {
@@ -19,16 +19,23 @@ Editor::Editor(PrivateKey)
     ResourceManagerEditor::instance();
 }
 
-Editor::~Editor() {}
+Editor::~Editor() 
+{
+    settings::deinitialise();
+    ResourceManagerEditor::destroy();
+}
 
 Editor* Editor::instance()
 {
-    std::call_once(flag, []()
-    {
-        m_instance = std::make_unique<Editor>(PrivateKey{});
-    });
-
+    std::lock_guard<std::mutex> lock { locker };
+    if (!m_instance) m_instance = std::make_unique<Editor>(PrivateKey{});
     return m_instance.get();
+}
+
+void Editor::destroy()
+{
+    std::lock_guard<std::mutex> lock { locker };
+    m_instance.reset();
 }
 
 void Editor::draw()

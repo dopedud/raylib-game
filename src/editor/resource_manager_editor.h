@@ -13,7 +13,7 @@ private:
     struct PrivateKey { explicit PrivateKey() = default; };
 
     static std::unique_ptr<ResourceManagerEditor> m_instance;
-    static std::once_flag flag;
+    static std::mutex locker;
 
     RenderTexture rt_game_view {};
     ImFont* font {};
@@ -27,16 +27,10 @@ public:
     ~ResourceManagerEditor();
 
     static ResourceManagerEditor* instance();
+    static void destroy();
 
-    inline RenderTexture* game_view()
-    {
-        return &rt_game_view;
-    }
-
-    inline ImFont* font_resource()
-    {
-        return font;
-    }
+    inline RenderTexture* game_view() { return &rt_game_view; }
+    inline ImFont* font_resource() { return font; }
 
     RenderTexture* reload_game_view(ImVec2 viewport);
 };
