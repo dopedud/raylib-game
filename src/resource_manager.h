@@ -9,12 +9,11 @@
 #include <mutex>
 
 #include "raylib.h"
-#include "imgui.h"
-
 #include "box2d/box2d.h"
 
 /**
  * @namespace
+ * @brief Resource variables to store paths to resources.
  */
 namespace resourcevars
 {
@@ -101,6 +100,12 @@ class ResourceManager
 {
 private:
 
+    /**
+     * @name Private Key
+     * @brief Key to prevent further instantiation after Singleton instance.
+     */
+    struct PrivateKey { explicit PrivateKey() = default; };
+
     static std::unique_ptr<ResourceManager> m_instance;
     static std::once_flag flag;
 
@@ -132,7 +137,7 @@ private:
     /**
      * @param 
      * @param path_sv Formatted path to textures. Paths are formatted (follow a certain regular expression) to allow
-     *             animations.
+     * animations.
      */
     std::vector<Texture> load_texture_resource(const int count, const std::string_view path_sv);
     
@@ -142,12 +147,16 @@ private:
 public:
 
     /**
-     * @brief Constructors and destructors are made public to let std::unique_ptr get accessed to them, but they're
-     * intended to be private so as to prevent user from instantiating another resource manager.
+     * Constructor and destructor are made public to let std::unique_ptr get accessed to them, but they're
+     * intended to be private so as to prevent user from instantiating another resource manager after the Singleton
+     * instance.
+     * 
+     * To prevent user from instantiating, the @ref PrivateKey private structure was created to only allow
+     * instantiation from within this class, guaranteeing Singleton instance.
      * @{
      */
 
-    ResourceManager();
+    explicit ResourceManager(PrivateKey);
     ~ResourceManager();
 
     /** @} */

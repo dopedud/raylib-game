@@ -2,17 +2,20 @@
 
 #include "resource_manager.h"
 
+std::unique_ptr<ResourceManagerEditor> ResourceManagerEditor::m_instance { nullptr };
+std::once_flag ResourceManagerEditor::flag;
+
 ResourceManagerEditor* ResourceManagerEditor::instance()
 {
     std::call_once(flag, []()
     {
-        m_instance = std::make_unique<ResourceManagerEditor>();
+        m_instance = std::make_unique<ResourceManagerEditor>(PrivateKey{});
     });
 
     return m_instance.get();
 }
 
-ResourceManagerEditor::ResourceManagerEditor()
+ResourceManagerEditor::ResourceManagerEditor(PrivateKey)
 {
     using namespace resourcevars;
 

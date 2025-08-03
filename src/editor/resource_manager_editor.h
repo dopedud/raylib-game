@@ -10,6 +10,8 @@ class ResourceManagerEditor
 {
 private:
 
+    struct PrivateKey { explicit PrivateKey() = default; };
+
     static std::unique_ptr<ResourceManagerEditor> m_instance;
     static std::once_flag flag;
 
@@ -21,7 +23,7 @@ private:
 
 public:
 
-    ResourceManagerEditor();
+    explicit ResourceManagerEditor(PrivateKey);
     ~ResourceManagerEditor();
 
     static ResourceManagerEditor* instance();

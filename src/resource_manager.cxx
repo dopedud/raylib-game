@@ -2,9 +2,6 @@
 
 #include <string>
 
-#include "raylib.h"
-#include "box2d/box2d.h"
-
 #include "settings.h"
 
 std::unique_ptr<ResourceManager> ResourceManager::m_instance { nullptr };
@@ -14,13 +11,13 @@ ResourceManager* ResourceManager::instance()
 {
     std::call_once(flag, []()
     {
-        m_instance = std::make_unique<ResourceManager>();
+        m_instance = std::make_unique<ResourceManager>(PrivateKey{});
     });
 
     return m_instance.get();
 }
 
-ResourceManager::ResourceManager()
+ResourceManager::ResourceManager(PrivateKey)
 {
     b2WorldDef world_def { b2DefaultWorldDef() };
 
@@ -122,7 +119,6 @@ std::vector<Texture> ResourceManager::load_texture_resource(const int count, con
     std::string path { std::string(path_sv) };
 
     std::vector<Texture> textures {};
-
     textures.resize(count);
 
     for (int i = 0; i < count; i++)
