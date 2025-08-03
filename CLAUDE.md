@@ -4,87 +4,117 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build Commands
 
-**Quick Build & Run:**
+**Quick build and run:**
 ```bash
-run.bat
+run
 ```
-This builds, installs, and runs the game in one command.
+This runs the batch file that executes: `cmake --build build && cmake --install build && installs\bin\game.exe`
 
-**Manual Build Process:**
+**Development workflow:**
 ```bash
-# Configure (with existing CMakeUserPresets.json)
+# Configure with user preset (required first time or after CMakeLists.txt changes)
 cmake --fresh --preset user-debug . -B build
 
-# Build
+# Build the project
 cmake --build build
 
-# Install dependencies and executable
+# Install and run
 cmake --install build
-
-# Run
 installs\bin\game.exe
 ```
 
-**Clean Commands:**
+**Cleanup commands:**
 ```bash
-# Clean install directory only
+# Clean install directory
 cmake --build build --target clean_install
 
-# Full clean (build + install directories)
+# Full clean (removes build directory)
 cmake --build build --target full_clean
 
 # Full clean including dependencies
 cmake --build build --target full_clean_dependency
 ```
 
+**Documentation generation:**
+```bash
+# Generate architecture diagram (requires PlantUML)
+java -jar plantuml-1.2025.4.jar architecture.puml -o docs
+
+# Generate code documentation (requires Doxygen)
+doxygen Doxyfile
+```
+
 ## Architecture Overview
 
-This is a 3D game built with Raylib (graphics), Box2D (physics), and ImGui (UI). The codebase follows a component-based architecture with clear separation of concerns:
+This is a 3D game built with Raylib (graphics) and Box2D (physics), written in C++17. The project follows a component-based architecture with singleton resource management.
 
-**Core Systems:**
-- `ResourceManager` - Singleton managing textures, shaders, models, and Box2D world
-- `StateManager<E>` - Template class for state management with any enum type
-- `CameraController` - 3D camera with smooth movement and mouse controls
-- `Player` - Main character with physics bodies, animations, and state management
-- `AnimatedModel` - 2D sprite animation system applied to 3D models
+### Core Systems
 
-**Key Dependencies:**
-- Raylib 5.5 (graphics/windowing)
-- Box2D 3.1.0 (physics simulation)
-- ImGui 1.92.1 (debug UI)
-- rlImGui (Raylib-ImGui integration)
+**Resource Management (Singleton)**
+- `ResourceManager` - Manages textures, shaders, models, and Box2D world
+- `constants.h` - Defines resource enumerations and paths
+- Resources organized by type with enum-based indexing
 
-**Physics Integration:**
-- Fixed timestep physics simulation (60Hz)
-- High-frequency input polling (512Hz)
-- Separate Box2D bodies for different player states
+**Game State System**
+- `StateManager<E>` - Generic template-based state management
+- `Player` uses `StateManager<PlayerState>` for IDLE/MOVING/JUMPING states
+- State transitions are planned but not fully implemented
+
+**Animation System**
+- `AnimatedModel` - 2D texture animation on 3D models
+- Keyframe-based timing with configurable frame durations
+- Supports looping and non-looping animations
+
+**Physics Integration**
+- Box2D world managed by ResourceManager
+- Fixed timestep physics simulation (60Hz with 4 substeps)
+- Player has multiple physics bodies for different states (partially implemented)
+
+**Camera System**
+- `CameraController` - Basic camera handling
+- `PlayerCameraController` - Intended for player following (incomplete)
+
+### Key Files Structure
+
+```
+src/
+├── main.cxx              # Main game loop, physics, and rendering
+├── resource_manager.*    # Singleton resource management
+├── state_manager.*       # Generic state management template
+├── player.*              # Player entity with physics and animation
+├── animated_model.*      # 2D animation on 3D models
+├── camera_controller.*   # Camera handling
+├── settings.*            # Game configuration constants
+└── editor/               # Debug editor (ImGui-based)
+```
+
+### Known Issues & Incomplete Features
+
+**Critical Issues:**
+- Player state transitions never occur (always stays IDLE)
+- Camera following is not implemented (`PlayerCameraController::follow()` is empty)
+- Multiple physics bodies per player created but never switched
+- MOVING and JUMPING animation states are empty
+
+**Architecture Notes:**
+- DEBUG mode enables ImGui editor and different render path
+- Physics simulation runs at fixed 60Hz timestep
+- Input polling at 512Hz for responsive controls
+- Game runs at 512 FPS target with physics decoupled
+
+### Development Patterns
 
 **Resource Loading:**
-All resources use relative paths from `../resources/` directory. The ResourceManager loads:
-- Animated textures (warrior sprites: idle, run, slide)
-- Custom shaders (GLSL vertex/fragment)
-- 3D models with texture mapping
-- Fonts (Cascadia Code)
+- Enums define resource types (TextureResource, ShaderResource, ModelResource)
+- Paths in `resourcevars` namespace with structured naming
+- Animation frames loaded from numbered file sequences
+
+**Memory Management:**
+- Singleton pattern for ResourceManager with thread-safe initialization
+- RAII patterns throughout codebase
+- Proper cleanup in destructors
 
 **Build System:**
-- CMake with FetchContent for dependency management
-- Shared libraries to keep executable size small
-- Cross-platform support with Windows-specific optimizations
-- Custom targets for cleaning build artifacts
-
-## Known Issues
-
-The README documents several incomplete systems:
-- Player state transitions never occur (always IDLE)
-- Camera follow() function is empty
-- Multiple physics bodies created but only first one used
-- MOVING/JUMPING animation states are incomplete
-- Missing ground detection and collision feedback
-
-## Development Notes
-
-- All source files are in `src/` with corresponding headers
-- Resources are duplicated in both `src/resources/` and `installs/resources/`
-- Documentation generated with Doxygen (`doxygen Doxyfile`)
-- Architecture diagram available via PlantUML (`architecture.puml`)
-- Uses C++17 standard with GCC compiler
+- CMake with FetchContent for dependencies (Raylib, ImGui, Box2D)
+- Separate debug/release presets with different compiler flags
+- User-specific presets in `CMakeUserPresets.json`

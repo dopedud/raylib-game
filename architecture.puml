@@ -2,7 +2,7 @@
 
     !theme vibrant
     skinparam classAttributeIconSize 0
-    skinparam classFontSize 12
+    skinparam classFontSize 10
     skinparam packageFontSize 12
 
     package "Core Systems" {
@@ -11,16 +11,20 @@
             - vector<vector<Texture>> texture_resources
             - vector<Shader> shader_resources
             - vector<Model> model_resources
+            - {static} unique_ptr<ResourceManager> m_instance
+            - {static} mutex locker
             --
-            + {static} instance() : ResourceManager&
+            + {static} instance() : ResourceManager*
+            + {static} destroy() : void
             + world_id() : b2WorldId
-            + get_texture_resource(TextureResource) : vector<Texture>*
-            + get_shader_resource(ShaderResource) : Shader*
-            + get_model_resource(ModelResource) : Model*
+            + texture_resource(TextureResource) : vector<Texture>*
+            + shader_resource(ShaderResource) : Shader*
+            + model_resource(ModelResource) : Model*
             - load_texture_resource(int, string_view) : vector<Texture>
             - load_shader_resource(string_view) : Shader
-            - ResourceManager()
-            - ~ResourceManager()
+            - load_shader_resource_fs(string_view) : Shader
+            + ResourceManager(PrivateKey)
+            + ~ResourceManager()
         }
 
         class "StateManager<E>" <<template>> {
@@ -36,35 +40,54 @@
             + transition(E) : bool
         }
 
-        class Settings {
-            + {static} initialise() : void
-            + {static} TimestampLogCallback() : void
+        namespace settings {
+            class GENERAL {
+                + {static} INITIAL_SCREEN_WIDTH : int = 1280
+                + {static} INITIAL_SCREEN_HEIGHT : int = 720
+                + {static} INITIAL_ASPECT_RATIO : float
+                + {static} TARGET_FPS : int = 512
+                + {static} TEXELS_PER_UNIT : float = 32.0f
+            }
+
+            class PHYSICS {
+                + {static} GRAVITY_ACCELERATION : float = -9.81f
+                + {static} TIMESTEP : float = 1.0f/60.0f
+                + {static} SUBSTEP_COUNT : int = 4
+            }
+
+            class INPUT {
+                + {static} TIMESTEP : float = 1.0f/512.0f
+            }
+
+            class SettingsFunctions {
+                + {static} initialise() : void
+                + {static} deinitialise() : void
+                + {static} TimestampLogCallback(int, char*, va_list) : void
+            }
         }
 
-        class GENERAL {
-            + {static} SCREEN_WIDTH : int = 1280
-            + {static} SCREEN_HEIGHT : int = 720
-            + {static} TARGET_FPS : int = 512
-            + {static} TEXELS_PER_UNIT : float = 32.0f
-        }
+        namespace resourcevars {
+            class FRAMES_AMOUNT {
+                + PLAYER::IDLE : int = 6
+                + PLAYER::RUN : int = 8
+                + PLAYER::SLIDE : int = 5
+            }
 
-        class PHYSICS {
-            + {static} GRAVITY_ACCELERATION : float = -9.81f
-            + {static} TIMESTEP : float = 1.0f/60.0f
-            + {static} SUBSTEP_COUNT : int = 4
-        }
+            class TEXTUREPATH {
+                + PLAYER::IDLE : string_view
+                + PLAYER::RUN : string_view
+                + PLAYER::SLIDE : string_view
+            }
 
-        class ResourceVars {
-            --
-            FRAMES_AMOUNT::PLAYER::IDLE : int = 6
-            FRAMES_AMOUNT::PLAYER::RUN : int = 8
-            FRAMES_AMOUNT::PLAYER::SLIDE : int = 5
-            --
-            TEXTUREPATH::PLAYER::IDLE : string_view
-            TEXTUREPATH::PLAYER::RUN : string_view
-            TEXTUREPATH::PLAYER::SLIDE : string_view
-            --
-            SHADERPATH::PLAYER::SHADER : string_view
+            class SHADERPATH {
+                + DEFAULT : string_view
+                + PLAYER : string_view
+            }
+
+            class FONTPATH {
+                + CASCADIA_CODE : string_view
+                + GOOGLE_SANS_CODE : string_view
+            }
         }
     }
 
@@ -75,9 +98,9 @@
             - vector<b2BodyId> bodyIDs
             - AnimatedModel* m_model
             - vector<AnimatedModel> models
-            - const float MAX_MOVE_VELOCITY = 10.0f
-            - float move_force = 10.0f
-            - float jump_force = 2.5f
+            - {static} const float MAX_MOVE_VELOCITY = 10.0f
+            - float move_force = 1000.0f
+            - float jump_force = 10000.0f
             - bool facingleft = false
             - bool receive_input = true
             --
@@ -121,13 +144,15 @@
             - initialise_timings() : void
         }
 
-        class PlayerCameraController {
-            - Camera3D m_camera
+        class CameraController {
             --
-            + PlayerCameraController()
+            + handle_input() : void
             + camera() : Camera3D
-            + follow(Transform) : void
-            + move_right(float) : void
+        }
+
+        class PlayerCameraController {
+            --
+            + follow() : void
         }
 
         enum PlayerState <<enum class>> {
@@ -145,6 +170,7 @@
         }
 
         enum ShaderResource <<enum class>> {
+            DEFAULT
             PLAYER
             COUNT
         }
@@ -161,90 +187,164 @@
         class Box2D <<external>> {
             + b2WorldId
             + b2BodyId
+            + b2DefaultBodyDef()
             + b2CreateWorld()
             + b2CreateBody()
+            + b2DestroyBody()
             + b2World_Step()
             + b2CreatePolygonShape()
+            + b2DefaultShapeDef()
             + b2MakeBox()
         }
 
         class Raylib <<external>> {
-            + Model
-            + Texture
-            + Shader
-            + Camera3D
-            + Vector2
-            + Transform
-            + DrawModel()
-            + LoadModel()
-            + LoadTexture()
-            + LoadShader()
-            + LoadModelFromMesh()
-            + GenMeshCube()
-            + UnloadModel()
-            + UnloadTexture()
-            + UnloadShader()
+            + Model, Texture, Shader
+            + Camera3D, Vector2, Vector3
+            + Image, Color
+            + DrawModel(), DrawModelEx()
+            + LoadModel(), LoadModelFromMesh()
+            + LoadTexture(), LoadTextureFromImage()
+            + LoadShader(), LoadShaderFromMemory()
+            + GenMeshCube(), GenImageColor()
+            + UnloadModel(), UnloadTexture(), UnloadImage()
             + GetFrameTime()
-            + BeginDrawing()
-            + EndDrawing()
-            + BeginMode3D()
-            + EndMode3D()
-            + DrawGrid()
-            + DrawFPS()
-            + EnableCursor()
-            + DisableCursor()
+            + BeginDrawing(), EndDrawing()
+            + BeginMode3D(), EndMode3D()
+            + BeginTextureMode(), EndTextureMode()
+            + ClearBackground(), DrawGrid()
+            + WindowShouldClose()
+            + IsKeyPressed(), IsCursorHidden()
+            + EnableCursor(), DisableCursor()
+        }
+
+        class ImGui <<external>> {
+            + Editor integration
+            + Debug UI rendering
         }
     }
 
     package "Main Application" {
         class Main {
-            + main(argc, argv) : int
-            + DrawGridY(int slices, float spacing) : void
+            + main(int argc, char* argv[]) : int
             --
-            Game Loop:
-            - Cursor toggle handling (ESC key)
-            - Physics simulation (fixed timestep with accumulation)
-            - Animation updates
-            - Input handling
-            - 3D rendering with dual grids (XZ and Y planes)
-            - FPS display
+            Initialization:
+            - Settings and ResourceManager setup
+            - Ground physics body creation
+            - Player and Camera instantiation
+            --
+            Game Loop (fixed timestep):
+            - ESC key cursor toggle
+            - Physics simulation (60Hz with accumulation)
+            - Input polling (512Hz with accumulation)
+            - Player animation updates
+            - Dual rendering paths (Debug/Release)
             - Ground plane with Box2D physics
+            --
+            Cleanup:
+            - Resource deallocation
+            - Physics world cleanup
         }
     }
 
-    ' Relationships
+    package "Debug Editor" <<conditional>> {
+        class Editor {
+            + {static} instance() : Editor*
+            + {static} destroy() : void
+            + draw() : void
+        }
+
+        class ResourceManagerEditor {
+            + {static} instance() : ResourceManagerEditor*
+            + game_view() : RenderTexture2D*
+        }
+
+        class SettingsEditor {
+            + DrawGridY(int, float) : void
+        }
+    }
+
+    ' Core Relationships
     ResourceManager --> Box2D : manages world
     ResourceManager --> Raylib : loads resources
-    ResourceManager --> ResourceVars : uses paths/constants
-    Player --> "StateManager<PlayerState>" : has
+    ResourceManager ..> resourcevars : uses paths/constants
+    Player --> "StateManager<PlayerState>" : contains
     Player --> AnimatedModel : contains vector
-    Player --> Box2D : physics body
-    Player --> PlayerState : uses
+    Player --> Box2D : physics bodies
+    Player --> PlayerState : uses enum
     AnimatedModel --> ResourceManager : gets resources from
-    AnimatedModel --> TextureResource : uses
-    AnimatedModel --> ShaderResource : uses
-    AnimatedModel --> ModelResource : uses
+    AnimatedModel --> TextureResource : uses enum
+    AnimatedModel --> ShaderResource : uses enum
+    AnimatedModel --> ModelResource : uses enum
     AnimatedModel --> Raylib : renders with
-    PlayerCameraController --> Raylib : uses Camera3D
+
+    ' Main Application Flow
     Main --> Player : creates & updates
-    Main --> PlayerCameraController : uses
+    Main --> CameraController : creates & uses
     Main --> ResourceManager : initializes
-    Main --> Settings : calls initialise
-    Main --> GENERAL : uses constants
-    Main --> PHYSICS : uses constants
+    Main --> settings : calls functions
     Main --> Box2D : steps physics world
     Main --> Raylib : renders scene
-    Settings --> Raylib : configures window/fps
+    settings.SettingsFunctions --> Raylib : configures window/fps
 
-    ' Notes
-    note right of ResourceManager : ARCHITECTURE DETAILS:\n- Singleton pattern implementation\n- Manages all game resources (textures, shaders, models)\n- Integrates Box2D physics world\n- Generates models dynamically from mesh cubes\n- Uses resourcevars namespace for paths and constants\n- Loads textures with frame-based naming convention
+    ' Debug Editor (conditional)
+    Main --> Editor : creates when DEBUG
+    Editor --> ImGui : uses for UI
+    ResourceManagerEditor --> Raylib : manages game view texture
 
-    note right of AnimatedModel : SOPHISTICATED ANIMATION:\n- Binary search for frame indexing\n- Sophisticated timing system with keyframes\n- Supports looping/non-looping animations\n- Uses timing_cumulative for efficient playback\n- Properly integrates with ResourceManager\n- Multiple constructors for different timing modes
+    ' Camera Inheritance
+    PlayerCameraController --|> CameraController : extends
 
-    note bottom of "StateManager<E>" : GENERIC TEMPLATE:\nWorks with any enum type\nCurrently used for PlayerState\nSupports state transitions and history
+    ' Notes with Current Issues
+    note right of ResourceManager 
+        SINGLETON RESOURCE MANAGER:
+        - Thread-safe singleton with mutex
+        - Manages Box2D physics world
+        - Loads textures from numbered sequences
+        - Generates quad models for 2D sprites
+        - Uses PrivateKey pattern for controlled access
+    end note
 
-    note right of Player : PLAYER IMPLEMENTATION:\n- Contains StateManager for state handling\n- Has vector of AnimatedModel objects\n- Physics integration with Box2D\n- Handles input, animation, and rendering\n- Supports multiple physics bodies
+    note right of AnimatedModel 
+        SOPHISTICATED 2D-ON-3D ANIMATION:
+        - Binary search for efficient frame lookup
+        - Keyframe timing with cumulative arrays
+        - Supports complex timing sequences
+        - Renders 2D sprite sheets on 3D quads
+        - Multiple constructor overloads
+    end note
 
-    note right of PlayerCameraController : CAMERA SYSTEM:\n- Manages 3D camera for player following\n- Contains follow() method for target tracking\n- Supports camera movement controls
+    note bottom of "StateManager<E>" 
+        GENERIC STATE MANAGEMENT:
+        Template works with any enum type
+        Tracks current and previous states
+        **ISSUE: Player never transitions states**
+    end note
+
+    note right of Player 
+        PLAYER ENTITY SYSTEM:
+        - Contains multiple AnimatedModel objects
+        - Has multiple Box2D bodies (unused)
+        - **ISSUES:**
+        - State never changes from IDLE
+        - handle_input() commented out
+        - switch_to_body() never called
+        - MOVING/JUMPING animations empty
+    end note
+
+    note right of PlayerCameraController 
+        CAMERA FOLLOWING SYSTEM:
+        **CRITICAL ISSUE:**
+        follow() method is completely empty
+        Camera moves at fixed speed instead
+        No actual player tracking implemented
+    end note
+
+    note top of Main 
+        FIXED TIMESTEP GAME LOOP:
+        - Physics: 60Hz with accumulation
+        - Input: 512Hz with accumulation
+        - Rendering: Up to 512 FPS
+        - Dual debug/release render paths
+    end note
 
 @enduml
