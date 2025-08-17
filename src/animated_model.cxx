@@ -109,11 +109,6 @@ AnimatedModel::AnimatedModel(AnimatedModel&& other) noexcept
     other.textures = nullptr;
     other.shader = nullptr;
     other.m_model = nullptr;
-    
-    other.frameindex = 0;
-    other.timer = .0f;
-    other.duration = .0f;
-    other.finished = false;
 }
 
 AnimatedModel& AnimatedModel::operator=(const AnimatedModel& other)

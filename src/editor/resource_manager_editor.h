@@ -16,7 +16,7 @@ private:
     static std::mutex locker;
 
     RenderTexture rt_game_view {};
-    ImFont* font {};
+    std::unique_ptr<ImFont> font {};
 
     ResourceManagerEditor(const ResourceManagerEditor&) = delete;
     ResourceManagerEditor& operator=(const ResourceManagerEditor&) = delete;
@@ -30,7 +30,7 @@ public:
     static void destroy();
 
     inline RenderTexture* game_view() { return &rt_game_view; }
-    inline ImFont* font_resource() { return font; }
+    inline ImFont* font_resource() { return font.get(); }
 
     RenderTexture* reload_game_view(ImVec2 viewport);
 };

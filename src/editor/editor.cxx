@@ -2,13 +2,13 @@
 
 #include <memory>
 
+#include "rcamera.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "rlImGui.h"
 
 #include "resource_manager_editor.h"
 #include "settings_editor.h"
-#include "camera_controller.h"
 
 std::unique_ptr<Editor> Editor::m_instance { nullptr };
 std::mutex Editor::locker;
@@ -21,7 +21,7 @@ Editor::Editor(PrivateKey)
 
 Editor::~Editor() 
 {
-    settings::deinitialise();
+    settings_editor::deinitialise();
     ResourceManagerEditor::destroy();
 }
 
@@ -113,7 +113,7 @@ void Editor::draw()
 
         ImGui::TextWrapped("Camera Max Speed");
 
-        float max_speed { camera.max_speed() };
+        float max_speed { camera_controller.max_speed() };
         ImGui::SliderFloat("##camera_max_speed",
             &max_speed,
             CameraController::MAX_SPEED_MIN,
@@ -121,11 +121,11 @@ void Editor::draw()
             "%.0f",
             ImGuiSliderFlags_AlwaysClamp
         );
-        camera.set_max_speed(max_speed);
+        camera_controller.set_max_speed(max_speed);
 
         ImGui::TextWrapped("Camera Smooth Multiplier");
 
-        float smooth_multiplier { camera.smooth_multiplier() };
+        float smooth_multiplier { camera_controller.smooth_multiplier() };
         ImGui::SliderFloat("##camera_smooth_multiplier",
             &smooth_multiplier,
             CameraController::SMOOTH_MULTIPLIER_MIN,
@@ -133,7 +133,7 @@ void Editor::draw()
             "%.0f",
             ImGuiSliderFlags_AlwaysClamp
         );
-        camera.set_smooth_multiplier(smooth_multiplier);
+        camera_controller.set_smooth_multiplier(smooth_multiplier);
     ImGui::End();
         
     ImGui::Begin("Viewport", nullptr, 
@@ -160,4 +160,72 @@ void Editor::draw()
 
     ImGui::PopFont();
     rlImGuiEnd();
+}
+
+Editor::CameraController::CameraController()
+{
+    m_camera.position = { .0f, .0f, .0f };
+    m_camera.target = Vector3{ .0f, .0f, 1.0f };
+    m_camera.up = { .0f, 1.0f, .0f };
+    m_camera.fovy = 75.0f;
+    m_camera.projection = CAMERA_PERSPECTIVE;
+}
+
+void Editor::CameraController::handle_input()
+{
+    Vector2 mouse_delta { GetMouseDelta() * m_mouse_sensitivity * COMMON_FACTOR };
+
+    if (Vector2Length(mouse_delta) > .0f)
+    {
+        float yaw { mouse_delta.x };
+        float pitch { mouse_delta.y };
+        
+        CameraYaw(&m_camera, -yaw, false);
+        CameraPitch(&m_camera, -pitch, true, false, false);
+    }
+
+    Vector3 local_move_vector {};
+        
+    if (IsKeyDown(KEY_W)) local_move_vector += Vector3UnitZ;
+    if (IsKeyDown(KEY_S)) local_move_vector += Vector3Negate(Vector3UnitZ);
+    if (IsKeyDown(KEY_D)) local_move_vector += Vector3UnitX;
+    if (IsKeyDown(KEY_A)) local_move_vector += Vector3Negate(Vector3UnitX);
+    if (IsKeyDown(KEY_SPACE)) local_move_vector += Vector3UnitY;
+    if (IsKeyDown(KEY_LEFT_CONTROL)) local_move_vector += Vector3Negate(Vector3UnitY);
+    
+    local_move_vector = Vector3Normalize(local_move_vector);
+
+    float max_speed { m_max_speed * COMMON_FACTOR };
+    float smooth_multiplier { m_smooth_multiplier * COMMON_FACTOR };
+    
+    if (!FloatEquals(Vector3Length(local_move_vector), .0f))
+    move_vector = Vector3Lerp(
+		move_vector,
+		Vector3Normalize(local_move_vector) * max_speed,
+		smooth_multiplier
+	);
+
+    else move_vector = Vector3Lerp(
+        move_vector,
+        Vector3Zeros,
+        smooth_multiplier
+    );
+    
+    move_vector = Vector3ClampValue(move_vector, .0f, max_speed);
+    
+    CameraMoveForward(&m_camera, move_vector.z, false);
+    CameraMoveRight(&m_camera, move_vector.x, false);
+    
+    // handle vertical movement in camera's local up direction
+    if (!FloatEquals(move_vector.y, 0.0f))
+    {
+        // calculate camera's local coordinate system
+        Vector3 forward { Vector3Normalize(Vector3Subtract(m_camera.target, m_camera.position)) };
+        Vector3 right { Vector3Normalize(Vector3CrossProduct(forward, m_camera.up)) };
+        Vector3 local_up { Vector3CrossProduct(right, forward) };
+        
+        // move both position and target to maintain camera orientation
+        m_camera.position = Vector3Add(m_camera.position, Vector3Scale(local_up, move_vector.y));
+        m_camera.target = Vector3Add(m_camera.target, Vector3Scale(local_up, move_vector.y));
+    }
 }

@@ -27,8 +27,8 @@ ResourceManagerEditor::ResourceManagerEditor(PrivateKey)
     ImGuiIO& io { ImGui::GetIO() };
     io.IniFilename = NULL;
     io.Fonts->AddFontFromFileTTF(FONTPATH::CASCADIA_CODE.data());
-    font = io.Fonts->AddFontFromFileTTF(FONTPATH::GOOGLE_SANS_CODE.data());
-    if (font == nullptr) io.Fonts->AddFontDefault();
+    font.reset(io.Fonts->AddFontFromFileTTF(FONTPATH::GOOGLE_SANS_CODE.data()));
+    if (!font) io.Fonts->AddFontDefault();
 }
 
 ResourceManagerEditor::~ResourceManagerEditor()

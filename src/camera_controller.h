@@ -4,21 +4,20 @@
 #include "raymath.h"
 
 #include "settings.h"
-#include "camera_target.h"
 
 class CameraController
 {
 private:   
 
-    Camera3D m_camera;
-	
-	float m_max_speed { 50.0f };
-	float m_smooth_multiplier { 25.0f };
+    Camera3D m_camera {};
+    
+    float m_max_speed { 50.0f };
+    float m_smooth_multiplier { 25.0f };
     float m_mouse_sensitivity { 1.0f };
 
     static constexpr float COMMON_FACTOR { settings::INPUT::TIMESTEP / 2.0f };
 
-	Vector3 move_vector {};
+    Vector3 move_vector {};
 
 public:
 

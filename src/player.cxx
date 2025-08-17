@@ -77,7 +77,7 @@ Player::Player()
 
     switch_to_body(bodyIDs[0]);
 
-    m_model = &models[0];
+    m_model.reset(&models[0]);
 }
 
 Player::~Player()

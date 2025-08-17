@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <utility>
+#include <memory>
 
 #include "raylib.h"
 
@@ -75,7 +76,7 @@ private:
 
 public:
 
-    AnimatedModel() = default; /**< @private */
+    // AnimatedModel() = default; /**< @private */
 
     /**
      * @fn

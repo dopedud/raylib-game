@@ -28,6 +28,11 @@ private:
     struct PrivateKey { explicit PrivateKey() = default; };
 
     static std::unique_ptr<ResourceManager> m_instance;
+
+    /**
+     * @name Multi-Threaded Locker
+     * @brief Locker to lock this instance of ResourceManager when it is being used.
+     */
     static std::mutex locker;
 
     /**

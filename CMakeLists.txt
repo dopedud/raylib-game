@@ -136,7 +136,6 @@ set(SRC
     player.cxx
     animated_model.cxx
     camera_controller.cxx
-    camera_target.cxx
 
     editor/editor.cxx
     editor/settings_editor.cxx
@@ -176,7 +175,6 @@ foreach(src ${SRC})
     list(APPEND SRC_FILES "${CMAKE_SOURCE_DIR}/src/${src}")
 endforeach()
 add_executable(${EXECUTABLE_NAME} ${SRC_FILES})
-# target_include_directories(${EXECUTABLE_NAME} PRIVATE ${bullet_SOURCE_DIR}/src)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE ${LIBRARIES})
 target_include_directories(${EXECUTABLE_NAME} PRIVATE 
     "${CMAKE_SOURCE_DIR}/src"
@@ -208,6 +206,36 @@ install(TARGETS ${EXECUTABLE_NAME} ${LIBRARIES}
 )
 
 install(DIRECTORY src/resources/ DESTINATION resources)
+
+# post-install script to remove headers
+install(CODE "
+    message(STATUS \"Cleaning up development files...\")
+    
+    # remove common header directories
+    if (EXISTS \"${CMAKE_INSTALL_PREFIX}/include\")
+        file(REMOVE_RECURSE \"${CMAKE_INSTALL_PREFIX}/include\")
+        message(STATUS \"Removed: include directory\")
+    endif()
+    
+    # remove CMake config files
+    if (EXISTS \"${CMAKE_INSTALL_PREFIX}/share\")
+        file(REMOVE_RECURSE \"${CMAKE_INSTALL_PREFIX}/share\")
+        message(STATUS \"Removed: share directory\")
+    endif()
+    
+    # remove pkg-config files
+    if (EXISTS \"${CMAKE_INSTALL_PREFIX}/lib/pkgconfig\")
+        file(REMOVE_RECURSE \"${CMAKE_INSTALL_PREFIX}/lib/pkgconfig\")
+        message(STATUS \"Removed: pkgconfig directory\")
+    endif()
+    
+    # remove any .cmake files in lib
+    file(GLOB CMAKE_FILES \"${CMAKE_INSTALL_PREFIX}/lib/*.cmake\")
+    if (CMAKE_FILES)
+        file(REMOVE \${CMAKE_FILES})
+        message(STATUS \"Removed: CMake config files\")
+    endif()
+")
 
 # create a custom target to clean (remove) install files
 add_custom_target(clean_install

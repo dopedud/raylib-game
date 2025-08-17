@@ -17,6 +17,8 @@ void settings_editor::initialise()
 {
     SetTraceLogLevel(LOG_DEBUG);
 
+    TraceLog(LOG_DEBUG, "This gets called first");
+
     rlImGuiSetup(true);
 
     ImGuiIO& imgui_io {  ImGui::GetIO() };

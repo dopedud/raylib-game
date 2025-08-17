@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "box2d/box2d.h"
 
@@ -28,7 +29,7 @@ private:
     float move_force { 1000.0f };
     float jump_force { 10000.0f };
 
-    AnimatedModel* m_model {};
+    std::unique_ptr<AnimatedModel> m_model {};
     std::vector<AnimatedModel> models {};
 
     bool facingleft {};
@@ -42,10 +43,10 @@ public:
     Player();
     ~Player();
 
-    b2BodyId bodyID() const { return m_bodyID; }
-    AnimatedModel* model() const { return m_model; }
+    inline b2BodyId bodyID() const { return m_bodyID; }
+    inline AnimatedModel* model() const { return m_model.get(); }
 
-    void set_input(bool toggle) { receive_input = toggle; }
+    inline void set_input(bool toggle) { receive_input = toggle; }
 
     void handle_input();
     void animate();

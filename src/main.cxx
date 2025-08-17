@@ -8,8 +8,6 @@
 ///// NOTE: TEMPORARY
 #define DEBUG
 
-#include <iostream>
-
 #include "raylib.h"
 #include "raymath.h"
 #include "imgui.h"
@@ -25,6 +23,8 @@
 
 #ifdef DEBUG
 #include "editor.h"
+#include "resource_manager_editor.h"
+#include "settings_editor.h"
 #endif
 
 __declspec(dllexport) unsigned long NvOptimusEnablement = 1;
@@ -41,12 +41,13 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
  */
 int main(int argc, char* argv[])
 {
-#ifdef DEBUG
-    Editor::instance();
-#endif
-
     settings::initialise();
     ResourceManager::instance();
+
+#ifdef DEBUG
+    Editor::instance();
+    bool show_editor { true };
+#endif
 
     Vector2 ground_size { 200.0f, .25f };
     Vector2 ground_position { .0f, -2.0f };
@@ -138,46 +139,61 @@ int main(int argc, char* argv[])
                 DrawGrid(100, 1);
                 settings_editor::DrawGridY(100, 1);
                 DrawModel(dummy, { .0f, .0f, 10.0f }, 1.0f, WHITE);
-                DrawModelEx(ground_model, { ground_position.x, ground_position.y, .0f }, 
+                DrawModelEx(ground_model, { ground_position.x, ground_position.y, .0f },
                 { .0f, .0f, 1.0f }, .0f, Vector3Ones, DARKGRAY);
                 player.draw();
             EndMode3D();
         EndTextureMode();
+
+        if (IsKeyPressed(KEY_F5)) { show_editor = !show_editor; }
+
+        if (!show_editor)
+        {
 #endif
+            BeginDrawing();
+                ClearBackground(Color{253, 246, 227, 255});
 
-        BeginDrawing();
-            ClearBackground(Color{253, 246, 227, 255});
-#ifndef DEBUG
-            /**
-             * DRAW WORLD
-             */
-            BeginMode3D(camera.camera());
-                DrawModel(dummy, { .0f, .0f, 10.0f }, 1.0f, WHITE);
-                DrawModelEx(ground_model, { ground_position.x, ground_position.y, .0f }, 
-                { .0f, .0f, 1.0f }, .0f, Vector3Ones, DARKGRAY);
-                player.draw();
-            EndMode3D();
-            /**
-             * END DRAW WORLD
-             */
+                /**
+                 * DRAW WORLD
+                 */
+                BeginMode3D(camera.camera());
+                    DrawGrid(100, 1);
+                    settings_editor::DrawGridY(100, 1);
+                    DrawModel(dummy, { .0f, .0f, 10.0f }, 1.0f, WHITE);
+                    DrawModelEx(ground_model, { ground_position.x, ground_position.y, .0f },
+                    { .0f, .0f, 1.0f }, .0f, Vector3Ones, DARKGRAY);
+                    player.draw();
+                EndMode3D();
+                /**
+                 * END DRAW WORLD
+                 */
 
-            /**
-             * DRAW UI
-             */
+                /**
+                 * DRAW UI
+                 */
 
-            /**
-             * END DRAW UI
-             */
-#else
-            /**
-             * DRAW EDITOR
-             */
-            Editor::instance()->draw();
-            /**
-             * END DRAW EDITOR
-             */
+                /**
+                 * END DRAW UI
+                 */
+
+            EndDrawing();
+
+#ifdef DEBUG
+        }
+
+        else 
+        {   
+            BeginDrawing();
+                /**
+                 * DRAW EDITOR
+                 */
+                Editor::instance()->draw();
+                /**
+                 * END DRAW EDITOR
+                 */
+            EndDrawing();
+        }
 #endif
-        EndDrawing();
         /**
          * END DRAWING FUNCTIONS
          */
