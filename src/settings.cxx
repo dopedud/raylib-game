@@ -9,9 +9,6 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "rcamera.h"
-#include "rlgl.h"
-#include "imgui.h"
-#include "rlImGui.h"
 
 #include "resource_manager.h"
 
