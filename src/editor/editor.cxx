@@ -1,7 +1,5 @@
 #include "editor.h"
 
-#include <memory>
-
 #include "rcamera.h"
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -122,6 +120,7 @@ void Editor::draw()
             ImGuiSliderFlags_AlwaysClamp
         );
         camera_controller.set_max_speed(max_speed);
+        // TraceLog(LOG_DEBUG, "camera max speed: %f", camera_controller.max_speed());
 
         ImGui::TextWrapped("Camera Smooth Multiplier");
 
@@ -134,6 +133,7 @@ void Editor::draw()
             ImGuiSliderFlags_AlwaysClamp
         );
         camera_controller.set_smooth_multiplier(smooth_multiplier);
+        TraceLog(LOG_DEBUG, "camera smooth multiplier: %f", camera_controller.smooth_multiplier());
     ImGui::End();
         
     ImGui::Begin("Viewport", nullptr, 

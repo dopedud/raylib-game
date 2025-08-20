@@ -88,8 +88,9 @@ cmake --build build
 ### Tech Stack
 
 - **Programming Languages:** C and C++
-- **Windowing, Rendering, Audio, and Input Hanlding:** Raylib
+- **Rendering, Audio, Input Handling, and Animations:** Raylib
 - **Debug GUI:** Dear IMGUI
+- **Game GUI:** TBA
 - **Physics Simulation:** Box2D
 
 
